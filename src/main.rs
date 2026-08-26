@@ -1,5 +1,7 @@
-use chrono::{NaiveDate, NaiveTime};
-use clap::{Arg, Parser, Subcommand, ValueEnum};
+mod commands;
+
+use clap::{ Parser};
+use commands::{ MonoCommands };
 
 #[derive(Parser)]
 #[clap(author, version, about)]
@@ -12,41 +14,6 @@ struct MonoCLI {
 
     #[clap(short, long)]
     animate: bool,
-}
-
-#[derive(Subcommand)]
-enum MonoCommands {
-    Add {
-        #[clap(short = 't', long = "type")]
-        note_type: Option<NoteTypes>,
-
-        #[clap(long)]
-        time: Option<NaiveTime>,
-
-        #[clap(long)]
-        date: Option<NaiveDate>,
-
-        #[clap(short, long)]
-        paste: bool,
-    },
-
-    CheckIn {
-        #[clap(long)]
-        time: Option<NaiveTime>,
-
-        #[clap(long)]
-        date: Option<NaiveDate>,
-
-        #[clap(short, long)]
-        paste: bool,
-    },
-}
-
-#[derive(ValueEnum, Clone, Debug)]
-enum NoteTypes {
-    Idea,
-    CheckIn,
-    Random,
 }
 
 fn main() {
