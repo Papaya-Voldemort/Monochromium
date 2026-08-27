@@ -2,7 +2,7 @@ use chrono::{NaiveDate, NaiveTime};
 use clap::{Subcommand, ValueEnum};
 
 #[derive(ValueEnum, Clone, Debug)]
-enum NoteTypes {
+pub enum NoteTypes {
     Idea,
     CheckIn,
     Random,
