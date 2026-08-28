@@ -1,6 +1,8 @@
 mod commands;
+mod database;
 
 use crate::commands::{add, check_in, delete, edit, list, search, view};
+use crate::database::{make_db};
 use clap::Parser;
 use commands::definitions::MonoCommands;
 
@@ -17,7 +19,10 @@ struct MonoCLI {
     animate: bool,
 }
 
-fn main() {
+#[tokio::main(flavor = "current_thread")]
+async fn main() {
+    make_db().await;
+
     let cli = MonoCLI::parse();
 
     match cli.command {
