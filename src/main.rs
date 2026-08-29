@@ -1,5 +1,6 @@
 mod commands;
 mod database;
+mod config;
 
 use crate::commands::{add, check_in, delete, edit, list, search, view};
 use crate::database::{make_db};
