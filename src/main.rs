@@ -22,7 +22,7 @@ struct MonoCLI {
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
-    make_db().await;
+    let db = make_db().await;
 
     let cli = MonoCLI::parse();
 
@@ -34,7 +34,7 @@ async fn main() {
             date,
             paste,
         } => {
-            add(text, note_type, time, date, paste);
+            add(db, text, note_type, time, date, paste).await;
         }
         MonoCommands::CheckIn {
             text,

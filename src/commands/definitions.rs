@@ -5,7 +5,8 @@ use clap::{Subcommand, ValueEnum};
 pub enum NoteTypes {
     Idea,
     CheckIn,
-    Random,
+    Todo,
+    Other,
 }
 
 #[derive(Subcommand)]
