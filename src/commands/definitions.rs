@@ -13,7 +13,7 @@ pub enum NoteTypes {
 pub enum MonoCommands {
     Add {
         #[arg()]
-        text: String,
+        text: Option<String>,
 
         #[clap(short = 't', long = "type")]
         note_type: Option<NoteTypes>,
@@ -30,7 +30,7 @@ pub enum MonoCommands {
 
     CheckIn {
         #[arg()]
-        text: String,
+        text: Option<String>,
 
         #[clap(long)]
         time: Option<NaiveTime>,
