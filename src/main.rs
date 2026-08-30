@@ -1,6 +1,7 @@
 mod commands;
 mod database;
 mod config;
+mod utils;
 
 use crate::commands::{add, check_in, delete, edit, list, search, view};
 use crate::database::{make_db};
@@ -42,7 +43,7 @@ async fn main() {
             date,
             paste,
         } => {
-            check_in(text, time, date, paste);
+            check_in(db, text, time, date, paste).await;
         }
         MonoCommands::Delete { note_id, approve } => {
             delete(note_id, approve);
