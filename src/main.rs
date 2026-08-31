@@ -35,7 +35,8 @@ async fn main() {
             date,
             paste,
         } => {
-            add(db, text, note_type, time, date, paste).await;
+            let output = add(db, text, note_type, time, date, paste).await;
+            println!("{}", output)
         }
         MonoCommands::CheckIn {
             text,
@@ -43,7 +44,8 @@ async fn main() {
             date,
             paste,
         } => {
-            check_in(db, text, time, date, paste).await;
+            let output = check_in(db, text, time, date, paste).await;
+            println!("{}", output)
         }
         MonoCommands::Delete { note_id, approve } => {
             delete(note_id, approve);
@@ -63,7 +65,15 @@ async fn main() {
             since,
             view,
         } => {
-            list(db, limit, note_type, today, since, view);
+            let output = list(db, limit, note_type, today, since, view).await;
+            match output {
+                Err(err) => eprintln!("Database Error {:?}", err),
+                Ok(vector_data) => {
+                    for note in &vector_data {
+                        println!("Note: {}", note);
+                    }
+                }
+            }
         }
         MonoCommands::Search {
             text,

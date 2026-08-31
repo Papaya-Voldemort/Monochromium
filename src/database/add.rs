@@ -20,7 +20,7 @@ pub async fn add_row(
     let date = date.to_string();
 
     conn.execute(
-        "INSERT INTO notes (title, note_type, content, date) VALUES (?, ?, ?, ?)",
+        "INSERT INTO notes (title, type, content, date) VALUES (?, ?, ?, ?)",
         params![title, note_type, content, date],
     )
     .await

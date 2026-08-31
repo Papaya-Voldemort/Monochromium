@@ -22,7 +22,7 @@ pub async fn read_rows(
 
     while let Some(row) = rows.next().await? {
         let date_str: String = row.get(3)?;
-        let parsed_date = NaiveDateTime::parse_from_str(&date_str, "%Y-%m-%d %H:%M:%S")?;
+        let parsed_date = NaiveDateTime::parse_from_str(&date_str, "%Y-%m-%d %H:%M:%S%.f")?;
         let note = Note {
             id: row.get(0)?,
             title: row.get(1)?,
