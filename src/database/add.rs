@@ -9,7 +9,7 @@ pub async fn add_row(
     content: String,
     date: NaiveDateTime,
 ) {
-    let mut conn = db.connect().unwrap();
+    let conn = db.connect().unwrap();
 
     let note_type: String = match note_type {
         NoteTypes::Idea => String::from("idea"),

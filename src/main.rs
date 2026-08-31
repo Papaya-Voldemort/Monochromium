@@ -1,10 +1,10 @@
 mod commands;
-mod database;
 mod config;
+mod database;
 mod utils;
 
 use crate::commands::{add, check_in, delete, edit, list, search, view};
-use crate::database::{make_db};
+use crate::database::make_db;
 use clap::Parser;
 use commands::definitions::MonoCommands;
 
@@ -63,7 +63,7 @@ async fn main() {
             since,
             view,
         } => {
-            list(limit, note_type, today, since, view);
+            list(db, limit, note_type, today, since, view);
         }
         MonoCommands::Search {
             text,
