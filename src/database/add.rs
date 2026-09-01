@@ -1,6 +1,7 @@
 use crate::commands::definitions::NoteTypes;
 use chrono::NaiveDateTime;
 use libsql::params;
+use crate::utils::parse_note_type;
 
 pub async fn add_row(
     db: libsql::Database,
@@ -11,12 +12,7 @@ pub async fn add_row(
 ) {
     let conn = db.connect().unwrap();
 
-    let note_type: String = match note_type {
-        NoteTypes::Idea => String::from("idea"),
-        NoteTypes::CheckIn => String::from("check in"),
-        NoteTypes::Todo => String::from("todo"),
-        NoteTypes::Other => String::from("other"),
-    };
+    let note_type = parse_note_type(note_type);
     let date = date.to_string();
 
     conn.execute(

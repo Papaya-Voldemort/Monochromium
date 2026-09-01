@@ -1,11 +1,11 @@
 use crate::commands::definitions::NoteTypes;
-use chrono::NaiveDate;
 use crate::database::read_rows;
+use chrono::NaiveDate;
 
 pub async fn list(
     db: libsql::Database,
     limit: Option<u16>,
-    node_type: Option<NoteTypes>,
+    note_type: Option<NoteTypes>,
     today: bool,
     since: Option<NaiveDate>,
     view: bool,
@@ -16,12 +16,22 @@ pub async fn list(
     } else {
         final_limit = limit.unwrap();
     }
-    let notes = read_rows(db, final_limit).await?;
+    let notes = read_rows(db, final_limit, note_type).await?;
     let mut output = Vec::new();
 
-    for note in notes {
-        let push = format!("{} \u{2022} ID: {}", note.title, note.id);
-        output.push(push);
+    if view {
+        for note in notes {
+            let push = format!(
+                "{} \u{2022} ID: {} \u{2022} {}\n {}",
+                note.title, note.id, note.date, note.content
+            );
+            output.push(push);
+        }
+    } else {
+        for note in notes {
+            let push = format!("{} \u{2022} ID: {}", note.title, note.id);
+            output.push(push);
+        }
     }
 
     Ok(output)
