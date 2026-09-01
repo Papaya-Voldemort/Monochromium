@@ -3,7 +3,7 @@ use crate::database::read_rows;
 use chrono::NaiveDate;
 
 pub async fn list(
-    db: libsql::Database,
+    conn: libsql::Connection,
     limit: Option<u16>,
     note_type: Option<NoteTypes>,
     today: bool,
@@ -16,7 +16,7 @@ pub async fn list(
     } else {
         final_limit = limit.unwrap();
     }
-    let notes = read_rows(db, final_limit, note_type).await?;
+    let notes = read_rows(conn, final_limit, note_type).await?;
     let mut output = Vec::new();
 
     if view {

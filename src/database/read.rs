@@ -11,12 +11,10 @@ pub struct Note {
     pub content: String,
 }
 pub async fn read_rows(
-    db: libsql::Database,
+    conn: libsql::Connection,
     limit: u16,
     note_type: Option<NoteTypes>,
 ) -> Result<Vec<Note>, Box<dyn std::error::Error>> {
-    let conn = db.connect()?;
-
     let mut rows = match note_type {
         Some(t) => {
             let type_str = parse_note_type(t);

@@ -24,6 +24,7 @@ struct MonoCLI {
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
     let db = make_db().await;
+    let conn = db.connect().unwrap();
 
     let cli = MonoCLI::parse();
 
@@ -35,7 +36,7 @@ async fn main() {
             date,
             paste,
         } => {
-            let output = add(db, text, note_type, time, date, paste).await;
+            let output = add(conn.clone(), text, note_type, time, date, paste).await;
             println!("{}", output)
         }
         MonoCommands::CheckIn {
@@ -44,11 +45,12 @@ async fn main() {
             date,
             paste,
         } => {
-            let output = check_in(db, text, time, date, paste).await;
-            println!("{}", output)
+            let output = check_in(conn.clone(), text, time, date, paste).await;
+            println!("{}", output);
         }
         MonoCommands::Delete { note_id, approve } => {
-            delete(note_id, approve);
+            let output = delete(conn.clone(), note_id, approve).await;
+            println!("{}", output);
         }
         MonoCommands::Edit {
             note_id,
@@ -65,7 +67,7 @@ async fn main() {
             since,
             view,
         } => {
-            let output = list(db, limit, note_type, today, since, view).await;
+            let output = list(conn, limit, note_type, today, since, view).await;
             match output {
                 Err(err) => eprintln!("Database Error {:?}", err),
                 Ok(vector_data) => {
