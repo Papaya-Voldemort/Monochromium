@@ -50,7 +50,7 @@ async fn main() {
         }
         MonoCommands::Delete { note_id, approve } => {
             let output = delete(conn.clone(), note_id, approve).await;
-            println!("{}", output);
+            println!("{}", output.unwrap());
         }
         MonoCommands::Edit {
             note_id,
