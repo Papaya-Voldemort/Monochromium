@@ -7,6 +7,7 @@ use crate::commands::{add, check_in, delete, edit, list, search, view};
 use crate::database::make_db;
 use clap::Parser;
 use commands::definitions::MonoCommands;
+use std::io;
 
 #[derive(Parser)]
 #[clap(author, version, about)]
@@ -83,7 +84,16 @@ async fn main() {
             note_type,
             date,
         } => {
-            search(text, limit, note_type, date);
+            let list = search(conn, text, limit, note_type, date).await;
+            match list {
+                Ok(list) => {
+                    for item in list {
+                        println!("{}", item)
+                    }
+                }
+                Err(err) => eprintln!("Search error: {}", err)
+            }
+
         }
         MonoCommands::View { note_id, no_format } => {
             let output = view(conn, note_id, no_format).await;
