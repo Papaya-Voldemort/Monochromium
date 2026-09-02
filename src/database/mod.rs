@@ -1,9 +1,9 @@
-mod db;
 mod add;
-mod read;
+mod db;
 mod delete;
+mod read;
 
-pub use db::make_db;
 pub use add::add_row;
-pub use read::read_rows;
+pub use db::make_db;
 pub use delete::delete_note;
+pub use read::{read_rows, read_single_row};

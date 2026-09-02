@@ -86,7 +86,8 @@ async fn main() {
             search(text, limit, note_type, date);
         }
         MonoCommands::View { note_id, no_format } => {
-            view(note_id, no_format);
+            let output = view(conn, note_id, no_format).await;
+            println!("{}", output)
         }
     }
 }
