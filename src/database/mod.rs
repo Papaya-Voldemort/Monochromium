@@ -3,6 +3,7 @@ mod db;
 mod delete;
 mod read;
 mod search;
+mod edit;
 
 pub use add::add_row;
 pub use db::make_db;

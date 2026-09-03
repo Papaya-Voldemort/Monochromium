@@ -105,7 +105,7 @@ pub enum MonoCommands {
         #[arg()]
         note_id: u32,
 
-        #[clap(short, long)]
+        #[clap(long)]
         headless: bool,
 
         #[clap(short, long)]
