@@ -1,5 +1,5 @@
 use chrono::{NaiveDate, NaiveTime};
-use clap::{Subcommand, ValueEnum};
+use clap::{Parser, Subcommand, ValueEnum};
 
 #[derive(ValueEnum, Clone, Debug)]
 pub enum NoteTypes {
@@ -9,21 +9,41 @@ pub enum NoteTypes {
     Other,
 }
 
+#[derive(Parser)]
+#[clap(author, version, about)]
+pub struct MonoCLI {
+    #[command(subcommand)]
+    pub command: MonoCommands,
+
+    /// Copy output to clipboard
+    #[clap(short, long, global = true)]
+    pub copy: bool,
+
+    #[clap(short, long)]
+    pub animate: bool,
+}
+
 #[derive(Subcommand)]
 pub enum MonoCommands {
+    /// Create a new note
     Add {
-        #[arg()]
+        /// Note text content
+        #[arg(value_name = "TEXT")]
         text: Option<String>,
 
+        /// Note category [default 'other']
         #[clap(short = 't', long = "type")]
         note_type: Option<NoteTypes>,
 
+        /// Logged time of note (HH:MM or HH:MM:SS) [default: current time]
         #[clap(long)]
         time: Option<NaiveTime>,
 
+        /// Logged date of note (YYYY-MM-DD) [default: current date]
         #[clap(long)]
         date: Option<NaiveDate>,
 
+        /// Use clipboard content as the note body
         #[clap(short, long)]
         paste: bool,
     },

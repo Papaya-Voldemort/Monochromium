@@ -1,6 +1,6 @@
 use crate::commands::definitions::NoteTypes;
-use crate::database::add_row;
-use crate::utils::{ make_title, string_check};
+use crate::database::{add_row, read_single_row};
+use crate::utils::{copy, make_title, string_check};
 use chrono::{Local, NaiveDate, NaiveDateTime, NaiveTime};
 
 pub async fn add(
@@ -10,10 +10,10 @@ pub async fn add(
     time: Option<NaiveTime>,
     date: Option<NaiveDate>,
     paste: bool,
-) -> String {
+) -> Result<String, Box<dyn std::error::Error>> {
     let full_text = string_check(text, paste);
     if full_text == "Please provide a message when making your note!" {
-        return full_text;
+        return Ok(full_text);
     }
 
     let now = Local::now();
@@ -26,7 +26,12 @@ pub async fn add(
     let datetime: NaiveDateTime = date.and_time(time);
 
     let note_type = note_type.unwrap_or(NoteTypes::Other);
-    add_row(conn, title, note_type, full_text, datetime).await;
+    let result = add_row(conn.clone(), title, note_type, full_text, datetime).await?;
+    let note = read_single_row(conn.clone(), result).await?;
 
-    "Note added successfully!".to_string()
+    let output = format!("{} \u{2022} ID: {} \u{2022} {}\n {}",
+            note.title, note.id, note.date, note.content);
+    copy(output.clone());
+
+    Ok(output)
 }

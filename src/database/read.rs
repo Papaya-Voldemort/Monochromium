@@ -67,7 +67,7 @@ pub async fn read_single_row(
 
     let row = rows.next().await?.unwrap();
     let date_str: String = row.get(3)?;
-    let parsed_date = NaiveDateTime::parse_from_str(&date_str, "%Y-%m-%d %H:%M:%S%.f").unwrap();
+    let parsed_date = NaiveDateTime::parse_from_str(&date_str, "%Y-%m-%d %H:%M:%S%.f")?;
     let final_date = parsed_date.format("%b %d, %Y at%l:%M %p").to_string();
     let note = Note {
         id: row.get(0)?,

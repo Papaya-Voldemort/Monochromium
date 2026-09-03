@@ -1,3 +1,5 @@
+#![allow(warnings)]
+
 mod commands;
 mod config;
 mod database;
@@ -6,21 +8,9 @@ mod utils;
 use crate::commands::{add, check_in, delete, edit, list, search, view};
 use crate::database::make_db;
 use clap::Parser;
-use commands::definitions::MonoCommands;
+use commands::definitions::{MonoCommands, MonoCLI};
 use std::io;
-
-#[derive(Parser)]
-#[clap(author, version, about)]
-struct MonoCLI {
-    #[command(subcommand)]
-    command: MonoCommands,
-
-    #[clap(short, long, global = true)]
-    copy: bool,
-
-    #[clap(short, long)]
-    animate: bool,
-}
+use crate::utils::copy;
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
@@ -38,7 +28,13 @@ async fn main() {
             paste,
         } => {
             let output = add(conn.clone(), text, note_type, time, date, paste).await;
-            println!("{}", output)
+            match output {
+                Err(err) => eprintln!("Database Error {:?}", err),
+                Ok(String) => {
+                    println!("{}", String)
+                }
+            }
+
         }
         MonoCommands::CheckIn {
             text,
@@ -91,9 +87,8 @@ async fn main() {
                         println!("{}", item)
                     }
                 }
-                Err(err) => eprintln!("Search error: {}", err)
+                Err(err) => eprintln!("Search error: {}", err),
             }
-
         }
         MonoCommands::View { note_id, no_format } => {
             let output = view(conn, note_id, no_format).await;
