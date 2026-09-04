@@ -1,4 +1,5 @@
 use crate::commands::definitions::NoteTypes;
+use crate::database::UpdateType;
 
 pub fn parse_note_type(note_type: NoteTypes) -> String {
     let note_type_string: String = match note_type {

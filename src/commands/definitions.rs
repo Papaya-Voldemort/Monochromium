@@ -108,11 +108,14 @@ pub enum MonoCommands {
         #[clap(long)]
         headless: bool,
 
-        #[clap(short, long)]
+        #[clap(short, long, conflicts_with = "overwrite")]
         append: bool,
 
         #[clap(short, long)]
         overwrite: bool,
+
+        #[clap(short, long)]
+        text: String,
     },
 
     Delete {

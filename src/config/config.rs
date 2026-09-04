@@ -12,9 +12,9 @@ pub fn create_config() {
         let config_dir = project_dirs.config_dir();
         println!("{}", config_dir.display());
 
-    let mut config_file = OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(config_dir.join("config.toml"));
+        let mut config_file = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(config_dir.join("config.toml"));
     }
 }

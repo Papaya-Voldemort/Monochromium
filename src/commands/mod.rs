@@ -14,4 +14,3 @@ pub use edit::edit;
 pub use list::list;
 pub use search::search;
 pub use view::view;
-pub use definitions::MonoCLI;

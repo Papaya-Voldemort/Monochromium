@@ -11,6 +11,6 @@ pub fn string_check(text: Option<String>, paste: bool) -> String {
     } else {
         full_text = text.clone().unwrap();
     }
-    
+
     full_text
 }

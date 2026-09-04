@@ -1,7 +1,7 @@
 use crate::commands::definitions::NoteTypes;
 use crate::database::add_row;
-use chrono::{Local, NaiveDate, NaiveDateTime, NaiveTime};
 use crate::utils::{make_title, string_check};
+use chrono::{Local, NaiveDate, NaiveDateTime, NaiveTime};
 
 pub async fn check_in(
     conn: libsql::Connection,
@@ -14,7 +14,7 @@ pub async fn check_in(
     if full_text == "Please provide a message when making your note!" {
         return full_text;
     }
-    
+
     let now = Local::now();
 
     // Default values

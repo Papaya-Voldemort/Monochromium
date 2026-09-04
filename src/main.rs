@@ -1,5 +1,4 @@
 #![allow(warnings)]
-
 mod commands;
 mod config;
 mod database;
@@ -8,9 +7,7 @@ mod utils;
 use crate::commands::{add, check_in, delete, edit, list, search, view};
 use crate::database::make_db;
 use clap::Parser;
-use commands::definitions::{MonoCommands, MonoCLI};
-use std::io;
-use crate::utils::copy;
+use commands::definitions::{MonoCLI, MonoCommands};
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
@@ -34,7 +31,6 @@ async fn main() {
                     println!("{}", String)
                 }
             }
-
         }
         MonoCommands::CheckIn {
             text,
@@ -54,8 +50,24 @@ async fn main() {
             headless,
             append,
             overwrite,
+            text,
         } => {
-            edit(note_id, headless, append, overwrite);
+            let output = edit(conn, note_id, headless, append, overwrite, text).await;
+            match output {
+                Err(err) => {}
+                Ok(String) => {
+                    if append {
+                        println!(
+                            "Appended \"{}\" to the end of \"{}\"!",
+                            String.old, String.new
+                        )
+                    } else if overwrite {
+                        println!("Replaced \"{}\" with \"{}\"!", String.new, String.old)
+                    } else {
+                        println!("Note updated successfully!")
+                    }
+                }
+            }
         }
         MonoCommands::List {
             limit,

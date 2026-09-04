@@ -29,8 +29,10 @@ pub async fn add(
     let result = add_row(conn.clone(), title, note_type, full_text, datetime).await?;
     let note = read_single_row(conn.clone(), result).await?;
 
-    let output = format!("{} \u{2022} ID: {} \u{2022} {}\n {}",
-            note.title, note.id, note.date, note.content);
+    let output = format!(
+        "{} \u{2022} ID: {} \u{2022} {}\n {}",
+        note.title, note.id, note.date, note.content
+    );
     copy(output.clone());
 
     Ok(output)
