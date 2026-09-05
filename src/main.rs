@@ -8,11 +8,13 @@ use crate::commands::{add, check_in, delete, edit, list, search, view};
 use crate::database::make_db;
 use clap::Parser;
 use commands::definitions::{MonoCLI, MonoCommands};
+use crate::config::setup_zshrc;
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
     let db = make_db().await;
     let conn = db.connect().unwrap();
+    let prompt_setup = setup_zshrc().await;
 
     let cli = MonoCLI::parse();
 
