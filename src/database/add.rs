@@ -14,12 +14,15 @@ pub async fn add_row(
     let note_type = parse_note_type(note_type);
     let date = date.to_string();
 
-    let output = conn
-        .execute(
+    let mut rows = conn
+        .query(
             "INSERT INTO notes (title, type, content, date) VALUES (?, ?, ?, ?) RETURNING id",
             params![title, note_type, content, date],
         )
         .await?;
 
-    Ok(output as u32)
+    let row = rows.next().await?.unwrap();
+    let id: u32 = row.get(0)?;
+
+    Ok(id)
 }

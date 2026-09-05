@@ -25,7 +25,7 @@ pub async fn edit(
         ));
     };
 
-    let old = update_note(conn, note_id, text, UpdateType::Overwrite).await?;
+    let old = update_note(conn, note_id, text, update_type).await?;
 
 
     Ok(Output {

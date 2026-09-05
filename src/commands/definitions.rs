@@ -114,7 +114,8 @@ pub enum MonoCommands {
         #[clap(short, long)]
         overwrite: bool,
 
-        #[clap(short, long)]
+        // For v2 do not require text
+        #[clap()]
         text: String,
     },
 
