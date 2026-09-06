@@ -11,13 +11,8 @@ pub async fn search(
     note_type: Option<NoteTypes>,
     date: Option<NaiveDate>,
 ) -> Result<Vec<String>, Box<dyn std::error::Error>> {
-    let final_limit: u16;
-    if limit == None {
-        final_limit = 10;
-    } else {
-        final_limit = limit.unwrap();
-    }
-    let notes = search_notes(conn, text, final_limit).await?;
+    let final_limit = limit.unwrap_or(10);
+    let notes = search_notes(conn, Some(text), final_limit, None).await?;
 
     let mut output = Vec::new();
 

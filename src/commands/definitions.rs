@@ -126,4 +126,6 @@ pub enum MonoCommands {
         #[clap(short, long)]
         approve: bool,
     },
+
+    Reminder {}
 }

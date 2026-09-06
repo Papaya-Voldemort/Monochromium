@@ -4,7 +4,7 @@ mod config;
 mod database;
 mod utils;
 
-use crate::commands::{add, check_in, delete, edit, list, search, view};
+use crate::commands::{add, check_in, delete, edit, list, reminder, search, view};
 use crate::database::make_db;
 use clap::Parser;
 use commands::definitions::{MonoCLI, MonoCommands};
@@ -107,6 +107,9 @@ async fn main() {
         MonoCommands::View { note_id, no_format } => {
             let output = view(conn, note_id, no_format).await;
             println!("{}", output)
+        }
+        MonoCommands::Reminder {} => {
+            reminder(conn).await
         }
     }
 }
