@@ -127,5 +127,7 @@ pub enum MonoCommands {
         approve: bool,
     },
 
-    Reminder {}
+    Reminder {},
+    
+    Init {}
 }

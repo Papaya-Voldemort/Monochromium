@@ -4,7 +4,7 @@ mod config;
 mod database;
 mod utils;
 
-use crate::commands::{add, check_in, delete, edit, list, reminder, search, view};
+use crate::commands::{add, check_in, delete, edit, init, list, reminder, search, view};
 use crate::config::setup_zshrc;
 use crate::database::make_db;
 use clap::Parser;
@@ -77,13 +77,11 @@ async fn main() {
             today,
             since,
             view,
-        } => {
-            match reminder(conn).await {
-                Ok(output) if !output.is_empty() => println!("{}", output),
-                Ok(_) => {}
-                Err(_) => eprintln!("We hit a speed bump! Try again."),
-            }
-        }
+        } => match reminder(conn).await {
+            Ok(output) if !output.is_empty() => println!("{}", output),
+            Ok(_) => {}
+            Err(_) => eprintln!("We hit a speed bump! Try again."),
+        },
         MonoCommands::Search {
             text,
             limit,
@@ -110,6 +108,9 @@ async fn main() {
                 Ok(output) => println!("{}", output),
                 Err(e) => eprintln!("We hit a speed bump! Try again."),
             }
+        }
+        MonoCommands::Init {} => {
+            init().await;
         }
     }
 }

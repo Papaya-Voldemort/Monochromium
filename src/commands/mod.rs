@@ -7,6 +7,7 @@ mod list;
 mod search;
 mod view;
 mod reminder;
+mod init;
 
 pub use add::add;
 pub use check_in::check_in;
@@ -16,3 +17,4 @@ pub use list::list;
 pub use search::search;
 pub use view::view;
 pub use reminder::reminder;
+pub use init::init;
