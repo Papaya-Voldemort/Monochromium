@@ -28,6 +28,7 @@ pub async fn search_notes(
                 "SELECT id, title, type, date, content
                  FROM notes
                  WHERE type = ?1
+                 ORDER BY date DESC
                  LIMIT ?2",
                 params![parse_note_type(note_type), limit],
             )
@@ -37,42 +38,13 @@ pub async fn search_notes(
             conn.query(
                 "SELECT id, title, type, date, content
                  FROM notes
+                 ORDER BY date DESC
                  LIMIT ?2",
                 params![limit],
             )
             .await?
         }
     };
-
-    // let mut rows;
-    // if let Some(search) = search {
-    //     if !search.is_empty() {
-    //         let pattern = format!("%{}%", search);
-    //
-    //         rows = conn
-    //             .query(
-    //                 "SELECT id, title, type, date, content FROM notes WHERE title LIKE ?1 OR content LIKE ?1 LIMIT ?2",
-    //                 params![pattern, limit]
-    //             )
-    //             .await?;
-    //     } else if let Some(note_type) = note_type {
-    //         rows = conn
-    //             .query(
-    //                 "SELECT id, title, type, date, content FROM notes WHERE type = ?1 LIMIT ?2",
-    //                 params![parse_note_type(note_type), limit],
-    //             )
-    //             .await?
-    //     } else {
-    //         rows = conn
-    //             .query(
-    //                 "SELECT id, title, type, date, content
-    //                  FROM notes
-    //                  LIMIT ?1",
-    //                 params![limit],
-    //             )
-    //             .await?;
-    //     }
-    // }
 
     let mut parsed_rows = Vec::new();
 

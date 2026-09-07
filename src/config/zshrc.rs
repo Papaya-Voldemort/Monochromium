@@ -1,5 +1,5 @@
 use directories::UserDirs;
-use tokio::fs::{read_to_string, OpenOptions};
+use tokio::fs::{OpenOptions, read_to_string};
 use tokio::io::AsyncWriteExt;
 
 pub async fn setup_zshrc() -> std::io::Result<()> {
@@ -9,7 +9,6 @@ pub async fn setup_zshrc() -> std::io::Result<()> {
         let existing = read_to_string(&zshrc_path).await.unwrap_or_default();
 
         if existing.contains("# >>> monochromium >>>") {
-            println!("zshrc already setup");
             return Ok(());
         }
 
@@ -19,12 +18,11 @@ pub async fn setup_zshrc() -> std::io::Result<()> {
             .open(zshrc_path)
             .await?;
 
-        let config = "\n# >>> monochromium >>>\n\
-    _mono_checkin_reminder() {\n\
-        mono reminder 2>/dev/null\n\
-    }\n\
-    precmd_functions+=(_mono_checkin_reminder)\n\
-    # <<< monochromium <<<\n";
+        let config = r#"
+# >>> monochromium >>>
+mono reminder 2>/dev/null
+# <<< monochromium <<<
+"#;
 
         zshrc.write_all(config.as_bytes()).await?;
     }

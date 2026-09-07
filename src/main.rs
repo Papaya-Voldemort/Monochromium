@@ -5,10 +5,10 @@ mod database;
 mod utils;
 
 use crate::commands::{add, check_in, delete, edit, list, reminder, search, view};
+use crate::config::setup_zshrc;
 use crate::database::make_db;
 use clap::Parser;
 use commands::definitions::{MonoCLI, MonoCommands};
-use crate::config::setup_zshrc;
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
@@ -78,14 +78,10 @@ async fn main() {
             since,
             view,
         } => {
-            let output = list(conn, limit, note_type, today, since, view).await;
-            match output {
-                Err(err) => eprintln!("Database Error {:?}", err),
-                Ok(vector_data) => {
-                    for note in &vector_data {
-                        println!("Note: {}", note);
-                    }
-                }
+            match reminder(conn).await {
+                Ok(output) if !output.is_empty() => println!("{}", output),
+                Ok(_) => {}
+                Err(_) => eprintln!("We hit a speed bump! Try again."),
             }
         }
         MonoCommands::Search {
@@ -109,7 +105,11 @@ async fn main() {
             println!("{}", output)
         }
         MonoCommands::Reminder {} => {
-            reminder(conn).await
+            let result = reminder(conn).await;
+            match result {
+                Ok(output) => println!("{}", output),
+                Err(e) => eprintln!("We hit a speed bump! Try again."),
+            }
         }
     }
 }
