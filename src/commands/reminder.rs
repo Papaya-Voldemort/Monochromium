@@ -13,15 +13,12 @@ pub async fn reminder(conn: libsql::Connection) -> Result<String, Box<dyn std::e
 
     let rows = search_notes(conn, None, 1, Some(CheckIn)).await?;
     if rows.is_empty() {
-        return Ok(
-            [
-                "Hey, it looks like you have never checked in!",
-                "Try running `mono checkin \"text\"` to make one!",
-                "A check-in is just like a regular note, but we'll remind you to make one every once in a while!",
-                "You can use these any way you want, but we recommend them as a mental health check-in.",
-            ]
-                .join("\n"),
-        );
+        return Ok([
+            "-- monochromium --",
+            "No check-ins yet.",
+            "Start one with `mono checkin \"text\"`.",
+        ]
+        .join("\n"));
     }
 
     let past_note = &rows[0];
@@ -39,10 +36,12 @@ pub async fn reminder(conn: libsql::Connection) -> Result<String, Box<dyn std::e
     let hours = time_passed.num_hours();
 
     if hours >= 24 {
-        Ok(
-            "It's been a bit since your last check-in. Write how you're doing with `mono checkin \"text\"`"
-                .to_string(),
-        )
+        Ok([
+            "-- monochromium --",
+            "It's been a while since your last check-in.",
+            "Write one with `mono checkin \"text\"`.",
+        ]
+        .join("\n"))
     } else {
         Ok(String::new())
     }
