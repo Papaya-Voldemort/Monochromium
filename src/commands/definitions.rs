@@ -92,52 +92,65 @@ pub enum MonoCommands {
 
     /// Search through notes
     Search {
+        /// Search value
         #[arg()]
         text: String,
 
+        /// Max amount of notes to be returned
         #[clap(short, long)]
         limit: Option<u16>,
 
+        /// Only allow certain types of notes (todo, check in, idea, other)
         #[clap(short, long)]
         note_type: Option<NoteTypes>,
 
+        /// Filter by date (unimplemented)
         #[clap(long)]
         date: Option<NaiveDate>,
     },
 
     /// View a notes content
     View {
+        /// The id of the note you want to view
         #[arg()]
         note_id: u32,
 
+        /// Remove md formatting (unimplemented)
         #[clap(short, long)]
         no_format: bool,
     },
 
-    /// Edit a notes content (beta)
+    /// Edit a notes content (beta: not finished)
     Edit {
+        /// The id of the note you want to edit
         #[arg()]
         note_id: u32,
 
+        /// Does not open text editor (unimplemented)
         #[clap(long)]
         headless: bool,
 
+        /// Append text to the end of the note
         #[clap(short, long, conflicts_with = "overwrite")]
         append: bool,
 
+        /// Overwrite note with new text
         #[clap(short, long)]
         overwrite: bool,
 
         // For v2 do not require text
+        /// Text to append/overwrite
         #[clap()]
         text: String,
     },
 
     /// Delete a note
     Delete {
+        /// The ID of the note you want to delete
         #[arg()]
         note_id: u32,
 
+        /// Approval flag to actually delete the note
         #[clap(short, long)]
         approve: bool,
     },

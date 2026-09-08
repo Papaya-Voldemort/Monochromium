@@ -8,7 +8,7 @@ Overview:
 
 * **Purpose:** Monochromium is a blazing fast mindfulness/productivity app for your terminal, it allows you to take quick notes with a single command, and reminds you to make notes about how your day is going consistently across the day.
 * **Goals:**
-    * Final binary under 1 MB
+    * Final binary under 2.5 MB
     * No AI Written Code
 * **Status**: Draft
 
