@@ -7,10 +7,18 @@ edition = "2024"
 name = "mono"
 path = "src/main.rs"
 
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
+
 [dependencies]
-arboard = "3.6.1"
-chrono = "0.4.45"
-clap = { version = "4.6.6", features = ["derive"] }
+arboard = { version = "3.6", default-features = false }
+chrono = { version = "0.4.45", default-features = false, features = ["clock", "std"] }
+clap = { version = "4.6", default-features = false, features = ["std", "derive", "help", "usage", "error-context"] }
 directories = "6.0.0"
-libsql = "0.9.30"
-tokio = { version = "1", features = ["rt", "macros"] }
+libsql = { version = "0.9", default-features = false, features = ["core"] }
+tokio = { version = "1", features = ["rt", "macros", "fs", "io-util"] }
+log = "0.4.34"

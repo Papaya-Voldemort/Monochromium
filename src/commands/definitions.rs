@@ -13,7 +13,7 @@ pub enum NoteTypes {
 #[clap(author, version, about)]
 pub struct MonoCLI {
     #[command(subcommand)]
-    pub command: MonoCommands,
+    pub command: Option<MonoCommands>,
 
     /// Copy output to clipboard
     #[clap(short, long, global = true)]
@@ -48,37 +48,49 @@ pub enum MonoCommands {
         paste: bool,
     },
 
+    /// Create a note with check-in type
     CheckIn {
-        #[arg()]
+        /// Note text content
+        #[arg(value_name = "TEXT")]
         text: Option<String>,
 
+        /// Logged time of note (HH:MM or HH:MM:SS) [default: current time]
         #[clap(long)]
         time: Option<NaiveTime>,
 
+        /// Logged date of note (YYYY-MM-DD) [default: current date]
         #[clap(long)]
         date: Option<NaiveDate>,
 
+        /// Use clipboard content as the note body
         #[clap(short, long)]
         paste: bool,
     },
 
+    /// List out existing notes
     List {
+        /// Max amount of notes to be listed
         #[clap(short, long)]
         limit: Option<u16>,
 
+        /// Only allow certain types of notes (todo, check in, idea, other)
         #[clap(short, long)]
         note_type: Option<NoteTypes>,
 
+        /// Only show notes from today
         #[clap(long)]
         today: bool,
 
+        /// Show all notes after a date
         #[clap(short, long)]
         since: Option<NaiveDate>,
 
+        /// Show note content as well
         #[clap(short, long)]
         view: bool,
     },
 
+    /// Search through notes
     Search {
         #[arg()]
         text: String,
@@ -93,6 +105,7 @@ pub enum MonoCommands {
         date: Option<NaiveDate>,
     },
 
+    /// View a notes content
     View {
         #[arg()]
         note_id: u32,
@@ -101,6 +114,7 @@ pub enum MonoCommands {
         no_format: bool,
     },
 
+    /// Edit a notes content (beta)
     Edit {
         #[arg()]
         note_id: u32,
@@ -119,6 +133,7 @@ pub enum MonoCommands {
         text: String,
     },
 
+    /// Delete a note
     Delete {
         #[arg()]
         note_id: u32,
@@ -127,7 +142,9 @@ pub enum MonoCommands {
         approve: bool,
     },
 
+    /// Util command for displaying reminders
     Reminder {},
-    
-    Init {}
+
+    /// Util command for initializing config
+    Init {},
 }
