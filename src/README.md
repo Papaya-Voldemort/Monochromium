@@ -1,1 +1,0 @@
-![Monochromium](banner.png)

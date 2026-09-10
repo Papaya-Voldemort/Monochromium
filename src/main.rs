@@ -80,11 +80,17 @@ async fn main() {
                 today,
                 since,
                 view,
-            } => match reminder(conn).await {
-                Ok(output) if !output.is_empty() => println!("{}", output),
-                Ok(_) => {}
-                Err(_) => eprintln!("We hit a speed bump! Try again."),
-            },
+            } => {
+                let list = list(conn, limit, note_type, today, since, view).await;
+                match list {
+                    Ok(list) => {
+                        for item in list {
+                            println!("{}", item)
+                        }
+                    }
+                    Err(err) => eprintln!("Search error: {}", err),
+                }
+            }
             MonoCommands::Search {
                 text,
                 limit,

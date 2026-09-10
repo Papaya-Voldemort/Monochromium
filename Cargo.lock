@@ -3,19 +3,6 @@
 version = 4
 
 [[package]]
-name = "Monochromium"
-version = "0.1.0"
-dependencies = [
- "arboard",
- "chrono",
- "clap",
- "directories",
- "libsql",
- "log",
- "tokio",
-]
-
-[[package]]
 name = "aho-corasick"
 version = "1.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -572,6 +559,19 @@ name = "minimal-lexical"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "68354c5c6bd36d73ff3feceb05efa59b6acb7626617f4962be322a825e61f79a"
+
+[[package]]
+name = "monochromium"
+version = "0.1.0"
+dependencies = [
+ "arboard",
+ "chrono",
+ "clap",
+ "directories",
+ "libsql",
+ "log",
+ "tokio",
+]
 
 [[package]]
 name = "nom"

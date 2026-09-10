@@ -2,7 +2,7 @@ use crate::database::{UpdateType, update_note};
 
 pub struct Output {
     pub old: String,
-    pub new: String
+    pub new: String,
 }
 
 pub async fn edit(
@@ -27,9 +27,5 @@ pub async fn edit(
 
     let old = update_note(conn, note_id, text, update_type).await?;
 
-
-    Ok(Output {
-        old,
-        new,
-    })
+    Ok(Output { old, new })
 }
