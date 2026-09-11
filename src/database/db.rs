@@ -6,7 +6,7 @@ const SCHEMA: &str = include_str!("schema.sql");
 
 pub async fn make_db() -> libsql::Database {
     // Get OS specific project directories
-    if let Some(project_dirs) = ProjectDirs::from("com", "monochrome", "monochrome") {
+    if let Some(project_dirs) = ProjectDirs::from("com", "monochromium", "monochromium") {
         fs::create_dir_all(project_dirs.data_dir()).unwrap();
         let data_dir = project_dirs.data_dir();
         // println!("{}", data_dir.display());

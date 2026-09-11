@@ -9,10 +9,11 @@ pub async fn check_in(
     time: Option<NaiveTime>,
     date: Option<NaiveDate>,
     paste: bool,
-) -> String {
+) -> Result<String, Box<dyn std::error::Error>> {
     let full_text = string_check(text, paste);
     if full_text == "Please provide a message when making your note!" {
-        return full_text;
+        println!("returned");
+        return Ok(full_text);
     }
 
     let now = Local::now();
@@ -21,11 +22,15 @@ pub async fn check_in(
     let time = time.unwrap_or(now.time());
     let date = date.unwrap_or(now.date_naive());
 
-    let title = make_title(full_text.clone());
+    let datetime: NaiveDateTime = date.and_time(time);
+    let readable_date = datetime.format("%-b %-d, %-I:%M %p").to_string();
+    let title = format!("Check-In: {}", readable_date);
+    println!("{}", title);
+
     let datetime: NaiveDateTime = date.and_time(time);
 
     let note_type = NoteTypes::CheckIn;
-    add_row(conn, title, note_type, full_text, datetime).await;
+    let output = add_row(conn, title, note_type, full_text, datetime).await?;
 
-    "Check in added successfully!".to_string()
+    Ok("Check in added successfully!".to_string())
 }

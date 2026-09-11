@@ -44,7 +44,14 @@ async fn main() {
                 paste,
             } => {
                 let output = check_in(conn.clone(), text, time, date, paste).await;
-                println!("{}", output);
+                match output {
+                    Ok(output) => {
+                        println!("{}", output);
+                    }
+                    Err(err) => {
+                        println!("{}", err)
+                    }
+                }
             }
             MonoCommands::Delete { note_id, approve } => {
                 let output = delete(conn.clone(), note_id, approve).await;

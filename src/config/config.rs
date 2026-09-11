@@ -7,7 +7,7 @@ struct Config {
 }
 
 pub fn create_config() {
-    if let Some(project_dirs) = ProjectDirs::from("com", "monochrome", "monochrome") {
+    if let Some(project_dirs) = ProjectDirs::from("com", "monochromium", "monochromium") {
         fs::create_dir_all(project_dirs.config_dir()).unwrap();
         let config_dir = project_dirs.config_dir();
         println!("{}", config_dir.display());
