@@ -49,6 +49,7 @@ pub enum MonoCommands {
     },
 
     /// Create a note with check-in type
+    #[command(name = "checkin")]
     CheckIn {
         /// Note text content
         #[arg(value_name = "TEXT")]

@@ -33,7 +33,7 @@ pub async fn add(
         "{} \u{2022} ID: {} \u{2022} {}\n {}",
         note.title, note.id, note.date, note.content
     );
-    copy(output.clone());
+
 
     Ok(output)
 }

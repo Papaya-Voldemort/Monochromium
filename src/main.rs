@@ -1,4 +1,4 @@
-#![allow(warnings)]
+// #![allow(warnings)]
 mod commands;
 mod config;
 mod database;
@@ -10,13 +10,12 @@ use crate::database::make_db;
 use crate::utils::copy;
 use clap::{CommandFactory, Parser};
 use commands::definitions::{MonoCLI, MonoCommands};
-use log::log;
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
     let db = make_db().await;
     let conn = db.connect().unwrap();
-    let prompt_setup = setup_zshrc().await;
+    let _prompt_setup = setup_zshrc().await;
 
     let cli = MonoCLI::parse();
 
@@ -32,8 +31,11 @@ async fn main() {
                 let output = add(conn.clone(), text, note_type, time, date, paste).await;
                 match output {
                     Err(err) => eprintln!("Database Error {:?}", err),
-                    Ok(String) => {
-                        println!("{}", String)
+                    Ok(string) => {
+                        println!("{}", string);
+                        if cli.copy {
+                            copy(string);
+                        };
                     }
                 }
             }
@@ -66,15 +68,17 @@ async fn main() {
             } => {
                 let output = edit(conn, note_id, headless, append, overwrite, text).await;
                 match output {
-                    Err(err) => {}
-                    Ok(String) => {
+                    Err(err) => {
+                        println!("{}", err)
+                    }
+                    Ok(string) => {
                         if append {
                             println!(
                                 "Appended \"{}\" to the end of \"{}\"!",
-                                String.old, String.new
+                                string.old, string.new
                             )
                         } else if overwrite {
-                            println!("Replaced \"{}\" with \"{}\"!", String.new, String.old)
+                            println!("Replaced \"{}\" with \"{}\"!", string.new, string.old)
                         } else {
                             println!("Note updated successfully!")
                         }
@@ -122,7 +126,7 @@ async fn main() {
                 let result = reminder(conn).await;
                 match result {
                     Ok(output) => println!("{}", output),
-                    Err(e) => eprintln!("We hit a speed bump! Try again."),
+                    Err(err) => eprintln!("We hit a speed bump! Try again. Error: {}", err),
                 }
             }
             MonoCommands::Init {} => {

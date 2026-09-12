@@ -23,7 +23,7 @@ pub async fn check_in(
     let date = date.unwrap_or(now.date_naive());
 
     let datetime: NaiveDateTime = date.and_time(time);
-    let readable_date = datetime.format("%-b %-d, %-I:%M %p").to_string();
+    let readable_date = datetime.format("%b %-d, %-I:%M %p").to_string();
     let title = format!("Check-In: {}", readable_date);
     println!("{}", title);
 

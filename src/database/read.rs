@@ -20,14 +20,14 @@ pub async fn read_rows(
         Some(t) => {
             let type_str = parse_note_type(t);
             conn.query(
-                "SELECT id, title, type, date, content FROM notes WHERE type = ?1 LIMIT ?2",
+                "SELECT id, title, type, date, content FROM notes WHERE type = ?1 LIMIT ?2 ORDER BY date DESC",
                 params![type_str, limit],
             )
             .await?
         }
         None => {
             conn.query(
-                "SELECT id, title, type, date, content FROM notes LIMIT ?1",
+                "SELECT id, title, type, date, content FROM notes LIMIT ?1 ORDER BY date DESC",
                 params![limit],
             )
             .await?
@@ -60,7 +60,7 @@ pub async fn read_single_row(
 ) -> Result<Note, Box<dyn std::error::Error>> {
     let mut rows = conn
         .query(
-            "SELECT id, title, type, date, content FROM notes WHERE id = ?1",
+            "SELECT id, title, type, date, content FROM notes WHERE id = ?1 ORDER BY date DESC",
             params![note_id],
         )
         .await?;
