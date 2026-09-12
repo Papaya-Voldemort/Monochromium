@@ -156,6 +156,9 @@ pub enum MonoCommands {
         approve: bool,
     },
 
+    /// Output all the notes
+    Export {},
+
     /// Util command for displaying reminders
     Reminder {},
 

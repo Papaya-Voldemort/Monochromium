@@ -13,7 +13,7 @@ pub struct Note {
 }
 pub async fn read_rows(
     conn: Connection,
-    limit: u16,
+    limit: i32,
     note_type: Option<NoteTypes>,
 ) -> Result<Vec<Note>, Box<dyn std::error::Error>> {
     let mut rows = match note_type {

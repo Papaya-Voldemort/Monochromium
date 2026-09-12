@@ -4,7 +4,7 @@ mod config;
 mod database;
 mod utils;
 
-use crate::commands::{add, check_in, delete, edit, init, list, reminder, search, view};
+use crate::commands::{add, check_in, delete, edit, export, init, list, reminder, search, view};
 use crate::config::setup_zshrc;
 use crate::database::make_db;
 use crate::utils::copy;
@@ -121,6 +121,25 @@ async fn main() {
             MonoCommands::View { note_id, no_format } => {
                 let output = view(conn, note_id, no_format).await;
                 println!("{}", output)
+            }
+            MonoCommands::Export {} => {
+                let output = export(conn).await;
+                match output {
+                    Ok(output) => {
+                        let mut copied = String::new();
+                        for item in output {
+                            println!("{}", item);
+                            copied.push_str(&item);
+                            copied.push('\n');
+                        }
+                        if cli.copy {
+                            copy(copied)
+                        }
+                    }
+                    Err(err) => {
+                        eprintln!("Search error: {}", err)
+                    }
+                }
             }
             MonoCommands::Reminder {} => {
                 let result = reminder(conn).await;

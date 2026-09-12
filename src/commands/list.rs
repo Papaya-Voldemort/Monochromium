@@ -16,7 +16,7 @@ pub async fn list(
     } else {
         final_limit = limit.unwrap();
     }
-    let notes = read_rows(conn, final_limit, note_type).await?;
+    let notes = read_rows(conn, final_limit as i32, note_type).await?;
     let mut output = Vec::new();
 
     if view {
