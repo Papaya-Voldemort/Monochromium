@@ -1,5 +1,4 @@
 use crate::commands::definitions::NoteTypes;
-use crate::utils::parse_note_type;
 use chrono::NaiveDateTime;
 use libsql::params;
 
@@ -10,7 +9,7 @@ pub async fn add_row(
     content: String,
     date: NaiveDateTime,
 ) -> Result<u32, Box<dyn std::error::Error>> {
-    let note_type = parse_note_type(note_type);
+    let note_type = note_type.as_str();
     let date = date.to_string();
 
     let mut rows = conn

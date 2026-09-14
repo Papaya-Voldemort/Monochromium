@@ -57,7 +57,10 @@ async fn main() {
             }
             MonoCommands::Delete { note_id, approve } => {
                 let output = delete(conn.clone(), note_id, approve).await;
-                println!("{}", output.unwrap());
+                match output {
+                    Ok(msg) => println!("{}", msg),
+                    Err(err) => eprintln!("{}", err)
+                }
             }
             MonoCommands::Edit {
                 note_id,
@@ -119,8 +122,11 @@ async fn main() {
                 }
             }
             MonoCommands::View { note_id, no_format } => {
-                let output = view(conn, note_id, no_format).await;
-                println!("{}", output)
+                match view(conn, note_id, no_format).await {
+                    Ok(output) => println!("{}", output),
+                    Err(err) => eprintln!("{}", err)
+                }
+
             }
             MonoCommands::Export {} => {
                 let output = export(conn).await;

@@ -1,6 +1,5 @@
 use crate::commands::definitions::NoteTypes;
 use crate::database::read::Note;
-use crate::utils::parse_note_type;
 use chrono::NaiveDateTime;
 use libsql::params;
 
@@ -30,7 +29,7 @@ pub async fn search_notes(
                  WHERE type = ?1
                  ORDER BY date DESC
                  LIMIT ?2",
-                params![parse_note_type(note_type), limit],
+                params![note_type.as_str(), limit],
             )
             .await?
         }

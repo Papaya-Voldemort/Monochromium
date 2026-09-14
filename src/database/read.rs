@@ -1,5 +1,4 @@
 use crate::commands::definitions::NoteTypes;
-use crate::utils::parse_note_type;
 use chrono::NaiveDateTime;
 use libsql::{Connection, params};
 
@@ -17,10 +16,9 @@ pub async fn read_rows(
 ) -> Result<Vec<Note>, Box<dyn std::error::Error>> {
     let mut rows = match note_type {
         Some(t) => {
-            let type_str = parse_note_type(t);
             conn.query(
                 "SELECT id, title, type, date, content FROM notes WHERE type = ?1 ORDER BY date DESC LIMIT ?2",
-                params![type_str, limit],
+                params![t.as_str(), limit],
             )
             .await?
         }
