@@ -6,16 +6,11 @@ pub async fn list(
     conn: libsql::Connection,
     limit: Option<u16>,
     note_type: Option<NoteTypes>,
-    today: bool,
-    since: Option<NaiveDate>,
+    _today: bool,
+    _since: Option<NaiveDate>,
     view: bool,
 ) -> Result<Vec<String>, Box<dyn std::error::Error>> {
-    let final_limit: u16;
-    if limit == None {
-        final_limit = 15;
-    } else {
-        final_limit = limit.unwrap();
-    }
+    let final_limit: u16 = limit.unwrap_or(15);
     let notes = read_rows(conn, final_limit as i32, note_type).await?;
     let mut output = Vec::new();
 

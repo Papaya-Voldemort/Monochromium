@@ -1,6 +1,6 @@
 use crate::database::read_single_row;
 
-pub async fn view(conn: libsql::Connection, node_id: u32, no_format: bool) -> String {
+pub async fn view(conn: libsql::Connection, node_id: u32, _no_format: bool) -> String {
     let note = read_single_row(conn, node_id).await.unwrap();
 
     let output = format!(

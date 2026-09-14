@@ -5,17 +5,17 @@ mod database;
 mod utils;
 
 use crate::commands::{add, check_in, delete, edit, export, init, list, reminder, search, view};
-use crate::config::setup_zshrc;
 use crate::database::make_db;
 use crate::utils::copy;
 use clap::{CommandFactory, Parser};
 use commands::definitions::{MonoCLI, MonoCommands};
+use crate::config::create_config;
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
     let db = make_db().await;
+    create_config();
     let conn = db.connect().unwrap();
-    let _prompt_setup = setup_zshrc().await;
 
     let cli = MonoCLI::parse();
 
@@ -75,7 +75,7 @@ async fn main() {
                         if append {
                             println!(
                                 "Appended \"{}\" to the end of \"{}\"!",
-                                string.old, string.new
+                                string.new, string.old
                             )
                         } else if overwrite {
                             println!("Replaced \"{}\" with \"{}\"!", string.new, string.old)
@@ -144,7 +144,7 @@ async fn main() {
             MonoCommands::Reminder {} => {
                 let result = reminder(conn).await;
                 match result {
-                    Ok(output) => println!("{}", output),
+                    Ok(output) => print!("{}", output),
                     Err(err) => eprintln!("We hit a speed bump! Try again. Error: {}", err),
                 }
             }
@@ -162,7 +162,7 @@ async fn main() {
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
             "#;
 
-            if cli.animate {}
+            // if cli.animate {}
 
             println!("{}", logo);
 

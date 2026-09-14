@@ -1,5 +1,4 @@
 use crate::database::delete_note;
-use tokio::io;
 
 pub async fn delete(
     conn: libsql::Connection,

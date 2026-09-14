@@ -1,6 +1,6 @@
 use crate::commands::definitions::NoteTypes;
 use crate::database::add_row;
-use crate::utils::{make_title, string_check};
+use crate::utils::{string_check};
 use chrono::{Local, NaiveDate, NaiveDateTime, NaiveTime};
 
 pub async fn check_in(
@@ -25,12 +25,11 @@ pub async fn check_in(
     let datetime: NaiveDateTime = date.and_time(time);
     let readable_date = datetime.format("%b %-d, %-I:%M %p").to_string();
     let title = format!("Check-In: {}", readable_date);
-    println!("{}", title);
 
     let datetime: NaiveDateTime = date.and_time(time);
 
     let note_type = NoteTypes::CheckIn;
     let output = add_row(conn, title, note_type, full_text, datetime).await?;
 
-    Ok("Check in added successfully!".to_string())
+    Ok(format!("{} check in added successfully!", output))
 }

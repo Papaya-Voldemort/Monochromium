@@ -1,6 +1,6 @@
 use crate::commands::definitions::NoteTypes;
 use crate::database::{add_row, read_single_row};
-use crate::utils::{copy, make_title, string_check};
+use crate::utils::{make_title, string_check};
 use chrono::{Local, NaiveDate, NaiveDateTime, NaiveTime};
 
 pub async fn add(
@@ -33,7 +33,6 @@ pub async fn add(
         "{} \u{2022} ID: {} \u{2022} {}\n {}",
         note.title, note.id, note.date, note.content
     );
-
 
     Ok(output)
 }

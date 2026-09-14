@@ -1,6 +1,6 @@
 # Monochromium
 
-> A fast, local first CLI note taking app
+> A fast, local first CLI note-taking app
 
 ![Monochromium](banner.png)
 
@@ -18,6 +18,7 @@ Monochromium is crazy light, modern, and allows for blazing fast workflows fully
 - Search and Filtering
 - Fully Local Notes with SQLite
 - Human-Readable Terminal Output
+- Shell reminder system
 
 ## Install
 
@@ -51,6 +52,27 @@ mono add "Ship v1.0"
 mono checkin
 mono list --today
 ```
+
+### Reminders
+
+To opt into reminders, run the following command
+> Mono Init updates your zshrc
+```bash
+mono init
+```
+
+## The Future
+
+I already love the state Monochromium is in, but not all of our [spec.md](spec.md) is implemented fully. 
+For future versions I want to add the following:
+- All flags and commands
+- Colored Outputs
+- Tests (Yeah probably should be in a v0.1.0 but...)
+- Other OS Releases
+- Smaller Binary
+- A few others
+
+So year a little work to go for v1.0.0 but I am ready to make my first release for now :)
 
 ## Contributions
 

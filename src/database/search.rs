@@ -54,7 +54,7 @@ pub async fn search_notes(
         let note = Note {
             id: row.get(0)?,
             title: row.get(1)?,
-            note_type: row.get(2)?,
+            _note_type: row.get(2)?,
             date: parsed_date.to_string(),
             content: row.get(4)?,
         };

@@ -1,7 +1,6 @@
 use crate::commands::definitions::NoteTypes;
 use crate::utils::parse_note_type;
 use chrono::NaiveDateTime;
-use clap::builder::Str;
 use libsql::params;
 
 pub async fn add_row(

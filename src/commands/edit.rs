@@ -8,7 +8,7 @@ pub struct Output {
 pub async fn edit(
     conn: libsql::Connection,
     note_id: u32,
-    headless: bool,
+    _headless: bool,
     append: bool,
     overwrite: bool,
     text: String,

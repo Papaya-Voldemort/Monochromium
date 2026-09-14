@@ -3,7 +3,7 @@ use libsql::params;
 pub enum UpdateType {
     Append,
     Overwrite,
-    None,
+    _None,
 }
 
 pub async fn update_note(
@@ -22,7 +22,7 @@ pub async fn update_note(
         return Err(libsql::Error::QueryReturnedNoRows);
     };
 
-    let update = match mode {
+    match mode {
         UpdateType::Append => {
             conn.execute(
                 "UPDATE notes SET content = content || ?1 WHERE id = ?2;",
@@ -37,7 +37,7 @@ pub async fn update_note(
             )
             .await?;
         }
-        UpdateType::None => {}
+        UpdateType::_None => {}
     };
 
     Ok(pre)

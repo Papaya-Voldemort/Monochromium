@@ -1,5 +1,5 @@
 use directories::ProjectDirs;
-use libsql::{Builder, Database};
+use libsql::Builder;
 use std::fs;
 
 const SCHEMA: &str = include_str!("schema.sql");
