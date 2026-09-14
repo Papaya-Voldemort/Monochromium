@@ -38,7 +38,11 @@ cargo install monochromium
 ```
 
 ### From Github Binary (MacOS)
+
+> I was a little too tired to finish this so a binary will come in future versions ;0
+
 TODO: Add link to binary
+
 
 ### Verify
 ```bash
