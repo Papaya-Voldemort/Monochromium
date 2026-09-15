@@ -1,8 +1,10 @@
-# Monochromium
+````# Monochromium
 
 > A fast, local first CLI note-taking app
 
 ![Monochromium](banner.png)
+
+![Demo](demo.gif)
 
 Monochromium lets you capture ideas, tasks, and mental health check-ins all without leaving the terminal!
 
@@ -90,4 +92,3 @@ For larger changes please make and link and issue to keep things more trackable.
 
 ## License
 MIT
-
