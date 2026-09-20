@@ -29,7 +29,7 @@ pub async fn check_in(
     let datetime: NaiveDateTime = date.and_time(time);
 
     let note_type = NoteTypes::CheckIn;
-    let output = add_row(conn, title, note_type, full_text, datetime).await?;
+    let _output = add_row(conn, title, note_type, full_text, datetime).await?;
 
-    Ok(format!("{} check in added successfully!", output))
+    Ok("check in added successfully!".to_string())
 }

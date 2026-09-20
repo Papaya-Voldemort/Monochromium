@@ -1,10 +1,12 @@
 use crate::commands::definitions::NoteTypes::CheckIn;
 use crate::database::search_notes;
 use chrono::{DateTime, Duration, Local, NaiveDate, NaiveDateTime, NaiveTime};
+use crate::config::Config;
 
-pub async fn reminder(conn: libsql::Connection) -> Result<String, Box<dyn std::error::Error>> {
-    //     Get current time compare against last checkin
+pub async fn reminder(conn: libsql::Connection, config: Config) -> Result<String, Box<dyn std::error::Error>> {
+    // Get current time compare against last checkin
     let now: DateTime<Local> = Local::now();
+    let interval = config.checkin_interval_minutes;
 
     let current_time: NaiveTime = now.time();
     let current_date: NaiveDate = now.date_naive();
@@ -33,9 +35,9 @@ pub async fn reminder(conn: libsql::Connection) -> Result<String, Box<dyn std::e
 
     let time_passed: Duration = current_datetime - past_datetime;
 
-    let hours = time_passed.num_hours();
+    let mins = time_passed.num_minutes();
 
-    if hours >= 24 {
+    if mins >= interval {
         Ok([
             "-- monochromium --",
             "It's been a while since your last check-in.",

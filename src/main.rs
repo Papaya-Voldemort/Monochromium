@@ -9,12 +9,13 @@ use crate::database::make_db;
 use crate::utils::copy;
 use clap::{CommandFactory, Parser};
 use commands::definitions::{MonoCLI, MonoCommands};
-use crate::config::create_config;
+use crate::config::{create_config, load_config};
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
     let db = make_db().await;
     create_config();
+    let config = load_config();
     let conn = db.connect().unwrap();
 
     let cli = MonoCLI::parse();
@@ -148,7 +149,7 @@ async fn main() {
                 }
             }
             MonoCommands::Reminder {} => {
-                let result = reminder(conn).await;
+                let result = reminder(conn, config).await;
                 match result {
                     Ok(output) => print!("{}", output),
                     Err(err) => eprintln!("We hit a speed bump! Try again. Error: {}", err),
