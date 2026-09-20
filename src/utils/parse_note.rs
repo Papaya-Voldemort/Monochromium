@@ -1,6 +1,6 @@
+use crate::types::Note;
 use chrono::NaiveDateTime;
 use rusqlite::Row;
-use crate::types::Note;
 
 pub fn parse_note(row: &Row) -> rusqlite::Result<Note> {
     let date_str: String = row.get(3)?;

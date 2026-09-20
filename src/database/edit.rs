@@ -1,5 +1,5 @@
-use rusqlite::params;
 use super::Database;
+use rusqlite::params;
 
 pub enum UpdateType {
     Append,

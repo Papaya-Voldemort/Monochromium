@@ -1,7 +1,7 @@
+use crate::database::Database;
 use crate::types::NoteTypes;
 use crate::utils::string_check;
 use chrono::{Local, NaiveDate, NaiveDateTime, NaiveTime};
-use crate::database::Database;
 
 pub fn check_in(
     db: &Database,

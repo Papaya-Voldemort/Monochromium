@@ -3,10 +3,7 @@ use crate::database::Database;
 use crate::types::NoteTypes;
 use chrono::{DateTime, Duration, Local, NaiveDate, NaiveDateTime, NaiveTime};
 
-pub fn reminder(
-    db: &Database,
-    config: Config,
-) -> Result<String, Box<dyn std::error::Error>> {
+pub fn reminder(db: &Database, config: Config) -> Result<String, Box<dyn std::error::Error>> {
     // Get current time compare against last checkin
     let now: DateTime<Local> = Local::now();
     let interval = config.checkin_interval_minutes;

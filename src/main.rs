@@ -139,15 +139,13 @@ fn main() {
                     Err(err) => eprintln!("Search error: {}", err),
                 }
             }
-            MonoCommands::View { note_id, no_format } => {
-                match view(&db, note_id, no_format) {
-                    Ok(output) => {
-                        println!("{}", output);
-                        copy(output)
-                    }
-                    Err(err) => eprintln!("{}", err),
+            MonoCommands::View { note_id, no_format } => match view(&db, note_id, no_format) {
+                Ok(output) => {
+                    println!("{}", output);
+                    copy(output)
                 }
-            }
+                Err(err) => eprintln!("{}", err),
+            },
             MonoCommands::Export {} => {
                 let output = export(&db);
                 match output {

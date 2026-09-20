@@ -1,7 +1,7 @@
+use crate::database::Database;
 use crate::types::NoteTypes;
 use crate::utils::{make_title, string_check};
 use chrono::{Local, NaiveDate, NaiveDateTime, NaiveTime};
-use crate::database::Database;
 
 pub fn add(
     db: &Database,
