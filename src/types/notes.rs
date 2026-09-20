@@ -1,5 +1,6 @@
 use clap::ValueEnum;
 use std::fmt;
+use chrono::NaiveDateTime;
 
 #[derive(ValueEnum, Clone, Debug)]
 pub enum NoteTypes {
@@ -30,6 +31,6 @@ pub struct Note {
     pub id: i64,
     pub title: String,
     pub _note_type: String,
-    pub date: String,
+    pub date: NaiveDateTime,
     pub content: String,
 }
