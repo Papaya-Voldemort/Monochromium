@@ -1,16 +1,16 @@
-use crate::database::search_notes;
+use crate::database::Database;
 use crate::types::NoteTypes;
 use chrono::NaiveDate;
 
-pub async fn search(
-    conn: libsql::Connection,
+pub fn search(
+    db: &Database,
     text: String,
     limit: Option<u16>,
     _note_type: Option<NoteTypes>,
     _date: Option<NaiveDate>,
 ) -> Result<Vec<String>, Box<dyn std::error::Error>> {
     let final_limit = limit.unwrap_or(10);
-    let notes = search_notes(conn, Some(text), final_limit, None).await?;
+    let notes = db.search_notes(Some(text), final_limit, None)?;
 
     let mut output = Vec::new();
 

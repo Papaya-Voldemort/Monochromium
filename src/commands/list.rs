@@ -1,10 +1,10 @@
-use crate::database::read_rows;
+use crate::database::Database;
 use crate::types::NoteTypes;
 use crate::utils::pretty_notes;
 use chrono::NaiveDate;
 
-pub async fn list(
-    conn: libsql::Connection,
+pub fn list(
+    db: &Database,
     limit: Option<u16>,
     note_type: Option<NoteTypes>,
     _today: bool,
@@ -12,7 +12,7 @@ pub async fn list(
     view: bool,
 ) -> Result<Vec<String>, Box<dyn std::error::Error>> {
     let final_limit: u16 = limit.unwrap_or(15);
-    let notes = read_rows(conn, final_limit as i32, note_type).await?;
+    let notes = db.read_rows(final_limit as i32, note_type)?;
 
     Ok(pretty_notes(notes, view))
 }

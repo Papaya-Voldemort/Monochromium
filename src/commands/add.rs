@@ -1,10 +1,10 @@
-use crate::database::{add_row, read_single_row};
+use crate::database::Database;
 use crate::types::NoteTypes;
 use crate::utils::{make_title, string_check};
 use chrono::{Local, NaiveDate, NaiveDateTime, NaiveTime};
 
-pub async fn add(
-    conn: libsql::Connection,
+pub fn add(
+    db: &Database,
     text: Option<String>,
     note_type: Option<NoteTypes>,
     time: Option<NaiveTime>,
@@ -26,12 +26,12 @@ pub async fn add(
     let datetime: NaiveDateTime = date.and_time(time);
 
     let note_type = note_type.unwrap_or(NoteTypes::Other);
-    let result = add_row(conn.clone(), title, note_type, full_text, datetime).await?;
-    let note = read_single_row(conn.clone(), result).await?;
+    let result = db.add_row(title, note_type, full_text, datetime)?;
+    let note = db.read_single_row(result)?;
 
     let output = format!(
         "{} \u{2022} ID: {} \u{2022} {}\n {}",
-        note.title, note.id, note.date, note.content
+        note.title, note.id, note.date.format("%b %d, %Y at%l:%M %p"), note.content
     );
 
     Ok(output)

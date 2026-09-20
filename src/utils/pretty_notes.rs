@@ -7,7 +7,7 @@ pub fn pretty_notes(notes: Vec<Note>, view: bool) -> Vec<String> {
         for note in notes {
             let push = format!(
                 "{} \u{2022} ID: {} \u{2022} {}\n {}",
-                note.title, note.id, note.date, note.content
+                note.title, note.id, note.date.format("%b %d, %Y at%l:%M %p"), note.content
             );
             output.push(push);
         }

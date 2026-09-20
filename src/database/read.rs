@@ -1,75 +1,52 @@
+use super::Database;
 use crate::types::{Note, NoteTypes};
-use chrono::NaiveDateTime;
-use libsql::{Connection, params};
+use crate::utils::parse_note;
+use rusqlite::params;
 
-pub async fn read_rows(
-    conn: Connection,
-    limit: i32,
-    note_type: Option<NoteTypes>,
-) -> Result<Vec<Note>, Box<dyn std::error::Error>> {
-    let mut rows = match note_type {
-        Some(t) => {
-            conn.query(
-                "SELECT id, title, type, date, content FROM notes WHERE type = ?1 ORDER BY date DESC LIMIT ?2",
-                params![t.as_str(), limit],
-            )
-            .await?
-        }
-        None => {
-            conn.query(
-                "SELECT id, title, type, date, content FROM notes ORDER BY date DESC LIMIT ?1",
-                params![limit],
-            )
-            .await?
-        }
-    };
+impl Database {
+    pub fn read_rows(
+        &self,
+        limit: i32,
+        note_type: Option<NoteTypes>,
+    ) -> Result<Vec<Note>, Box<dyn std::error::Error>> {
+        let notes = match note_type {
+            Some(t) => {
+                let mut stmt = self.conn.prepare(
+                    "SELECT id, title, type, date, content
+                 FROM notes
+                 WHERE type = ?1
+                 ORDER BY date DESC
+                 LIMIT ?2",
+                )?;
 
-    let mut parsed_rows = Vec::new();
+                stmt.query_map(params![t.as_str(), limit], parse_note)?
+                    .collect::<Result<Vec<_>, _>>()?
+            }
+            None => {
+                let mut stmt = self.conn.prepare(
+                    "SELECT id, title, type, date, content
+                 FROM notes
+                 ORDER BY date DESC
+                 LIMIT ?1",
+                )?;
 
-    while let Some(row) = rows.next().await? {
-        let date_str: String = row.get(3)?;
-        let parsed_date = NaiveDateTime::parse_from_str(&date_str, "%Y-%m-%d %H:%M:%S%.f")?;
-        let final_date = parsed_date.format("%b %d, %Y at%l:%M %p").to_string();
-        let note = Note {
-            id: row.get(0)?,
-            title: row.get(1)?,
-            _note_type: row.get(2)?,
-            date: final_date,
-            content: row.get(4)?,
+                stmt.query_map(params![limit], parse_note)?
+                    .collect::<Result<Vec<_>, _>>()?
+            }
         };
 
-        parsed_rows.push(note);
+        Ok(notes)
     }
 
-    Ok(parsed_rows)
-}
-
-pub async fn read_single_row(
-    conn: Connection,
-    note_id: u32,
-) -> Result<Note, Box<dyn std::error::Error>> {
-    let mut rows = conn
-        .query(
-            "SELECT id, title, type, date, content FROM notes WHERE id = ?1 ORDER BY date DESC",
+    pub fn read_single_row(&self, note_id: u32) -> Result<Note, Box<dyn std::error::Error>> {
+        let note = self.conn.query_row(
+            "SELECT id, title, type, date, content
+         FROM notes
+         WHERE id = ?1",
             params![note_id],
-        )
-        .await?;
+            parse_note,
+        )?;
 
-    let row = rows
-        .next()
-        .await?
-        .ok_or_else(|| format!("Note with id {note_id} not found"))?;
-
-    let date_str: String = row.get(3)?;
-    let parsed_date = NaiveDateTime::parse_from_str(&date_str, "%Y-%m-%d %H:%M:%S%.f")?;
-    let final_date = parsed_date.format("%b %d, %Y at%l:%M %p").to_string();
-    let note = Note {
-        id: row.get(0)?,
-        title: row.get(1)?,
-        _note_type: row.get(2)?,
-        date: final_date,
-        content: row.get(4)?,
-    };
-
-    Ok(note)
+        Ok(note)
+    }
 }

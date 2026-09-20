@@ -1,10 +1,10 @@
-use crate::database::add_row;
+use crate::database::Database;
 use crate::types::NoteTypes;
 use crate::utils::string_check;
 use chrono::{Local, NaiveDate, NaiveDateTime, NaiveTime};
 
-pub async fn check_in(
-    conn: libsql::Connection,
+pub fn check_in(
+    db: &Database,
     text: Option<String>,
     time: Option<NaiveTime>,
     date: Option<NaiveDate>,
@@ -28,7 +28,7 @@ pub async fn check_in(
     let datetime: NaiveDateTime = date.and_time(time);
 
     let note_type = NoteTypes::CheckIn;
-    let _output = add_row(conn, title, note_type, full_text, datetime).await?;
+    let _output = db.add_row(title, note_type, full_text, datetime)?;
 
     Ok("check in added successfully!".to_string())
 }

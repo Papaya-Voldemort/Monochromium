@@ -9,17 +9,15 @@ use crate::commands::{
     add, check_in, delete, edit, export, init, list, list_todos, reminder, search, view,
 };
 use crate::config::{create_config, load_config};
-use crate::database::make_db;
+use crate::database::Database;
 use crate::utils::copy;
 use clap::{CommandFactory, Parser};
 use types::{MonoCLI, MonoCommands};
 
-#[tokio::main(flavor = "current_thread")]
-async fn main() {
-    let db = make_db().await;
+fn main() {
+    let db = Database::new();
     create_config();
     let config = load_config();
-    let conn = db.connect().unwrap();
 
     let cli = MonoCLI::parse();
 
@@ -32,7 +30,7 @@ async fn main() {
                 date,
                 paste,
             } => {
-                let output = add(conn.clone(), text, note_type, time, date, paste).await;
+                let output = add(&db, text, note_type, time, date, paste);
                 match output {
                     Err(err) => eprintln!("Database Error {:?}", err),
                     Ok(string) => {
@@ -49,7 +47,7 @@ async fn main() {
                 date,
                 paste,
             } => {
-                let output = check_in(conn.clone(), text, time, date, paste).await;
+                let output = check_in(&db, text, time, date, paste);
                 match output {
                     Ok(output) => {
                         println!("{}", output);
@@ -60,7 +58,7 @@ async fn main() {
                 }
             }
             MonoCommands::Delete { note_id, approve } => {
-                let output = delete(conn.clone(), note_id, approve).await;
+                let output = delete(&db, note_id, approve);
                 match output {
                     Ok(msg) => println!("{}", msg),
                     Err(err) => eprintln!("{}", err),
@@ -73,7 +71,7 @@ async fn main() {
                 overwrite,
                 text,
             } => {
-                let output = edit(conn, note_id, headless, append, overwrite, text).await;
+                let output = edit(&db, note_id, headless, append, overwrite, text);
                 match output {
                     Err(err) => {
                         println!("{}", err)
@@ -99,7 +97,7 @@ async fn main() {
                 since,
                 view,
             } => {
-                let list = list(conn, limit, note_type, today, since, view).await;
+                let list = list(&db, limit, note_type, today, since, view);
                 match list {
                     Ok(list) => {
                         for item in list {
@@ -115,7 +113,7 @@ async fn main() {
                 since,
                 view,
             } => {
-                let list = list_todos(conn, limit, today, since, view).await;
+                let list = list_todos(&db, limit, today, since, view);
                 match list {
                     Ok(list) => {
                         for item in list {
@@ -131,7 +129,7 @@ async fn main() {
                 note_type,
                 date,
             } => {
-                let list = search(conn, text, limit, note_type, date).await;
+                let list = search(&db, text, limit, note_type, date);
                 match list {
                     Ok(list) => {
                         for item in list {
@@ -141,17 +139,15 @@ async fn main() {
                     Err(err) => eprintln!("Search error: {}", err),
                 }
             }
-            MonoCommands::View { note_id, no_format } => {
-                match view(conn, note_id, no_format).await {
-                    Ok(output) => {
-                        println!("{}", output);
-                        copy(output)
-                    }
-                    Err(err) => eprintln!("{}", err),
+            MonoCommands::View { note_id, no_format } => match view(&db, note_id, no_format) {
+                Ok(output) => {
+                    println!("{}", output);
+                    copy(output)
                 }
-            }
+                Err(err) => eprintln!("{}", err),
+            },
             MonoCommands::Export {} => {
-                let output = export(conn).await;
+                let output = export(&db);
                 match output {
                     Ok(output) => {
                         let mut copied = String::new();
@@ -170,14 +166,14 @@ async fn main() {
                 }
             }
             MonoCommands::Reminder {} => {
-                let result = reminder(conn, config).await;
+                let result = reminder(&db, config);
                 match result {
                     Ok(output) => print!("{}", output),
                     Err(err) => eprintln!("We hit a speed bump! Try again. Error: {}", err),
                 }
             }
             MonoCommands::Init {} => {
-                init().await;
+                init();
             }
         },
         None => {
