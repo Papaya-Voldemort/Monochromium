@@ -1,5 +1,5 @@
-use crate::commands::definitions::NoteTypes;
 use crate::database::{add_row, read_single_row};
+use crate::types::NoteTypes;
 use crate::utils::{make_title, string_check};
 use chrono::{Local, NaiveDate, NaiveDateTime, NaiveTime};
 

@@ -1,14 +1,7 @@
-use crate::commands::definitions::NoteTypes;
+use crate::types::{Note, NoteTypes};
 use chrono::NaiveDateTime;
 use libsql::{Connection, params};
 
-pub struct Note {
-    pub id: i64,
-    pub title: String,
-    pub _note_type: String,
-    pub date: String,
-    pub content: String,
-}
 pub async fn read_rows(
     conn: Connection,
     limit: i32,

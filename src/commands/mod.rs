@@ -1,6 +1,5 @@
 mod add;
 mod check_in;
-pub mod definitions;
 mod delete;
 mod edit;
 mod export;
@@ -8,6 +7,7 @@ mod init;
 mod list;
 mod reminder;
 mod search;
+mod todo_list;
 mod view;
 
 pub use add::add;
@@ -19,4 +19,5 @@ pub use init::init;
 pub use list::list;
 pub use reminder::reminder;
 pub use search::search;
+pub use todo_list::list_todos;
 pub use view::view;

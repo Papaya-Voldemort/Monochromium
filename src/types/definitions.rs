@@ -1,31 +1,6 @@
+use crate::types::notes::NoteTypes;
 use chrono::{NaiveDate, NaiveTime};
-use clap::{Parser, Subcommand, ValueEnum};
-use std::fmt;
-
-#[derive(ValueEnum, Clone, Debug)]
-pub enum NoteTypes {
-    Idea,
-    CheckIn,
-    Todo,
-    Other,
-}
-
-impl NoteTypes {
-    pub const fn as_str(&self) -> &'static str {
-        match self {
-            Self::Idea => "idea",
-            Self::CheckIn => "check in",
-            Self::Todo => "todo",
-            Self::Other => "other",
-        }
-    }
-}
-
-impl fmt::Display for NoteTypes {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.as_str())
-    }
-}
+use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
 #[clap(author, version, about)]
@@ -105,6 +80,25 @@ pub enum MonoCommands {
         since: Option<NaiveDate>,
 
         /// Show note content as well
+        #[clap(short, long)]
+        view: bool,
+    },
+
+    #[command(name = "todos")]
+    TodoList {
+        /// Max amount of todos to be listed
+        #[clap(short, long)]
+        limit: Option<u16>,
+
+        /// Only show notes from today
+        #[clap(long)]
+        today: bool,
+
+        /// Show all notes after a date
+        #[clap(short, long)]
+        since: Option<NaiveDate>,
+
+        /// Show notes content as well
         #[clap(short, long)]
         view: bool,
     },

@@ -1,5 +1,5 @@
-use crate::commands::definitions::NoteTypes;
 use crate::database::search_notes;
+use crate::types::NoteTypes;
 use chrono::NaiveDate;
 
 pub async fn search(

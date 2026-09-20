@@ -1,6 +1,6 @@
-use crate::commands::definitions::NoteTypes;
 use crate::database::add_row;
-use crate::utils::{string_check};
+use crate::types::NoteTypes;
+use crate::utils::string_check;
 use chrono::{Local, NaiveDate, NaiveDateTime, NaiveTime};
 
 pub async fn check_in(
@@ -12,7 +12,6 @@ pub async fn check_in(
 ) -> Result<String, Box<dyn std::error::Error>> {
     let full_text = string_check(text, paste);
     if full_text == "Please provide a message when making your note!" {
-        println!("returned");
         return Ok(full_text);
     }
 

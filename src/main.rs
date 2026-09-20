@@ -2,14 +2,17 @@
 mod commands;
 mod config;
 mod database;
+mod types;
 mod utils;
 
-use crate::commands::{add, check_in, delete, edit, export, init, list, reminder, search, view};
+use crate::commands::{
+    add, check_in, delete, edit, export, init, list, list_todos, reminder, search, view,
+};
+use crate::config::{create_config, load_config};
 use crate::database::make_db;
 use crate::utils::copy;
 use clap::{CommandFactory, Parser};
-use commands::definitions::{MonoCLI, MonoCommands};
-use crate::config::{create_config, load_config};
+use types::{MonoCLI, MonoCommands};
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
@@ -60,7 +63,7 @@ async fn main() {
                 let output = delete(conn.clone(), note_id, approve).await;
                 match output {
                     Ok(msg) => println!("{}", msg),
-                    Err(err) => eprintln!("{}", err)
+                    Err(err) => eprintln!("{}", err),
                 }
             }
             MonoCommands::Edit {
@@ -106,6 +109,22 @@ async fn main() {
                     Err(err) => eprintln!("Search error: {}", err),
                 }
             }
+            MonoCommands::TodoList {
+                limit,
+                today,
+                since,
+                view,
+            } => {
+                let list = list_todos(conn, limit, today, since, view).await;
+                match list {
+                    Ok(list) => {
+                        for item in list {
+                            println!("{}", item)
+                        }
+                    }
+                    Err(err) => eprintln!("Search error: {}", err),
+                }
+            }
             MonoCommands::Search {
                 text,
                 limit,
@@ -124,10 +143,12 @@ async fn main() {
             }
             MonoCommands::View { note_id, no_format } => {
                 match view(conn, note_id, no_format).await {
-                    Ok(output) => println!("{}", output),
-                    Err(err) => eprintln!("{}", err)
+                    Ok(output) => {
+                        println!("{}", output);
+                        copy(output)
+                    }
+                    Err(err) => eprintln!("{}", err),
                 }
-
             }
             MonoCommands::Export {} => {
                 let output = export(conn).await;

@@ -1,4 +1,4 @@
-use crate::commands::definitions::NoteTypes;
+use crate::types::NoteTypes;
 use chrono::NaiveDateTime;
 use libsql::params;
 

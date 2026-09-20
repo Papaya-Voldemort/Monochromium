@@ -2,7 +2,7 @@ use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
-use toml::{to_string_pretty, from_str};
+use toml::{from_str, to_string_pretty};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
@@ -19,12 +19,9 @@ impl Default for Config {
     }
 }
 
-
-
 pub fn config_path() -> PathBuf {
-    let project_dirs =
-        ProjectDirs::from("com", "monochromium", "monochromium")
-            .expect("Could not determine config directory");
+    let project_dirs = ProjectDirs::from("com", "monochromium", "monochromium")
+        .expect("Could not determine config directory");
 
     project_dirs.config_dir().join("config.toml")
 }
@@ -37,27 +34,20 @@ pub fn create_config() {
     }
 
     if let Some(parent) = path.parent() {
-        fs::create_dir_all(parent)
-            .expect("Could not create config directory");
+        fs::create_dir_all(parent).expect("Could not create config directory");
     }
 
     let config = Config::default();
 
-    let contents =
-        to_string_pretty(&config)
-            .expect("Could not serialize config");
+    let contents = to_string_pretty(&config).expect("Could not serialize config");
 
-    fs::write(path, contents)
-        .expect("Could not write config");
+    fs::write(path, contents).expect("Could not write config");
 }
 
 pub fn load_config() -> Config {
     create_config();
 
-    let contents =
-        fs::read_to_string(config_path())
-            .expect("Could not read config");
+    let contents = fs::read_to_string(config_path()).expect("Could not read config");
 
-    from_str(&contents)
-        .expect("Invalid config.toml")
+    from_str(&contents).expect("Invalid config.toml")
 }
