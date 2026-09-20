@@ -1,18 +1,18 @@
-use crate::database::{UpdateType, update_note};
+use crate::database::{Database, UpdateType};
 
 pub struct Output {
     pub old: String,
     pub new: String,
 }
 
-pub async fn edit(
-    conn: libsql::Connection,
+pub fn edit(
+    db: &Database,
     note_id: u32,
     _headless: bool,
     append: bool,
     overwrite: bool,
     text: String,
-) -> Result<Output, libsql::Error> {
+) -> Result<Output, Box<dyn std::error::Error>> {
     let new = text.clone();
 
     let update_type = if append {
@@ -20,12 +20,10 @@ pub async fn edit(
     } else if overwrite {
         UpdateType::Overwrite
     } else {
-        return Err(libsql::Error::Misuse(
-            "Must specify either append or overwrite".into(),
-        ));
+        return Err("Must specify either append or overwrite".into());
     };
 
-    let old = update_note(conn, note_id, text, update_type).await?;
+    let old = db.update_note(note_id, text, update_type)?;
 
     Ok(Output { old, new })
 }

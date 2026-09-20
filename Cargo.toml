@@ -25,7 +25,6 @@ arboard = { version = "3.6", default-features = false }
 chrono = { version = "0.4.45", default-features = false, features = ["clock", "std"] }
 clap = { version = "4.6", default-features = false, features = ["std", "derive", "help", "usage", "error-context"] }
 directories = "6.0.0"
-libsql = { version = "0.9", default-features = false, features = ["core"] }
-tokio = { version = "1", features = ["rt", "macros", "fs", "io-util"] }
 serde = { version = "1.0.229", features = ["derive"] }
 toml = "1.1.6"
+rusqlite = { version = "0.40.2", features = ["bundled"] }

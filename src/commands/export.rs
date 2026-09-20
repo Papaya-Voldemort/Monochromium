@@ -1,7 +1,7 @@
-use crate::database::read_rows;
+use crate::database::Database;
 
-pub async fn export(conn: libsql::Connection) -> Result<Vec<String>, Box<dyn std::error::Error>> {
-    let rows = read_rows(conn, -1, None).await?;
+pub fn export(db: &Database) -> Result<Vec<String>, Box<dyn std::error::Error>> {
+    let rows = db.read_rows(-1, None)?;
 
     let mut output: Vec<String> = Vec::new();
 

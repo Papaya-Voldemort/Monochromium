@@ -1,11 +1,11 @@
-use crate::database::read_single_row;
+use crate::database::Database;
 
-pub async fn view(
-    conn: libsql::Connection,
+pub fn view(
+    db: &Database,
     node_id: u32,
     _no_format: bool,
 ) -> Result<String, Box<dyn std::error::Error>> {
-    let note = read_single_row(conn, node_id).await?;
+    let note = db.read_single_row(node_id)?;
 
     let output = format!(
         "{} \u{2022} ID: {} \u{2022} {}\n {}",

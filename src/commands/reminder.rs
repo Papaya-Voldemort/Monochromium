@@ -1,10 +1,10 @@
 use crate::config::Config;
-use crate::database::search_notes;
+use crate::database::Database;
 use crate::types::NoteTypes;
 use chrono::{DateTime, Duration, Local, NaiveDate, NaiveDateTime, NaiveTime};
 
-pub async fn reminder(
-    conn: libsql::Connection,
+pub fn reminder(
+    db: &Database,
     config: Config,
 ) -> Result<String, Box<dyn std::error::Error>> {
     // Get current time compare against last checkin
@@ -16,7 +16,7 @@ pub async fn reminder(
 
     let current_datetime: NaiveDateTime = current_date.and_time(current_time);
 
-    let rows = search_notes(conn, None, 1, Some(NoteTypes::CheckIn)).await?;
+    let rows = db.search_notes(None, 1, Some(NoteTypes::CheckIn))?;
     if rows.is_empty() {
         return Ok([
             "-- monochromium --",

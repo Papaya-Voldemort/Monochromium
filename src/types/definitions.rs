@@ -84,6 +84,7 @@ pub enum MonoCommands {
         view: bool,
     },
 
+    /// See all of your todos
     #[command(name = "todos")]
     TodoList {
         /// Max amount of todos to be listed
