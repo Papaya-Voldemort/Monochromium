@@ -23,7 +23,7 @@ pub fn edit(
         return Err("Must specify either append or overwrite".into());
     };
 
-    let old = db.update_note(note_id, text, update_type)?;
+    let old = db.update_row(note_id, text, update_type)?;
 
     Ok(Output { old, new })
 }

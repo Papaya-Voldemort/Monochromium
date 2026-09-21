@@ -4,7 +4,7 @@ use crate::utils::parse_note;
 use rusqlite::params;
 
 impl Database {
-    pub fn search_notes(
+    pub fn search_rows(
         &self,
         search: Option<String>,
         limit: u16,

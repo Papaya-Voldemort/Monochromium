@@ -31,7 +31,10 @@ pub fn add(
 
     let output = format!(
         "{} \u{2022} ID: {} \u{2022} {}\n {}",
-        note.title, note.id, note.date.format("%b %d, %Y at%l:%M %p"), note.content
+        note.title,
+        note.id,
+        note.date.format("%b %d, %Y at%l:%M %p"),
+        note.content
     );
 
     Ok(output)

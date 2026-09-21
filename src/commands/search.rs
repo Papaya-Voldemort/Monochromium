@@ -10,7 +10,7 @@ pub fn search(
     _date: Option<NaiveDate>,
 ) -> Result<Vec<String>, Box<dyn std::error::Error>> {
     let final_limit = limit.unwrap_or(10);
-    let notes = db.search_notes(Some(text), final_limit, None)?;
+    let notes = db.search_rows(Some(text), final_limit, None)?;
 
     let mut output = Vec::new();
 

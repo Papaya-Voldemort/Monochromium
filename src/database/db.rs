@@ -26,4 +26,13 @@ impl Database {
             panic!("Could not determine default database location");
         }
     }
+
+    #[cfg(test)]
+    pub fn new_in_memory() -> Self {
+        let conn = Connection::open_in_memory().unwrap();
+
+        conn.execute_batch(SCHEMA).unwrap();
+
+        Self { conn }
+    }
 }
