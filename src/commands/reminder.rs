@@ -1,7 +1,7 @@
 use crate::config::Config;
 use crate::database::Database;
 use crate::types::NoteTypes;
-use chrono::{DateTime, Duration, Local, NaiveDate, NaiveDateTime, NaiveTime};
+use chrono::{Duration, Local};
 
 pub fn reminder(db: &Database, config: Config) -> Result<String, Box<dyn std::error::Error>> {
     let current_datetime = Local::now().naive_local();

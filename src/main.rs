@@ -36,7 +36,7 @@ fn main() {
                     Ok(string) => {
                         println!("{}", string);
                         if cli.copy {
-                            copy(string);
+                            let _out = copy(string);
                         };
                     }
                 }
@@ -142,7 +142,7 @@ fn main() {
             MonoCommands::View { note_id, no_format } => match view(&db, note_id, no_format) {
                 Ok(output) => {
                     println!("{}", output);
-                    copy(output)
+                    let _out = copy(output);
                 }
                 Err(err) => eprintln!("{}", err),
             },
@@ -157,7 +157,7 @@ fn main() {
                             copied.push('\n');
                         }
                         if cli.copy {
-                            copy(copied)
+                            let _out = copy(copied);
                         }
                     }
                     Err(err) => {
@@ -197,7 +197,7 @@ fn main() {
 
             if cli.copy {
                 let full_output = format!("{}\n{}", logo, help_text);
-                copy(full_output);
+                let _out = copy(full_output);
             }
         }
     }
