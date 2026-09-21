@@ -36,7 +36,13 @@ fn main() {
                     Ok(string) => {
                         println!("{}", string);
                         if cli.copy {
-                            let _out = copy(string);
+                            let out = copy(string);
+                            match out {
+                                Ok(_ok) => {}
+                                Err(err) => {
+                                    eprintln!("Clipboard Error: {}", err)
+                                }
+                            }
                         };
                     }
                 }
@@ -142,7 +148,13 @@ fn main() {
             MonoCommands::View { note_id, no_format } => match view(&db, note_id, no_format) {
                 Ok(output) => {
                     println!("{}", output);
-                    let _out = copy(output);
+                    let out = copy(output);
+                    match out {
+                        Ok(_ok) => {}
+                        Err(err) => {
+                            eprintln!("Clipboard Error: {}", err)
+                        }
+                    }
                 }
                 Err(err) => eprintln!("{}", err),
             },
@@ -157,7 +169,13 @@ fn main() {
                             copied.push('\n');
                         }
                         if cli.copy {
-                            let _out = copy(copied);
+                            let out = copy(copied);
+                            match out {
+                                Ok(_ok) => {}
+                                Err(err) => {
+                                    eprintln!("Clipboard Error: {}", err)
+                                }
+                            }
                         }
                     }
                     Err(err) => {
@@ -197,7 +215,13 @@ fn main() {
 
             if cli.copy {
                 let full_output = format!("{}\n{}", logo, help_text);
-                let _out = copy(full_output);
+                let out = copy(full_output);
+                match out {
+                    Ok(_ok) => {}
+                    Err(err) => {
+                        eprintln!("Clipboard Error: {}", err)
+                    }
+                }
             }
         }
     }
