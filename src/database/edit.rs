@@ -8,7 +8,7 @@ pub enum UpdateType {
 }
 
 impl Database {
-    pub fn update_note(
+    pub fn update_row(
         &self,
         note_id: u32,
         text: String,

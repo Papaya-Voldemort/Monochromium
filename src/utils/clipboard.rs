@@ -6,7 +6,7 @@ pub fn get_paste() -> Result<String, arboard::Error> {
     clipboard.get_text()
 }
 
-pub fn copy(text: String) -> Result<(), arboard::Error>{
+pub fn copy(text: String) -> Result<(), arboard::Error> {
     let mut clipboard = Clipboard::new()?;
 
     clipboard.set_text(text)

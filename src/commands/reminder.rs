@@ -7,7 +7,7 @@ pub fn reminder(db: &Database, config: Config) -> Result<String, Box<dyn std::er
     let current_datetime = Local::now().naive_local();
     let interval = config.checkin_interval_minutes;
 
-    let rows = db.search_notes(None, 1, Some(NoteTypes::CheckIn))?;
+    let rows = db.search_rows(None, 1, Some(NoteTypes::CheckIn))?;
     if rows.is_empty() {
         return Ok([
             "-- monochromium --",
