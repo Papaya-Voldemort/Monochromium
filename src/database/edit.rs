@@ -13,7 +13,7 @@ impl Database {
         note_id: u32,
         text: String,
         mode: UpdateType,
-    ) -> Result<String, Box<dyn std::error::Error>> {
+    ) -> Result<String, rusqlite::Error> {
         let pre: String = self.conn.query_row(
             "SELECT content FROM notes WHERE id = ?1",
             params![note_id],

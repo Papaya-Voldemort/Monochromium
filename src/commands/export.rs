@@ -1,6 +1,7 @@
 use crate::database::Database;
+use crate::types::MonoError;
 
-pub fn export(db: &Database) -> Result<Vec<String>, Box<dyn std::error::Error>> {
+pub fn export(db: &Database) -> Result<Vec<String>, MonoError> {
     let rows = db.read_rows(-1, None)?;
 
     let mut output: Vec<String> = Vec::new();

@@ -1,3 +1,4 @@
+use crate::types::MonoError;
 use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
 use std::fs;
@@ -19,18 +20,19 @@ impl Default for Config {
     }
 }
 
-pub fn config_path() -> PathBuf {
-    let project_dirs = ProjectDirs::from("com", "monochromium", "monochromium")
-        .expect("Could not determine config directory");
+pub fn config_path() -> Result<PathBuf, MonoError> {
+    let project_dirs = ProjectDirs::from("com", "monochromium", "monochromium").ok_or(
+        MonoError::Config("Could not determine config directory".to_string()),
+    );
 
-    project_dirs.config_dir().join("config.toml")
+    Ok(project_dirs?.config_dir().join("config.toml"))
 }
 
-pub fn create_config() {
-    let path = config_path();
+pub fn create_config() -> Result<(), MonoError> {
+    let path = config_path()?;
 
     if path.exists() {
-        return;
+        return Ok(());
     }
 
     if let Some(parent) = path.parent() {
@@ -42,12 +44,15 @@ pub fn create_config() {
     let contents = to_string_pretty(&config).expect("Could not serialize config");
 
     fs::write(path, contents).expect("Could not write config");
+
+    Ok(())
 }
 
-pub fn load_config() -> Config {
-    create_config();
+pub fn load_config() -> Result<Config, MonoError> {
+    create_config()?;
 
-    let contents = fs::read_to_string(config_path()).expect("Could not read config");
+    let contents = fs::read_to_string(config_path()?)?;
+    let config = from_str(&contents);
 
-    from_str(&contents).expect("Invalid config.toml")
+    Ok(config.unwrap())
 }

@@ -10,7 +10,7 @@ impl Database {
         note_type: NoteTypes,
         content: String,
         date: NaiveDateTime,
-    ) -> Result<u32, Box<dyn std::error::Error>> {
+    ) -> Result<u32, rusqlite::Error> {
         let note_type = note_type.as_str();
         let date = date.to_string();
 

@@ -1,5 +1,5 @@
 use crate::database::Database;
-use crate::types::NoteTypes;
+use crate::types::{MonoError, NoteTypes};
 use chrono::NaiveDate;
 
 pub fn search(
@@ -8,7 +8,7 @@ pub fn search(
     limit: Option<u16>,
     _note_type: Option<NoteTypes>,
     _date: Option<NaiveDate>,
-) -> Result<Vec<String>, Box<dyn std::error::Error>> {
+) -> Result<Vec<String>, MonoError> {
     let final_limit = limit.unwrap_or(10);
     let notes = db.search_rows(Some(text), final_limit, None)?;
 

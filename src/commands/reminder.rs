@@ -1,9 +1,9 @@
 use crate::config::Config;
 use crate::database::Database;
-use crate::types::NoteTypes;
+use crate::types::{MonoError, NoteTypes};
 use chrono::{Duration, Local};
 
-pub fn reminder(db: &Database, config: Config) -> Result<String, Box<dyn std::error::Error>> {
+pub fn reminder(db: &Database, config: Config) -> Result<String, MonoError> {
     let current_datetime = Local::now().naive_local();
     let interval = config.checkin_interval_minutes;
 

@@ -10,14 +10,15 @@ use crate::commands::{
 };
 use crate::config::{create_config, load_config};
 use crate::database::Database;
+use crate::types::MonoError;
 use crate::utils::copy;
 use clap::{CommandFactory, Parser};
 use types::{MonoCLI, MonoCommands};
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), MonoError> {
     let db = Database::new();
-    create_config();
-    let config = load_config();
+    let _ = create_config();
+    let config = load_config()?;
 
     let cli = MonoCLI::parse();
 

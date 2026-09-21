@@ -1,10 +1,7 @@
 use crate::database::Database;
+use crate::types::MonoError;
 
-pub fn delete(
-    db: &Database,
-    note_id: u32,
-    approve: bool,
-) -> Result<String, Box<dyn std::error::Error>> {
+pub fn delete(db: &Database, note_id: u32, approve: bool) -> Result<String, MonoError> {
     if approve {
         let deleted = db.delete_note(note_id)?;
         if deleted == 0 {

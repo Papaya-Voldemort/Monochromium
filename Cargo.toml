@@ -1,6 +1,6 @@
 [package]
 name = "monochromium"
-version = "0.3.0-alpha.0"
+version = "0.4.0-alpha.0"
 edition = "2024"
 description = "A fast, local-first CLI note-taking app for developers"
 readme = "README.md"
@@ -28,3 +28,4 @@ directories = "6.0.0"
 serde = { version = "1.0.229", features = ["derive"] }
 toml = "1.1.6"
 rusqlite = { version = "0.40.2", default-features = false, features = ["bundled"] }
+thiserror = "2.0.20"
