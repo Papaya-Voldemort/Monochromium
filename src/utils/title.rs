@@ -1,17 +1,22 @@
-// Build out tiny ML model to do text -> title
-pub fn make_title(text: String) -> String {
-    let words: Vec<&str> = text.split_whitespace().take(5).collect();
+use crate::types::NoteTypes;
+use crate::utils::trim_text;
+use chrono::{Local, NaiveDate, NaiveDateTime, NaiveTime};
 
-    words.join(" ")
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_make_title_truncates_at_five_words() {
-        let title = make_title("one two three four five six seven".to_string());
-        assert_eq!(title, "one two three four five");
+pub fn make_title(
+    text: String,
+    note_type: NoteTypes,
+    time: Option<NaiveTime>,
+    date: Option<NaiveDate>,
+) -> String {
+    match note_type {
+        NoteTypes::CheckIn => {
+            let now = Local::now();
+            let time = time.unwrap_or(now.time());
+            let date = date.unwrap_or(now.date_naive());
+            let datetime: NaiveDateTime = date.and_time(time);
+            let readable_date = datetime.format("%b %-d, %-I:%M %p").to_string();
+            format!("Check-In: {}", readable_date)
+        }
+        _ => trim_text(text.clone(), 5),
     }
 }

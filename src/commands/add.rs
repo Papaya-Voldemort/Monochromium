@@ -22,7 +22,12 @@ pub fn add(
     let time = time.unwrap_or(now.time());
     let date = date.unwrap_or(now.date_naive());
 
-    let title = make_title(full_text.clone());
+    let title = make_title(
+        full_text.clone(),
+        note_type.clone().unwrap(),
+        Some(time),
+        Some(date),
+    );
     let datetime: NaiveDateTime = date.and_time(time);
 
     let note_type = note_type.unwrap_or(NoteTypes::Other);

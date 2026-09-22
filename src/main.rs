@@ -5,12 +5,10 @@ mod database;
 mod types;
 mod utils;
 
-use crate::commands::{
-    add, check_in, delete, edit, export, init, list, list_todos, reminder, search, view,
-};
+use crate::commands::{add, delete, edit, export, init, list, reminder, search, view};
 use crate::config::load_config;
 use crate::database::Database;
-use crate::types::{EditMode, MonoError};
+use crate::types::{CommandOutput, EditMode, MonoError};
 use crate::utils::copy;
 use clap::{CommandFactory, Parser};
 use types::{MonoCLI, MonoCommands};
@@ -28,7 +26,9 @@ fn run() -> Result<(), MonoError> {
 
     let cli = MonoCLI::parse();
 
-    match cli.command {
+    let copy_output = cli.copy;
+
+    let output = match cli.command {
         Some(cmd) => match cmd {
             MonoCommands::Add {
                 text,
@@ -36,46 +36,9 @@ fn run() -> Result<(), MonoError> {
                 time,
                 date,
                 paste,
-            } => {
-                let output = add(&db, text, note_type, time, date, paste)?;
-                println!("{}", output);
-
-                if cli.copy
-                    && let Err(err) = copy(output)
-                {
-                    eprintln!("Warning: could not copy to clipboard: {err}");
-                }
-
-                Ok(())
-            }
-            MonoCommands::CheckIn {
-                text,
-                time,
-                date,
-                paste,
-            } => {
-                let output = check_in(&db, text, time, date, paste)?;
-                println!("{}", output);
-
-                if cli.copy
-                    && let Err(err) = copy(output)
-                {
-                    eprintln!("Warning: could not copy to clipboard: {err}");
-                }
-
-                Ok(())
-            }
+            } => CommandOutput::Text(add(&db, text, note_type, time, date, paste)?),
             MonoCommands::Delete { note_id, approve } => {
-                let output = delete(&db, note_id, approve)?;
-                println!("{}", output);
-
-                if cli.copy
-                    && let Err(err) = copy(output)
-                {
-                    eprintln!("Warning: could not copy to clipboard: {err}");
-                }
-
-                Ok(())
+                CommandOutput::Text(delete(&db, note_id, approve)?)
             }
             MonoCommands::Edit {
                 note_id,
@@ -85,144 +48,70 @@ fn run() -> Result<(), MonoError> {
             } => {
                 let output = edit(&db, note_id, headless, edit_mode, text)?;
 
-                match output.update_type {
+                let text = match output.update_type {
                     EditMode::Append => {
-                        println!(
+                        format!(
                             "Appended \"{}\" to the end of \"{}\"!",
                             output.new, output.old
-                        );
+                        )
                     }
+
                     EditMode::Overwrite => {
-                        println!("Replaced \"{}\" with \"{}\"!", output.old, output.new);
+                        format!("Replaced \"{}\" with \"{}\"!", output.old, output.new)
                     }
                 };
 
-                Ok(())
+                CommandOutput::Text(text)
             }
+
             MonoCommands::List {
                 limit,
                 note_type,
                 today,
                 since,
                 view,
-            } => {
-                let list = list(&db, limit, note_type, today, since, view)?;
-                for item in &list {
-                    println!("{}", item);
-                }
-
-                if cli.copy
-                    && let Err(err) = copy(list.join("\n"))
-                {
-                    eprintln!("Warning: could not copy to clipboard: {err}");
-                }
-
-                Ok(())
-            }
-            MonoCommands::TodoList {
-                limit,
-                today,
-                since,
-                view,
-            } => {
-                let list = list_todos(&db, limit, today, since, view)?;
-                for item in &list {
-                    println!("{}", item);
-                }
-
-                if cli.copy
-                    && let Err(err) = copy(list.join("\n"))
-                {
-                    eprintln!("Warning: could not copy to clipboard: {err}");
-                }
-
-                Ok(())
-            }
+            } => CommandOutput::Lines(list(&db, limit, note_type, today, since, view)?),
             MonoCommands::Search {
                 text,
                 limit,
                 note_type,
                 date,
-            } => {
-                let list = search(&db, text, limit, note_type, date)?;
-                for item in &list {
-                    println!("{}", item);
-                }
-
-                if cli.copy
-                    && let Err(err) = copy(list.join("\n"))
-                {
-                    eprintln!("Warning: could not copy to clipboard: {err}");
-                }
-
-                Ok(())
-            }
+            } => CommandOutput::Lines(search(&db, text, limit, note_type, date)?),
             MonoCommands::View { note_id, no_format } => {
-                let output = view(&db, note_id, no_format)?;
-
-                println!("{}", output);
-
-                if cli.copy
-                    && let Err(err) = copy(output)
-                {
-                    eprintln!("Warning: could not copy to clipboard: {err}");
-                }
-
-                Ok(())
+                CommandOutput::Text(view(&db, note_id, no_format)?)
             }
 
-            MonoCommands::Export {} => {
-                let list = export(&db)?;
+            MonoCommands::Export {} => CommandOutput::Lines(export(&db)?),
 
-                for item in &list {
-                    println!("{}", item);
-                }
-
-                if cli.copy
-                    && let Err(err) = copy(list.join("\n"))
-                {
-                    eprintln!("Warning: could not copy to clipboard: {err}");
-                }
-
-                Ok(())
-            }
-
-            MonoCommands::Reminder {} => {
-                let output = reminder(&db, config)?;
-                print!("{}", output);
-
-                Ok(())
-            }
+            MonoCommands::Reminder {} => CommandOutput::Text(reminder(&db, config)?),
             MonoCommands::Init {} => {
                 init();
-                Ok(())
+
+                CommandOutput::Text("Initialized Monochromium configuration.".to_string())
             }
         },
         None => {
             let logo = r#"
-    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⢰⣶⣦⠀⢀⣶⣶⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣶⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠶⠆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⢰⣶⣦⠀⢀⣶⣶⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣶⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠶⠆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⢸⣿⢻⡄⣸⢿⣿⠀⣴⡿⠻⣷⡄⢸⣷⠞⢿⣦⠀⣴⡿⠻⣷⡄⢠⣾⠛⢷⡆⢸⣿⠞⢿⣦⠀⣿⡶⠟⢠⣾⠟⢿⣦⠀⣿⡶⠻⣷⠞⢿⣦⠀⣿⡇⢸⣷⠀⢸⣿⠀⣿⡶⠻⣷⠞⢿⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⢸⣿⠸⣧⡿⢸⣿⠀⣿⡄⠀⣼⡇⢸⣿⠀⢸⣿⠀⣿⡄⠀⣼⡇⢸⣇⠀⣀⡀⢸⣿⠀⢸⣿⠀⣿⡇⠀⢸⣧⠀⢠⣿⠀⣿⡇⠀⣿⠀⢸⣿⠀⣿⡇⢸⣿⠀⢸⣿⠀⣿⡇⠀⣿⠀⢸⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠘⠛⠀⠛⠃⠘⠛⠀⠈⠛⠛⠋⠀⠘⠛⠀⠘⠛⠀⠈⠛⠛⠋⠀⠈⠛⠛⠛⠁⠘⠛⠀⠘⠛⠀⠛⠃⠀⠀⠙⠛⠛⠁⠀⠛⠃⠀⠛⠀⠘⠛⠀⠛⠃⠀⠛⠛⠙⠛⠀⠛⠃⠀⠛⠀⠘⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-            "#;
-
-            // if cli.animate {}
-
-            println!("{}", logo);
+"#;
 
             let mut cmd = MonoCLI::command();
             let help_text = cmd.render_help().to_string();
 
-            println!("{}", help_text);
-
-            if cli.copy {
-                let full_output = format!("{}\n{}", logo, help_text);
-                copy(full_output)?;
-            }
-
-            Ok(())
+            CommandOutput::Text(format!("{logo}\n{help_text}"))
         }
+    };
+
+    output.print();
+
+    if copy_output && let Err(err) = copy(output.as_text()) {
+        eprintln!("Warning: could not copy to clipboard: {err}");
     }
+
+    Ok(())
 }
