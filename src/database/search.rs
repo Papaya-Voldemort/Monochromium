@@ -9,7 +9,7 @@ impl Database {
         search: Option<String>,
         limit: u16,
         note_type: Option<NoteTypes>,
-    ) -> Result<Vec<Note>, Box<dyn std::error::Error>> {
+    ) -> Result<Vec<Note>, rusqlite::Error> {
         let notes = match (search, note_type) {
             (Some(search), _) if !search.is_empty() => {
                 let pattern = format!("%{search}%");

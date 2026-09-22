@@ -10,5 +10,3 @@ mod tests;
 pub struct Database {
     pub(crate) conn: rusqlite::Connection,
 }
-
-pub use edit::UpdateType;

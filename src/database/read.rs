@@ -8,7 +8,7 @@ impl Database {
         &self,
         limit: i32,
         note_type: Option<NoteTypes>,
-    ) -> Result<Vec<Note>, Box<dyn std::error::Error>> {
+    ) -> Result<Vec<Note>, rusqlite::Error> {
         let notes = match note_type {
             Some(t) => {
                 let mut stmt = self.conn.prepare(
@@ -38,7 +38,7 @@ impl Database {
         Ok(notes)
     }
 
-    pub fn read_single_row(&self, note_id: u32) -> Result<Note, Box<dyn std::error::Error>> {
+    pub fn read_single_row(&self, note_id: u32) -> Result<Note, rusqlite::Error> {
         let note = self.conn.query_row(
             "SELECT id, title, type, date, content
          FROM notes
