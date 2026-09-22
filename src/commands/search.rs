@@ -9,6 +9,12 @@ pub fn search(
     _note_type: Option<NoteTypes>,
     _date: Option<NaiveDate>,
 ) -> Result<Vec<String>, MonoError> {
+    if text.trim().is_empty() {
+        return Err(MonoError::InvalidInput(
+            "Please input a query for your search".to_string(),
+        ));
+    }
+
     let final_limit = limit.unwrap_or(10);
     let notes = db.search_rows(Some(text), final_limit, None)?;
 

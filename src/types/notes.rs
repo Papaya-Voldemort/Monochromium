@@ -35,3 +35,9 @@ pub struct Note {
     pub date: NaiveDateTime,
     pub content: String,
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
+pub enum EditMode {
+    Append,
+    Overwrite,
+}

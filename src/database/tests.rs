@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod tests {
-    use crate::database::{Database, UpdateType};
+    use crate::database::Database;
+    use crate::types::EditMode;
     use crate::types::{Note, NoteTypes};
 
     #[test]
@@ -35,7 +36,7 @@ mod tests {
         assert_eq!(search, &comp);
 
         let edit = db
-            .update_row(test_note_id, "APPEND".to_string(), UpdateType::Append)
+            .update_row(test_note_id, "APPEND".to_string(), EditMode::Append)
             .unwrap();
 
         let read = db.read_single_row(test_note_id).unwrap();

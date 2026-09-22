@@ -11,7 +11,7 @@ pub fn add(
     date: Option<NaiveDate>,
     paste: bool,
 ) -> Result<String, MonoError> {
-    let full_text = string_check(text, paste);
+    let full_text = string_check(text, paste)?;
     if full_text == "Please provide a message when making your note!" {
         return Ok(full_text);
     }

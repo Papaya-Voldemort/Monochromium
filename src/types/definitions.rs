@@ -1,4 +1,4 @@
-use crate::types::notes::NoteTypes;
+use crate::types::notes::{EditMode, NoteTypes};
 use chrono::{NaiveDate, NaiveTime};
 use clap::{Parser, Subcommand};
 
@@ -144,13 +144,9 @@ pub enum MonoCommands {
         #[clap(long)]
         headless: bool,
 
-        /// Append text to the end of the note
-        #[clap(short, long, conflicts_with = "overwrite")]
-        append: bool,
-
-        /// Overwrite note with new text
-        #[clap(short, long)]
-        overwrite: bool,
+        /// Either overwrite or append text
+        #[arg(short = 'm', long = "mode")]
+        edit_mode: EditMode,
 
         // For v2 do not require text
         /// Text to append/overwrite

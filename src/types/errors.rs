@@ -16,4 +16,10 @@ pub enum MonoError {
 
     #[error("config error: {0}")]
     Config(String),
+
+    #[error("config parse error: {0}")]
+    ConfigParse(#[from] toml::de::Error),
+
+    #[error("config serialization error: {0}")]
+    ConfigSerialize(#[from] toml::ser::Error),
 }
