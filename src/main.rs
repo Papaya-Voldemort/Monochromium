@@ -40,8 +40,10 @@ fn run() -> Result<(), MonoError> {
                 let output = add(&db, text, note_type, time, date, paste)?;
                 println!("{}", output);
 
-                if cli.copy {
-                    copy(output)?;
+                if cli.copy
+                    && let Err(err) = copy(output)
+                {
+                    eprintln!("Warning: could not copy to clipboard: {err}");
                 }
 
                 Ok(())
@@ -55,8 +57,10 @@ fn run() -> Result<(), MonoError> {
                 let output = check_in(&db, text, time, date, paste)?;
                 println!("{}", output);
 
-                if cli.copy {
-                    copy(output)?;
+                if cli.copy
+                    && let Err(err) = copy(output)
+                {
+                    eprintln!("Warning: could not copy to clipboard: {err}");
                 }
 
                 Ok(())
@@ -65,8 +69,10 @@ fn run() -> Result<(), MonoError> {
                 let output = delete(&db, note_id, approve)?;
                 println!("{}", output);
 
-                if cli.copy {
-                    copy(output)?;
+                if cli.copy
+                    && let Err(err) = copy(output)
+                {
+                    eprintln!("Warning: could not copy to clipboard: {err}");
                 }
 
                 Ok(())
@@ -105,8 +111,10 @@ fn run() -> Result<(), MonoError> {
                     println!("{}", item);
                 }
 
-                if cli.copy {
-                    copy(list.join("\n"))?;
+                if cli.copy
+                    && let Err(err) = copy(list.join("\n"))
+                {
+                    eprintln!("Warning: could not copy to clipboard: {err}");
                 }
 
                 Ok(())
@@ -122,8 +130,10 @@ fn run() -> Result<(), MonoError> {
                     println!("{}", item);
                 }
 
-                if cli.copy {
-                    copy(list.join("\n"))?;
+                if cli.copy
+                    && let Err(err) = copy(list.join("\n"))
+                {
+                    eprintln!("Warning: could not copy to clipboard: {err}");
                 }
 
                 Ok(())
@@ -139,8 +149,10 @@ fn run() -> Result<(), MonoError> {
                     println!("{}", item);
                 }
 
-                if cli.copy {
-                    copy(list.join("\n"))?;
+                if cli.copy
+                    && let Err(err) = copy(list.join("\n"))
+                {
+                    eprintln!("Warning: could not copy to clipboard: {err}");
                 }
 
                 Ok(())
@@ -150,8 +162,10 @@ fn run() -> Result<(), MonoError> {
 
                 println!("{}", output);
 
-                if cli.copy {
-                    copy(output)?;
+                if cli.copy
+                    && let Err(err) = copy(output)
+                {
+                    eprintln!("Warning: could not copy to clipboard: {err}");
                 }
 
                 Ok(())
@@ -164,8 +178,10 @@ fn run() -> Result<(), MonoError> {
                     println!("{}", item);
                 }
 
-                if cli.copy {
-                    copy(list.join("\n"))?;
+                if cli.copy
+                    && let Err(err) = copy(list.join("\n"))
+                {
+                    eprintln!("Warning: could not copy to clipboard: {err}");
                 }
 
                 Ok(())
