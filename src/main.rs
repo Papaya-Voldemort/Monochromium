@@ -83,12 +83,8 @@ fn run() -> Result<(), MonoError> {
 
             MonoCommands::Export {} => CommandOutput::Lines(export(&db)?),
 
-            MonoCommands::Reminder {} => CommandOutput::Text(reminder(&db, config)?),
-            MonoCommands::Init {} => {
-                init();
-
-                CommandOutput::Text("Initialized Monochromium configuration.".to_string())
-            }
+            MonoCommands::Reminder {} => CommandOutput::Raw(reminder(&db, config)?),
+            MonoCommands::Init {} => CommandOutput::Text(init()?),
         },
         None => {
             let logo = r#"

@@ -1,5 +1,7 @@
 # Monochromium
 
+![Hackatime](https://hackatime.hackclub.com/api/v1/badge/U09197C6M2B/Papaya-Voldemort/Monochromium)
+
 > A fast, local first CLI note-taking app
 
 ![Monochromium](banner.png)
