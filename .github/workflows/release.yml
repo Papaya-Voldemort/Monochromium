@@ -1,0 +1,126 @@
+name: Release
+
+permissions:
+  contents: write
+  id-token: write
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  verify-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Verify tag matches Cargo.toml
+        shell: bash
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          CARGO_VERSION=$(grep '^version = ' Cargo.toml | head -n1 | cut -d '"' -f2)
+
+          echo "Tag version: $TAG_VERSION"
+          echo "Cargo.toml version: $CARGO_VERSION"
+
+          if [ "$TAG_VERSION" != "$CARGO_VERSION" ]; then
+            echo "Version mismatch!"
+            exit 1
+          fi
+
+  build:
+    needs: verify-version
+
+    strategy:
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            os_name: linux
+            arch: x86_64
+            executable: mono
+            ext: ""
+
+          - runner: windows-latest
+            os_name: windows
+            arch: x86_64
+            executable: mono.exe
+            ext: ".exe"
+
+          - runner: macos-latest
+            os_name: macos
+            arch: arm64
+            executable: mono
+            ext: ""
+
+    runs-on: ${{matrix.runner}}
+
+    steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v5
+
+        - name: Install Rust
+          uses: dtolnay/rust-toolchain@stable
+
+        - name: Cache Rust build
+          uses: Swatinem/rust-cache@v2
+
+        - name: Build Release
+          run: cargo build --release
+
+        - name: Rename Binary
+          shell: bash
+          run: |
+            mv "target/release/${{ matrix.executable }}" \
+               "target/release/monochromium-${{ github.ref_name }}-${{ matrix.os_name }}-${{ matrix.arch }}${{ matrix.ext }}"
+
+        - name: Upload Binary Artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: monochromium-${{ matrix.os_name }}-${{ matrix.arch }}
+            path: target/release/monochromium-${{ github.ref_name }}-${{ matrix.os_name }}-${{ matrix.arch }}${{ matrix.ext }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Generate Checksums
+        run: sha256sum artifacts/* > artifacts/SHA256SUMS
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*
+          generate_release_notes: true
+
+  publish-crate:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Verify crate package
+        run: cargo publish --locked --dry-run
+
+      - name: Authenticate with crates.io
+        id: auth
+        uses: rust-lang/crates-io-auth-action@v1
+
+      - name: Publish to crates.io
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
+        run: cargo publish --locked

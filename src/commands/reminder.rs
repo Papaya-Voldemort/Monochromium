@@ -9,7 +9,7 @@ pub fn reminder(db: &Database, config: Config) -> Result<String, MonoError> {
 
     let rows = db.search_rows(None, 1, Some(NoteTypes::CheckIn))?;
     let checkins = !rows.is_empty();
-    
+
     let default = get_default(checkins);
 
     let final_out: String = if config.show_todo_list {
