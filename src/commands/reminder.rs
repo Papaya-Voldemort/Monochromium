@@ -6,13 +6,10 @@ use chrono::{Duration, Local};
 pub fn reminder(db: &Database, config: Config) -> Result<String, MonoError> {
     let current_datetime = Local::now().naive_local();
     let interval = config.checkin_interval_minutes;
-    let mut checkins: bool = true;
 
     let rows = db.search_rows(None, 1, Some(NoteTypes::CheckIn))?;
-    if rows.is_empty() {
-        checkins = false;
-    }
-
+    let checkins = !rows.is_empty();
+    
     let default = get_default(checkins);
 
     let final_out: String = if config.show_todo_list {
@@ -26,6 +23,10 @@ pub fn reminder(db: &Database, config: Config) -> Result<String, MonoError> {
     } else {
         default
     };
+
+    if rows.is_empty() {
+        return Ok(final_out);
+    }
 
     let past_datetime = rows[0].date;
     let time_passed: Duration = current_datetime - past_datetime;
