@@ -41,26 +41,6 @@ pub enum MonoCommands {
         paste: bool,
     },
 
-    /// Create a note with check-in type
-    #[command(name = "checkin")]
-    CheckIn {
-        /// Note text content
-        #[arg(value_name = "TEXT")]
-        text: Option<String>,
-
-        /// Logged time of note (HH:MM or HH:MM:SS) [default: current time]
-        #[clap(long)]
-        time: Option<NaiveTime>,
-
-        /// Logged date of note (YYYY-MM-DD) [default: current date]
-        #[clap(long)]
-        date: Option<NaiveDate>,
-
-        /// Use clipboard content as the note body
-        #[clap(short, long)]
-        paste: bool,
-    },
-
     /// List out existing notes
     List {
         /// Max amount of notes to be listed
@@ -68,7 +48,7 @@ pub enum MonoCommands {
         limit: Option<u16>,
 
         /// Only allow certain types of notes (todo, check in, idea, other)
-        #[clap(short, long)]
+        #[arg(short = 't', long = "type")]
         note_type: Option<NoteTypes>,
 
         /// Only show notes from today
@@ -80,26 +60,6 @@ pub enum MonoCommands {
         since: Option<NaiveDate>,
 
         /// Show note content as well
-        #[clap(short, long)]
-        view: bool,
-    },
-
-    /// See all of your todos
-    #[command(name = "todos")]
-    TodoList {
-        /// Max amount of todos to be listed
-        #[clap(short, long)]
-        limit: Option<u16>,
-
-        /// Only show notes from today
-        #[clap(long)]
-        today: bool,
-
-        /// Show all notes after a date
-        #[clap(short, long)]
-        since: Option<NaiveDate>,
-
-        /// Show notes content as well
         #[clap(short, long)]
         view: bool,
     },
