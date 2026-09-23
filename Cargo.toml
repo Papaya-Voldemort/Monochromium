@@ -1,6 +1,6 @@
 [package]
 name = "monochromium"
-version = "0.4.2-alpha.0"
+version = "0.4.2"
 edition = "2024"
 description = "A fast, local-first CLI note-taking app for developers"
 readme = "README.md"
