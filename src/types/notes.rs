@@ -5,6 +5,7 @@ use std::fmt;
 #[derive(ValueEnum, Clone, Debug)]
 pub enum NoteTypes {
     Idea,
+    #[value(name = "check-in", alias = "checkin")]
     CheckIn,
     Todo,
     Other,

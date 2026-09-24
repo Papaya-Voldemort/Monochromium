@@ -16,7 +16,7 @@ pub fn search(
     }
 
     let final_limit = limit.unwrap_or(10);
-    let notes = db.search_rows(Some(text), final_limit, None)?;
+    let notes = db.search_rows(Some(text.trim().to_string()), final_limit, None)?;
 
     let mut output = Vec::new();
 

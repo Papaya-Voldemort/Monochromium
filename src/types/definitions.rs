@@ -12,8 +12,8 @@ pub struct MonoCLI {
     #[clap(short, long, global = true)]
     pub copy: bool,
 
-    #[clap(short, long)]
-    pub animate: bool,
+    // #[clap(short, long)]
+    // pub animate: bool,
 }
 
 #[derive(Subcommand)]
@@ -47,7 +47,7 @@ pub enum MonoCommands {
         #[clap(short, long)]
         limit: Option<u16>,
 
-        /// Only allow certain types of notes (todo, check in, idea, other)
+        /// Only allow certain types of notes (todo, checkin, idea, other)
         #[arg(short = 't', long = "type")]
         note_type: Option<NoteTypes>,
 
@@ -74,7 +74,7 @@ pub enum MonoCommands {
         #[clap(short, long)]
         limit: Option<u16>,
 
-        /// Only allow certain types of notes (todo, check in, idea, other)
+        /// Only allow certain types of notes (todo, checkin, idea, other)
         #[clap(short, long)]
         note_type: Option<NoteTypes>,
 

@@ -8,10 +8,10 @@ pub fn export(db: &Database) -> Result<Vec<String>, MonoError> {
 
     for note in rows {
         let push = format!(
-            "{} \u{2022} ID: {} \u{2022} {}\n {}",
+            "{} \u{2022} ID: {} \u{2022} {}\n  {}",
             note.title,
             note.id,
-            note.date.format("%b %d, %Y at%l:%M %p"),
+            note.date.format("%b %d, %Y at %-I:%M %p"),
             note.content
         );
         output.push(push);
