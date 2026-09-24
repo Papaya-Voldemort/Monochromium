@@ -17,9 +17,11 @@ impl Database {
 
         match mode {
             EditMode::Append => {
+                let full_text = format!(" {text}");
+
                 self.conn.execute(
                     "UPDATE notes SET content = content || ?1 WHERE id = ?2;",
-                    params![text, note_id],
+                    params![full_text, note_id],
                 )?;
             }
             EditMode::Overwrite => {

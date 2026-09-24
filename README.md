@@ -43,10 +43,9 @@ cargo install --path .
 cargo install monochromium
 ```
 
-### From Github Binary (MacOS)
+### From Github Binary
 
-> I was a little too tired to add this so a binary will come in future versions ;0
-
+Download the correct binary for your OS [here](https://github.com/Papaya-Voldemort/Monochromium/releases/tag/v0.4.2)
 
 ### Verify
 ```bash
@@ -57,8 +56,8 @@ mono --version
 
 ```bash
 mono add "Ship v1.0"
-mono checkin
-mono list --today
+mono add -t checkin "feeling great"
+mono list
 ```
 
 ### Reminders
@@ -80,7 +79,7 @@ For future versions I want to add the following:
 - Smaller Binary
 - A few others
 
-So year a little work to go for v1.0.0 but I am ready to make my first release for now :)
+So yeah a little work to go for v1.0.0 but I am ready to make my first release for now :)
 
 ## Contributions
 

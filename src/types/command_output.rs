@@ -17,8 +17,12 @@ impl CommandOutput {
         match self {
             Self::Text(text) => println!("{text}"),
             Self::Lines(lines) => {
-                for line in lines {
-                    println!("{line}");
+                if lines.is_empty() {
+                    println!("No notes found :(")
+                } else {
+                    for line in lines {
+                        println!("{line}");
+                    }
                 }
             }
             Self::Raw(text) => print!("{text}"),

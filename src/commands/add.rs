@@ -13,7 +13,7 @@ pub fn add(
 ) -> Result<String, MonoError> {
     let full_text = string_check(text, paste)?;
     if full_text == "Please provide a message when making your note!" {
-        return Ok(full_text);
+        return Err(MonoError::InvalidInput(full_text));
     }
 
     let now = Local::now();
