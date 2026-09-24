@@ -11,7 +11,6 @@ pub struct MonoCLI {
     /// Copy output to clipboard
     #[clap(short, long, global = true)]
     pub copy: bool,
-
     // #[clap(short, long)]
     // pub animate: bool,
 }
