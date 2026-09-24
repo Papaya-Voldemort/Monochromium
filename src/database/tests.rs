@@ -40,7 +40,7 @@ fn note_lifecycle_round_trip() {
 
     let read = db.read_single_row(test_note_id).unwrap();
 
-    let after_edit = format!("{}APPEND", edit);
+    let after_edit = format!("{} APPEND", edit);
 
     assert_eq!(after_edit, read.content);
 
