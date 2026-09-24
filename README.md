@@ -2,6 +2,8 @@
 
 ![Hackatime](https://hackatime.hackclub.com/api/v1/badge/U09197C6M2B/Papaya-Voldemort/Monochromium)
 
+> FOR STARDANCE REVIEWERS: IF THE COMMAND IS NOT FOUND AFTER YOU INSTALL IT, MAKE SURE YOU RELOAD YOUR SHELL
+
 > A fast, local first CLI note-taking app
 
 ![Monochromium](banner.png)
