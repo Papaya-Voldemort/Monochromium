@@ -6,6 +6,7 @@ mod init;
 mod list;
 mod reminder;
 mod search;
+mod stats;
 mod view;
 
 pub use add::add;
@@ -16,4 +17,5 @@ pub use init::init;
 pub use list::list;
 pub use reminder::reminder;
 pub use search::search;
+pub use stats::get_stats;
 pub use view::view;

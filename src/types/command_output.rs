@@ -25,7 +25,7 @@ impl CommandOutput {
                     }
                 }
             }
-            Self::Raw(text) => print!("{text}"),
+            Self::Raw(text) => println!("{text}"),
         }
     }
 }

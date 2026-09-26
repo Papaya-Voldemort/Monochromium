@@ -124,6 +124,9 @@ pub enum MonoCommands {
         approve: bool,
     },
 
+    /// Display a basic stats overview (beta)
+    Stats {},
+
     /// Output all the notes
     Export {},
 

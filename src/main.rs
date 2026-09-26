@@ -5,7 +5,7 @@ mod database;
 mod types;
 mod utils;
 
-use crate::commands::{add, delete, edit, export, init, list, reminder, search, view};
+use crate::commands::{add, delete, edit, export, get_stats, init, list, reminder, search, view};
 use crate::config::load_config;
 use crate::database::Database;
 use crate::types::{CommandOutput, EditMode, MonoError};
@@ -80,6 +80,7 @@ fn run() -> Result<(), MonoError> {
             MonoCommands::View { note_id, no_format } => {
                 CommandOutput::Text(view(&db, note_id, no_format)?)
             }
+            MonoCommands::Stats {} => CommandOutput::Raw(get_stats(&db)?),
 
             MonoCommands::Export {} => CommandOutput::Lines(export(&db)?),
 

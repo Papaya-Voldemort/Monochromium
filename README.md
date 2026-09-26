@@ -70,16 +70,17 @@ mono init
 
 ## The Future
 
-I already love the state Monochromium is in, but not all of our [spec.md](spec.md) is implemented fully. 
-For future versions I want to add the following:
-- All flags and commands
+I already love the state Monochromium is in, but not all of our [spec.md](spec.md) is implemented fully.
+We also have so many others plans for the future!
+I want to add at least the following:
+- More useful commands and flags
 - Colored Outputs
-- Tests (Yeah probably should be in a v0.1.0 but...)
-- Other OS Releases
+- More Tests and Validation
 - Smaller Binary
+- Fuzzy Search
 - A few others
 
-So yeah a little work to go for v1.0.0 but I am ready to make my first release for now :)
+So yeah a little work to go for v1.0.0 but we are well on our way!
 
 ## Contributions
 
