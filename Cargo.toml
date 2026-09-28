@@ -9,6 +9,13 @@ license = "MIT"
 keywords = ["notes", "cli", "terminal", "productivity"]
 categories = ["command-line-utilities"]
 
+exclude = [
+    "demo.gif",
+    "banner.png",
+    ".github/",
+    "spec.md"
+]
+
 [[bin]]
 name = "mono"
 path = "src/main.rs"

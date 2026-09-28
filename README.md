@@ -6,9 +6,9 @@
 
 > A fast, local first CLI note-taking app
 
-![Monochromium](banner.png)
+![Monochromium](https://raw.githubusercontent.com/Papaya-Voldemort/Monochromium/main/banner.png)
 
-![Demo](demo.gif)
+![Demo](https://raw.githubusercontent.com/Papaya-Voldemort/Monochromium/main/demo.gif)
 
 Monochromium lets you capture ideas, tasks, and mental health check-ins all without leaving the terminal!
 
@@ -70,7 +70,7 @@ mono init
 
 ## The Future
 
-I already love the state Monochromium is in, but not all of our [spec.md](spec.md) is implemented fully.
+I already love the state Monochromium is in, but not all of our I already love the state Monochromium is in, but not all of our [spec.md](https://github.com/Papaya-Voldemort/Monochromium/blob/main/spec.md) is implemented fully.
 We also have so many others plans for the future!
 I want to add at least the following:
 - More useful commands and flags
