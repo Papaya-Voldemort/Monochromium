@@ -12,17 +12,13 @@ pub fn reminder(db: &Database, config: Config) -> Result<String, MonoError> {
 
     let default = get_default(checkins);
 
-    let final_out: String = if config.show_todo_list {
-        let notes = db.read_rows(-1, Some(NoteTypes::Todo))?;
-        let mut pre: Vec<String> = vec![default, "".to_string(), "-- todo --".to_string()];
-        for note in notes {
-            pre.push(format!("[{}] {}", note.id, note.content));
-        }
-
-        pre.join("\n")
+    let todos: String = if config.show_todo_list {
+        get_todo_list(db)?
     } else {
-        default
+        String::new()
     };
+
+    let final_out: String = [default, todos.clone()].join("\n");
 
     if rows.is_empty() {
         return Ok(final_out);
@@ -34,7 +30,11 @@ pub fn reminder(db: &Database, config: Config) -> Result<String, MonoError> {
     if time_passed.num_minutes() >= interval {
         Ok(final_out)
     } else {
-        Ok(String::new())
+        if config.show_todo_list {
+            Ok(todos.trim().to_string())
+        } else {
+            Ok(String::new())
+        }
     }
 }
 
@@ -46,4 +46,14 @@ fn get_default(checkins: bool) -> String {
     };
 
     body.to_string()
+}
+
+fn get_todo_list(db: &Database) -> Result<String, MonoError> {
+    let notes = db.read_rows(-1, Some(NoteTypes::Todo))?;
+    let mut pre: Vec<String> = vec!["".to_string(), "-- todo --".to_string()];
+    for note in notes {
+        pre.push(format!("[{}] {}", note.id, note.content));
+    }
+
+    Ok(pre.join("\n"))
 }

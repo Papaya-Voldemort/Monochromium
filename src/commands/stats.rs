@@ -26,11 +26,20 @@ Monochromium Stats
   {:<15} {:>width$} {:>5.0}%
   {:<15} {:>width$} {:>5.0}%
 ",
-        "Total notes", total_notes,
-        "Check-ins", total_checkins, checkin_percent,
-        "Todos", total_todos, todo_percent,
-        "Ideas", total_ideas, idea_percent,
-        "Other", total_other, other_percent,
+        "Total notes",
+        total_notes,
+        "Check-ins",
+        total_checkins,
+        checkin_percent,
+        "Todos",
+        total_todos,
+        todo_percent,
+        "Ideas",
+        total_ideas,
+        idea_percent,
+        "Other",
+        total_other,
+        other_percent,
         width = count_width
     ))
 }
