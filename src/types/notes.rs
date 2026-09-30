@@ -41,4 +41,5 @@ pub struct Note {
 pub enum EditMode {
     Append,
     Overwrite,
+    Title
 }

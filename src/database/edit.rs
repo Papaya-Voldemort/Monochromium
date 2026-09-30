@@ -9,11 +9,22 @@ impl Database {
         text: String,
         mode: EditMode,
     ) -> Result<String, rusqlite::Error> {
-        let pre: String = self.conn.query_row(
-            "SELECT content FROM notes WHERE id = ?1",
-            params![note_id],
-            |row| row.get(0),
-        )?;
+        let pre: String = match mode {
+            EditMode::Title => {
+                self.conn.query_row(
+                    "SELECT title FROM notes WHERE id = ?1",
+                    params![note_id],
+                    |row| row.get(0),
+                )?
+            }
+            _ => {
+                self.conn.query_row(
+                    "SELECT content FROM notes WHERE id = ?1",
+                    params![note_id],
+                    |row| row.get(0),
+                )?
+            }
+        };
 
         match mode {
             EditMode::Append => {
@@ -22,13 +33,19 @@ impl Database {
                 self.conn.execute(
                     "UPDATE notes SET content = content || ?1 WHERE id = ?2;",
                     params![full_text, note_id],
-                )?;
+                )?
             }
             EditMode::Overwrite => {
                 self.conn.execute(
                     "UPDATE notes SET content = ?1 WHERE id = ?2;",
                     params![text, note_id],
-                )?;
+                )?
+            }
+            EditMode::Title => {
+                self.conn.execute(
+                    "UPDATE notes SET title = ?1 WHERE id = ?2",
+                    params![text, note_id],
+                )?
             }
         };
 

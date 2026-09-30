@@ -105,12 +105,12 @@ pub enum MonoCommands {
 
         /// Either overwrite or append text
         #[arg(short = 'm', long = "mode")]
-        edit_mode: EditMode,
+        edit_mode: Option<EditMode>,
 
         // For v2 do not require text
         /// Text to append/overwrite
         #[clap()]
-        text: String,
+        text: Option<String>,
     },
 
     /// Delete a note

@@ -59,6 +59,10 @@ fn run() -> Result<(), MonoError> {
                     EditMode::Overwrite => {
                         format!("Replaced \"{}\" with \"{}\"!", output.old, output.new)
                     }
+
+                    EditMode::Title => {
+                        format!("Replaced old title \"{}\" with \"{}\"!", output.old, output.new)
+                    }
                 };
 
                 CommandOutput::Text(text)
