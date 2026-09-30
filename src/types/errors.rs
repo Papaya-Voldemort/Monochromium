@@ -22,4 +22,7 @@ pub enum MonoError {
 
     #[error("config serialization error: {0}")]
     ConfigSerialize(#[from] toml::ser::Error),
+
+    #[error("could not determine the user's shell")]
+    ShellNotFound,
 }
