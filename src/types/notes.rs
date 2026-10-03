@@ -40,8 +40,8 @@ pub struct OldNote {
 // TODO: DB no longer controls content so this needs tweaking
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
 pub enum EditMode {
-    Append,
-    Overwrite,
     Title,
     FilePath,
+    Type,
+    Date
 }
