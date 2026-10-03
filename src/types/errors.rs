@@ -27,5 +27,8 @@ pub enum MonoError {
     ShellNotFound,
 
     #[error("could not locate directories")]
-    DirectoriesNotFound
+    DirectoriesNotFound,
+
+    #[error("invalid note type: {0}")]
+    InvalidNoteType(String),
 }

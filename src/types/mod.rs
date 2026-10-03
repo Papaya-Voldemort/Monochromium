@@ -6,4 +6,4 @@ mod notes;
 pub use command_output::CommandOutput;
 pub use definitions::{MonoCLI, MonoCommands};
 pub use errors::MonoError;
-pub use notes::{EditMode, OldNote, NoteTypes};
+pub use notes::{EditMode, OldNote, NoteTypes, Note};
