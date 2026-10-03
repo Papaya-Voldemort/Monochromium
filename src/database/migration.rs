@@ -1,10 +1,10 @@
+use chrono::NaiveDateTime;
 use crate::config::load_config;
 use crate::database::Database;
 use crate::database::db::SCHEMA;
 use crate::storage::write_all;
 use crate::types::{MonoError, OldNote};
-use crate::utils::parse_note;
-use rusqlite::{Connection, params};
+use rusqlite::{params, Connection, Row};
 
 const CURRENT_SCHEMA_VERSION: u32 = 2;
 
@@ -39,7 +39,7 @@ impl Database {
     fn migrate_v1_to_v2(conn: &mut Connection) -> Result<(), MonoError> {
         let mut stmt = conn.prepare("SELECT id, title, type, date, content FROM notes")?;
         let notes = stmt
-            .query_map(params![], parse_note)?
+            .query_map(params![], parse_old_note)?
             .collect::<Result<Vec<OldNote>, _>>()?;
 
         drop(stmt);
@@ -74,4 +74,28 @@ impl Database {
 
         Ok(())
     }
+}
+
+fn parse_old_note(row: &Row) -> Result<OldNote, rusqlite::Error> {
+    let date_str: String = row.get(3)?;
+
+    let date = NaiveDateTime::parse_from_str(
+        &date_str,
+        "%Y-%m-%d %H:%M:%S%.f",
+    )
+        .map_err(|err| {
+            rusqlite::Error::FromSqlConversionFailure(
+                3,
+                rusqlite::types::Type::Text,
+                Box::new(err),
+            )
+        })?;
+
+    Ok(OldNote {
+        id: row.get(0)?,
+        title: row.get(1)?,
+        note_type: row.get(2)?,
+        date,
+        content: row.get(4)?,
+    })
 }

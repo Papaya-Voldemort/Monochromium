@@ -1,7 +1,8 @@
 #[cfg(test)]
 use crate::database::Database;
 use crate::types::{EditMode, MonoError};
-use crate::types::{OldNote, NoteTypes};
+use crate::types::{Note, NoteTypes};
+use std::path::PathBuf;
 
 #[test]
 fn note_lifecycle_round_trip() -> Result<(), MonoError> {
@@ -12,7 +13,7 @@ fn note_lifecycle_round_trip() -> Result<(), MonoError> {
     let test_note_id = db.add_row(
         "test".to_string(),
         NoteTypes::Other,
-        "text note content".to_string(), // TODO: Fix this to be a path eventually, path probably does not need to be real or make a real on device note md file but up to you
+        PathBuf::from("path/test.md"),
         dt,
     )?;
 
@@ -20,25 +21,26 @@ fn note_lifecycle_round_trip() -> Result<(), MonoError> {
 
     let search = results.first().unwrap();
 
-    let comp = OldNote {
+    let comp = Note {
         id: test_note_id,
         title: "test".to_string(),
-        _note_type: "other".to_string(),
+        note_type: NoteTypes::Other,
         date: dt,
-        content: "text note content".to_string(),
+        file_link: PathBuf::from("path/test.md"),
+        content: None,
     };
 
     assert_eq!(search, &comp);
 
-    let edit = db.update_row(test_note_id, "APPEND".to_string(), EditMode::Append)?;
+    let edit = db.update_row(test_note_id, "-test-".to_string(), EditMode::Title)?;
 
     let read = db.read_single_row(test_note_id)?;
 
-    let after_edit = format!("{} APPEND", edit);
+    let after_edit = "-test-".to_string();
 
-    assert_eq!(after_edit, read.content);
+    assert_eq!(after_edit, read.title);
 
-    let _delete = db.delete_note(test_note_id);
+    let _delete = db.delete_note(test_note_id)?;
 
     let check_deleted = db.read_single_row(test_note_id);
 

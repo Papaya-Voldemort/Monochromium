@@ -22,7 +22,7 @@ fn main() {
 }
 
 fn run() -> Result<(), MonoError> {
-    let db = Database::new();
+    let db = Database::new()?;
     let config = load_config()?;
 
     let cli = MonoCLI::parse();
@@ -50,20 +50,27 @@ fn run() -> Result<(), MonoError> {
                 let output = edit(&db, note_id, headless, edit_mode, text)?;
 
                 let text = match output.update_type {
-                    EditMode::Append => {
-                        format!(
-                            "Appended \"{}\" to the end of \"{}\"!",
-                            output.new, output.old
-                        )
-                    }
-
-                    EditMode::Overwrite => {
-                        format!("Replaced \"{}\" with \"{}\"!", output.old, output.new)
-                    }
-
                     EditMode::Title => {
                         format!(
                             "Replaced old title \"{}\" with \"{}\"!",
+                            output.old, output.new
+                        )
+                    }
+                    EditMode::FilePath => {
+                        format!(
+                            "Replaced old file path \"{}\" with \"{}\"!",
+                            output.old, output.new
+                        )
+                    }
+                    EditMode::Type => {
+                        format!(
+                            "Replaced old type \"{}\" with \"{}\"!",
+                            output.old, output.new
+                        )
+                    }
+                    EditMode::Date => {
+                        format!(
+                            "Replaced old date \"{}\" with \"{}\"!",
                             output.old, output.new
                         )
                     }
