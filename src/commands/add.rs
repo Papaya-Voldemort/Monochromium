@@ -1,7 +1,11 @@
+use crate::config::load_config;
 use crate::database::Database;
+use crate::storage::write_all;
+use crate::types::EditMode::FilePath;
 use crate::types::{MonoError, NoteTypes};
 use crate::utils::{make_title, string_check};
 use chrono::{Local, NaiveDate, NaiveDateTime, NaiveTime};
+use std::path::PathBuf;
 
 pub fn add(
     db: &Database,
@@ -26,8 +30,18 @@ pub fn add(
     let title = make_title(full_text.clone(), note_type.clone(), Some(time), Some(date));
     let datetime: NaiveDateTime = date.and_time(time);
 
-    let result = db.add_row(title, note_type, full_text, datetime)?;
-    let note = db.read_single_row(result)?;
+    let temp_path = PathBuf::new();
+
+    let id = db.add_row(title.clone(), note_type, temp_path, datetime)?;
+
+    let config = load_config()?;
+    let safe_title = title.replace(['/', '\\', ':', '*', '?', '"', '<', '>', '|'], "-");
+    let full_path = config.note_location.join(format!("{safe_title}-{id}.md"));
+
+    write_all(full_path.clone(), full_text)?;
+    db.update_row(id, full_path.to_string_lossy().to_string(), FilePath)?;
+
+    let note = db.read_single_row(id)?;
 
     let output = format!(
         "{} \u{2022} ID: {} \u{2022} {}\n {}",

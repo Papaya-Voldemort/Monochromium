@@ -1,5 +1,5 @@
 use super::Database;
-use crate::types::{Note, NoteTypes};
+use crate::types::{OldNote, NoteTypes};
 use crate::utils::parse_note;
 use rusqlite::params;
 
@@ -9,7 +9,7 @@ impl Database {
         search: Option<String>,
         limit: u16,
         note_type: Option<NoteTypes>,
-    ) -> Result<Vec<Note>, rusqlite::Error> {
+    ) -> Result<Vec<OldNote>, rusqlite::Error> {
         let notes = match (search, note_type) {
             (Some(search), _) if !search.is_empty() => {
                 let pattern = format!("%{search}%");

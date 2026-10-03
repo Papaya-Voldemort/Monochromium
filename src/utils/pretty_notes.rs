@@ -1,6 +1,6 @@
-use crate::types::Note;
+use crate::types::OldNote;
 
-pub fn pretty_notes(notes: Vec<Note>, view: bool) -> Vec<String> {
+pub fn pretty_notes(notes: Vec<OldNote>, view: bool) -> Vec<String> {
     let mut output = Vec::new();
 
     if view {
@@ -32,30 +32,30 @@ mod tests {
     #[test]
     fn test_pretty_notes_formating_with_view() {
         let test_notes = vec![
-            Note {
+            OldNote {
                 id: 1,
                 title: "First test note".to_string(),
-                _note_type: "note".to_string(),
+                note_type: "note".to_string(),
                 date: NaiveDate::from_ymd_opt(2026, 9, 21)
                     .unwrap()
                     .and_hms_opt(9, 30, 0)
                     .unwrap(),
                 content: "This is the content of the first note.".to_string(),
             },
-            Note {
+            OldNote {
                 id: 2,
                 title: "Buy groceries".to_string(),
-                _note_type: "todo".to_string(),
+                note_type: "todo".to_string(),
                 date: NaiveDate::from_ymd_opt(2026, 9, 22)
                     .unwrap()
                     .and_hms_opt(16, 45, 0)
                     .unwrap(),
                 content: "Milk, bread, eggs, and peanut butter.".to_string(),
             },
-            Note {
+            OldNote {
                 id: 3,
                 title: "Morning check-in".to_string(),
-                _note_type: "checkin".to_string(),
+                note_type: "checkin".to_string(),
                 date: NaiveDate::from_ymd_opt(2026, 9, 23)
                     .unwrap()
                     .and_hms_opt(7, 5, 0)
@@ -78,30 +78,30 @@ mod tests {
     #[test]
     fn test_pretty_notes_formating_without_view() {
         let test_notes = vec![
-            Note {
+            OldNote {
                 id: 1,
                 title: "First test note".to_string(),
-                _note_type: "note".to_string(),
+                note_type: "note".to_string(),
                 date: NaiveDate::from_ymd_opt(2026, 9, 21)
                     .unwrap()
                     .and_hms_opt(9, 30, 0)
                     .unwrap(),
                 content: "This is the content of the first note.".to_string(),
             },
-            Note {
+            OldNote {
                 id: 2,
                 title: "Buy groceries".to_string(),
-                _note_type: "todo".to_string(),
+                note_type: "todo".to_string(),
                 date: NaiveDate::from_ymd_opt(2026, 9, 22)
                     .unwrap()
                     .and_hms_opt(16, 45, 0)
                     .unwrap(),
                 content: "Milk, bread, eggs, and peanut butter.".to_string(),
             },
-            Note {
+            OldNote {
                 id: 3,
                 title: "Morning check-in".to_string(),
-                _note_type: "checkin".to_string(),
+                note_type: "checkin".to_string(),
                 date: NaiveDate::from_ymd_opt(2026, 9, 23)
                     .unwrap()
                     .and_hms_opt(7, 5, 0)

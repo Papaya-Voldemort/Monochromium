@@ -2,6 +2,7 @@
 mod commands;
 mod config;
 mod database;
+mod storage;
 mod types;
 mod utils;
 
@@ -61,7 +62,10 @@ fn run() -> Result<(), MonoError> {
                     }
 
                     EditMode::Title => {
-                        format!("Replaced old title \"{}\" with \"{}\"!", output.old, output.new)
+                        format!(
+                            "Replaced old title \"{}\" with \"{}\"!",
+                            output.old, output.new
+                        )
                     }
                 };
 

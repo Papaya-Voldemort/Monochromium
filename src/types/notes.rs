@@ -29,17 +29,19 @@ impl fmt::Display for NoteTypes {
 }
 
 #[derive(Debug, PartialEq)]
-pub struct Note {
+pub struct OldNote {
     pub id: u32,
     pub title: String,
-    pub _note_type: String,
+    pub note_type: String,
     pub date: NaiveDateTime,
     pub content: String,
 }
 
+// TODO: DB no longer controls content so this needs tweaking
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
 pub enum EditMode {
     Append,
     Overwrite,
-    Title
+    Title,
+    FilePath,
 }

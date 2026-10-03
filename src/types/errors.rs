@@ -25,4 +25,7 @@ pub enum MonoError {
 
     #[error("could not determine the user's shell")]
     ShellNotFound,
+
+    #[error("could not locate directories")]
+    DirectoriesNotFound
 }

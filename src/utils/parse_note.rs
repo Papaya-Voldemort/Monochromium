@@ -1,18 +1,18 @@
-use crate::types::Note;
+use crate::types::OldNote;
 use chrono::NaiveDateTime;
 use rusqlite::Row;
 
-pub fn parse_note(row: &Row) -> rusqlite::Result<Note> {
+pub fn parse_note(row: &Row) -> rusqlite::Result<OldNote> {
     let date_str: String = row.get(3)?;
 
     let date = NaiveDateTime::parse_from_str(&date_str, "%Y-%m-%d %H:%M:%S%.f").map_err(|err| {
         rusqlite::Error::FromSqlConversionFailure(3, rusqlite::types::Type::Text, Box::new(err))
     })?;
 
-    Ok(Note {
+    Ok(OldNote {
         id: row.get(0)?,
         title: row.get(1)?,
-        _note_type: row.get(2)?,
+        note_type: row.get(2)?,
         date,
         content: row.get(4)?,
     })
@@ -60,7 +60,7 @@ mod tests {
 
         assert_eq!(note.id, 1);
         assert_eq!(note.title, "Test note");
-        assert_eq!(note._note_type, "note");
+        assert_eq!(note.note_type, "note");
         assert_eq!(note.content, "Hello world");
 
         assert_eq!(
