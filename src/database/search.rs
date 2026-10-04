@@ -23,10 +23,7 @@ impl Database {
                      LIMIT ?3",
                 )?;
 
-                stmt.query_map(
-                    params![pattern, note_type.as_str(), limit],
-                    parse_note,
-                )?
+                stmt.query_map(params![pattern, note_type.as_str(), limit], parse_note)?
                     .collect::<Result<Vec<_>, _>>()?
             }
 
@@ -41,10 +38,7 @@ impl Database {
                      LIMIT ?2",
                 )?;
 
-                stmt.query_map(
-                    params![pattern, limit],
-                    parse_note,
-                )?
+                stmt.query_map(params![pattern, limit], parse_note)?
                     .collect::<Result<Vec<_>, _>>()?
             }
 
@@ -57,10 +51,7 @@ impl Database {
                      LIMIT ?2",
                 )?;
 
-                stmt.query_map(
-                    params![note_type.as_str(), limit],
-                    parse_note,
-                )?
+                stmt.query_map(params![note_type.as_str(), limit], parse_note)?
                     .collect::<Result<Vec<_>, _>>()?
             }
 
@@ -72,10 +63,7 @@ impl Database {
                      LIMIT ?1",
                 )?;
 
-                stmt.query_map(
-                    params![limit],
-                    parse_note,
-                )?
+                stmt.query_map(params![limit], parse_note)?
                     .collect::<Result<Vec<_>, _>>()?
             }
         };

@@ -45,7 +45,7 @@ fn run() -> Result<(), MonoError> {
                 note_id,
                 headless,
                 edit_mode,
-                text,
+                change: text,
             } => {
                 let output = edit(&db, note_id, headless, edit_mode, text)?;
 

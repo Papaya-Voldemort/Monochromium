@@ -30,8 +30,8 @@ pub fn parse_note(row: &Row) -> Result<Note, rusqlite::Error> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rusqlite::{Connection, params};
     use crate::types::MonoError;
+    use rusqlite::{Connection, params};
 
     #[test]
     fn test_note_parsing() -> Result<(), MonoError> {
@@ -55,7 +55,13 @@ mod tests {
             INSERT INTO notes (id, title, type, date, file_link)
             VALUES (?1, ?2, ?3, ?4, ?5)
             ",
-            params![1, "Test note", "other", "2026-09-21 09:30:00", "path/note.md"],
+            params![
+                1,
+                "Test note",
+                "other",
+                "2026-09-21 09:30:00",
+                "path/note.md"
+            ],
         )?;
 
         let note = conn.query_row(

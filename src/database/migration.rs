@@ -1,15 +1,15 @@
-use chrono::NaiveDateTime;
 use crate::config::load_config;
 use crate::database::Database;
 use crate::database::db::SCHEMA;
 use crate::storage::write_all;
 use crate::types::{MonoError, OldNote};
-use rusqlite::{params, Connection, Row};
+use chrono::NaiveDateTime;
+use rusqlite::{Connection, Row, params};
 
 const CURRENT_SCHEMA_VERSION: u32 = 2;
 
 impl Database {
-    fn check_version(conn: &mut Connection) -> Result<(), MonoError> {
+    pub fn check_version(conn: &mut Connection) -> Result<(), MonoError> {
         let current_version: u32 = conn.query_row("PRAGMA user_version;", [], |row| row.get(0))?;
 
         if current_version == 0 {
@@ -50,7 +50,7 @@ impl Database {
 
         for note in notes {
             let full_path = path.join(format!("{}-{}.md", note.title, note.id));
-            write_all(full_path.clone(), note.content)?;
+            write_all(&full_path, note.content)?;
 
             migrated_files.push((note.id, full_path));
         }
@@ -66,9 +66,7 @@ impl Database {
             )?;
         }
 
-        tx.execute_batch(
-            "ALTER TABLE notes DROP COLUMN content;"
-        )?;
+        tx.execute_batch("ALTER TABLE notes DROP COLUMN content;")?;
 
         tx.commit()?;
 
@@ -79,17 +77,9 @@ impl Database {
 fn parse_old_note(row: &Row) -> Result<OldNote, rusqlite::Error> {
     let date_str: String = row.get(3)?;
 
-    let date = NaiveDateTime::parse_from_str(
-        &date_str,
-        "%Y-%m-%d %H:%M:%S%.f",
-    )
-        .map_err(|err| {
-            rusqlite::Error::FromSqlConversionFailure(
-                3,
-                rusqlite::types::Type::Text,
-                Box::new(err),
-            )
-        })?;
+    let date = NaiveDateTime::parse_from_str(&date_str, "%Y-%m-%d %H:%M:%S%.f").map_err(|err| {
+        rusqlite::Error::FromSqlConversionFailure(3, rusqlite::types::Type::Text, Box::new(err))
+    })?;
 
     Ok(OldNote {
         id: row.get(0)?,

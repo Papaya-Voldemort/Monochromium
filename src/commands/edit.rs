@@ -19,12 +19,6 @@ pub fn edit(
 
     let text = text.ok_or_else(|| MonoError::InvalidInput("Missing text content".to_string()))?;
 
-    if update_type == EditMode::Append && text.trim().is_empty() {
-        return Err(MonoError::InvalidInput(
-            "Please insert a value to append".to_string(),
-        ));
-    }
-
     let old = db.update_row(note_id, text.clone(), update_type)?;
 
     Ok(Output {

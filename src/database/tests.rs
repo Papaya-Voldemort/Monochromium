@@ -32,7 +32,7 @@ fn note_lifecycle_round_trip() -> Result<(), MonoError> {
 
     assert_eq!(search, &comp);
 
-    let edit = db.update_row(test_note_id, "-test-".to_string(), EditMode::Title)?;
+    let _edit = db.update_row(test_note_id, "-test-".to_string(), EditMode::Title)?;
 
     let read = db.read_single_row(test_note_id)?;
 

@@ -1,7 +1,9 @@
 use crate::config::Config;
 use crate::database::Database;
+use crate::storage::read_file;
 use crate::types::{MonoError, NoteTypes};
 use chrono::{Duration, Local};
+use std::path::PathBuf;
 
 pub fn reminder(db: &Database, config: Config) -> Result<String, MonoError> {
     let current_datetime = Local::now().naive_local();
@@ -49,10 +51,15 @@ fn get_default(checkins: bool) -> String {
 }
 
 fn get_todo_list(db: &Database) -> Result<String, MonoError> {
-    let notes = db.read_rows(-1, Some(NoteTypes::Todo))?;
+    let mut notes = db.read_rows(-1, Some(NoteTypes::Todo))?;
+
+    for note in &mut notes {
+        note.content = Some(read_file(&PathBuf::from(&note.file_link))?);
+    }
+
     let mut pre: Vec<String> = vec!["".to_string(), "-- todo --".to_string()];
     for note in notes {
-        pre.push(format!("[{}] {}", note.id, note.content));
+        pre.push(format!("[{}] {}", note.id, note.content.unwrap()));
     }
 
     Ok(pre.join("\n"))

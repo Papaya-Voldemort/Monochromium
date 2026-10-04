@@ -38,17 +38,19 @@ pub fn add(
     let safe_title = title.replace(['/', '\\', ':', '*', '?', '"', '<', '>', '|'], "-");
     let full_path = config.note_location.join(format!("{safe_title}-{id}.md"));
 
-    write_all(full_path.clone(), full_text)?;
+    write_all(&full_path, full_text.clone())?;
     db.update_row(id, full_path.to_string_lossy().to_string(), FilePath)?;
 
     let note = db.read_single_row(id)?;
 
     let output = format!(
-        "{} \u{2022} ID: {} \u{2022} {}\n {}",
+        "{}\n#{} · {} · {}\n{}\n\n{}",
         note.title,
         note.id,
-        note.date.format("%b %d, %Y at%l:%M %p"),
-        note.content
+        note.date.format("%b %-d, %Y"),
+        note.date.format("%-I:%M %p"),
+        note.file_link.display(),
+        full_text,
     );
 
     Ok(output)
