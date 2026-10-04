@@ -40,7 +40,7 @@ impl Database {
 
     pub fn read_single_row(&self, note_id: u32) -> Result<Note, rusqlite::Error> {
         let note = self.conn.query_row(
-            "SELECT id, title, type, date, content
+            "SELECT id, title, type, date, file_link
          FROM notes
          WHERE id = ?1",
             params![note_id],

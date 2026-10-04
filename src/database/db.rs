@@ -20,6 +20,7 @@ impl Database {
     pub fn new_in_memory() -> Result<Self, MonoError> {
         let conn = Connection::open_in_memory()?;
         conn.execute_batch(SCHEMA)?;
+
         Ok(Self { conn })
     }
 }
