@@ -2,6 +2,7 @@ use crate::database::Database;
 use crate::types::{MonoError, NoteTypes};
 use chrono::NaiveDate;
 
+// TODO: Update to fuzzy search file contents
 pub fn search(
     db: &Database,
     text: String,

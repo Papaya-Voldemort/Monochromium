@@ -99,10 +99,6 @@ pub enum MonoCommands {
         #[arg()]
         note_id: u32,
 
-        /// Does not open text editor (unimplemented)
-        #[clap(long)]
-        headless: bool,
-
         /// Either overwrite or append text
         #[arg(short = 'm', long = "mode")]
         edit_mode: Option<EditMode>,

@@ -9,7 +9,7 @@ mod utils;
 use crate::commands::{add, delete, edit, export, get_stats, init, list, reminder, search, view};
 use crate::config::load_config;
 use crate::database::Database;
-use crate::types::{CommandOutput, EditMode, MonoError};
+use crate::types::{CommandOutput, MonoError};
 use crate::utils::copy;
 use clap::{CommandFactory, Parser};
 use types::{MonoCLI, MonoCommands};
@@ -43,40 +43,12 @@ fn run() -> Result<(), MonoError> {
             }
             MonoCommands::Edit {
                 note_id,
-                headless,
                 edit_mode,
                 change: text,
             } => {
-                let output = edit(&db, note_id, headless, edit_mode, text)?;
+                let output = edit(&db, note_id, edit_mode, text)?;
 
-                let text = match output.update_type {
-                    EditMode::Title => {
-                        format!(
-                            "Replaced old title \"{}\" with \"{}\"!",
-                            output.old, output.new
-                        )
-                    }
-                    EditMode::FilePath => {
-                        format!(
-                            "Replaced old file path \"{}\" with \"{}\"!",
-                            output.old, output.new
-                        )
-                    }
-                    EditMode::Type => {
-                        format!(
-                            "Replaced old type \"{}\" with \"{}\"!",
-                            output.old, output.new
-                        )
-                    }
-                    EditMode::Date => {
-                        format!(
-                            "Replaced old date \"{}\" with \"{}\"!",
-                            output.old, output.new
-                        )
-                    }
-                };
-
-                CommandOutput::Text(text)
+                CommandOutput::Text(output.output)
             }
 
             MonoCommands::List {
