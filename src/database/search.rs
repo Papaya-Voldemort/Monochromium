@@ -11,27 +11,44 @@ impl Database {
         note_type: Option<NoteTypes>,
     ) -> Result<Vec<Note>, rusqlite::Error> {
         let notes = match (search, note_type) {
+            (Some(search), Some(note_type)) if !search.is_empty() => {
+                let pattern = format!("%{search}%");
+
+                let mut stmt = self.conn.prepare(
+                    "SELECT id, title, type, date, file_link
+                     FROM notes
+                     WHERE title LIKE ?1
+                       AND type = ?2
+                     ORDER BY date DESC
+                     LIMIT ?3",
+                )?;
+
+                stmt.query_map(params![pattern, note_type.as_str(), limit], parse_note)?
+                    .collect::<Result<Vec<_>, _>>()?
+            }
+
             (Some(search), _) if !search.is_empty() => {
                 let pattern = format!("%{search}%");
 
                 let mut stmt = self.conn.prepare(
-                    "SELECT id, title, type, date, content
-                 FROM notes
-                 WHERE title LIKE ?1 OR content LIKE ?1
-                 ORDER BY date DESC
-                 LIMIT ?2",
+                    "SELECT id, title, type, date, file_link
+                     FROM notes
+                     WHERE title LIKE ?1
+                     ORDER BY date DESC
+                     LIMIT ?2",
                 )?;
 
                 stmt.query_map(params![pattern, limit], parse_note)?
                     .collect::<Result<Vec<_>, _>>()?
             }
+
             (_, Some(note_type)) => {
                 let mut stmt = self.conn.prepare(
-                    "SELECT id, title, type, date, content
-                 FROM notes
-                 WHERE type = ?1
-                 ORDER BY date DESC
-                 LIMIT ?2",
+                    "SELECT id, title, type, date, file_link
+                     FROM notes
+                     WHERE type = ?1
+                     ORDER BY date DESC
+                     LIMIT ?2",
                 )?;
 
                 stmt.query_map(params![note_type.as_str(), limit], parse_note)?
@@ -40,10 +57,10 @@ impl Database {
 
             _ => {
                 let mut stmt = self.conn.prepare(
-                    "SELECT id, title, type, date, content
-                 FROM notes
-                 ORDER BY date DESC
-                 LIMIT ?1",
+                    "SELECT id, title, type, date, file_link
+                     FROM notes
+                     ORDER BY date DESC
+                     LIMIT ?1",
                 )?;
 
                 stmt.query_map(params![limit], parse_note)?

@@ -6,49 +6,27 @@ impl Database {
     pub fn update_row(
         &self,
         note_id: u32,
-        text: String,
+        change: String,
         mode: EditMode,
     ) -> Result<String, rusqlite::Error> {
-        let pre: String = match mode {
-            EditMode::Title => {
-                self.conn.query_row(
-                    "SELECT title FROM notes WHERE id = ?1",
-                    params![note_id],
-                    |row| row.get(0),
-                )?
-            }
-            _ => {
-                self.conn.query_row(
-                    "SELECT content FROM notes WHERE id = ?1",
-                    params![note_id],
-                    |row| row.get(0),
-                )?
-            }
+        let column: &str = match mode {
+            EditMode::Title => "title",
+            EditMode::FilePath => "file_link",
+            EditMode::Date => "date",
+            EditMode::Type => "type",
         };
 
-        match mode {
-            EditMode::Append => {
-                let full_text = format!(" {text}");
+        let query = format!("SELECT {} FROM notes WHERE id = ?1", column);
 
-                self.conn.execute(
-                    "UPDATE notes SET content = content || ?1 WHERE id = ?2;",
-                    params![full_text, note_id],
-                )?
-            }
-            EditMode::Overwrite => {
-                self.conn.execute(
-                    "UPDATE notes SET content = ?1 WHERE id = ?2;",
-                    params![text, note_id],
-                )?
-            }
-            EditMode::Title => {
-                self.conn.execute(
-                    "UPDATE notes SET title = ?1 WHERE id = ?2",
-                    params![text, note_id],
-                )?
-            }
-        };
+        let before: String = self
+            .conn
+            .query_row(query.as_str(), params![note_id], |row| row.get(0))?;
 
-        Ok(pre)
+        let query = format!("UPDATE notes SET {} = ?1 WHERE id = ?2", column);
+
+        self.conn
+            .execute(query.as_str(), params![change, note_id])?;
+
+        Ok(before)
     }
 }

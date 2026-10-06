@@ -1,38 +1,26 @@
-use directories::ProjectDirs;
-use rusqlite::Connection;
-use std::fs;
-
 use super::Database;
+use crate::types::MonoError;
+use crate::utils::{PathType, get_path};
+use rusqlite::Connection;
 
-const SCHEMA: &str = include_str!("schema.sql");
+pub const SCHEMA: &str = include_str!("schema.sql");
 impl Database {
-    pub fn new() -> Self {
-        // Get OS specific project directories
-        if let Some(project_dirs) = ProjectDirs::from("com", "monochromium", "monochromium") {
-            fs::create_dir_all(project_dirs.data_dir()).unwrap();
-            let data_dir = project_dirs.data_dir();
-            // println!("{}", data_dir.display());
+    pub fn new() -> Result<Self, MonoError> {
+        let data_dir = get_path(PathType::Database)?;
+        let db_path = data_dir.join("monochromium.db");
+        let mut conn = Connection::open(db_path)?;
 
-            let db_path = data_dir.join("monochromium.db");
-            // println!("{}", db_path.display());
+        conn.execute_batch(SCHEMA)?;
+        Self::check_version(&mut conn)?;
 
-            // Make database
-            let conn = Connection::open(db_path).unwrap();
-
-            conn.execute_batch(SCHEMA).unwrap();
-
-            Self { conn }
-        } else {
-            panic!("Could not determine default database location");
-        }
+        Ok(Self { conn })
     }
 
     #[cfg(test)]
-    pub fn new_in_memory() -> Self {
-        let conn = Connection::open_in_memory().unwrap();
+    pub fn new_in_memory() -> Result<Self, MonoError> {
+        let conn = Connection::open_in_memory()?;
+        conn.execute_batch(SCHEMA)?;
 
-        conn.execute_batch(SCHEMA).unwrap();
-
-        Self { conn }
+        Ok(Self { conn })
     }
 }

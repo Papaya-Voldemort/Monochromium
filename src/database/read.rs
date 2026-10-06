@@ -12,7 +12,7 @@ impl Database {
         let notes = match note_type {
             Some(t) => {
                 let mut stmt = self.conn.prepare(
-                    "SELECT id, title, type, date, content
+                    "SELECT id, title, type, date, file_link
                  FROM notes
                  WHERE type = ?1
                  ORDER BY date DESC
@@ -24,7 +24,7 @@ impl Database {
             }
             None => {
                 let mut stmt = self.conn.prepare(
-                    "SELECT id, title, type, date, content
+                    "SELECT id, title, type, date, file_link
                  FROM notes
                  ORDER BY date DESC
                  LIMIT ?1",
@@ -40,7 +40,7 @@ impl Database {
 
     pub fn read_single_row(&self, note_id: u32) -> Result<Note, rusqlite::Error> {
         let note = self.conn.query_row(
-            "SELECT id, title, type, date, content
+            "SELECT id, title, type, date, file_link
          FROM notes
          WHERE id = ?1",
             params![note_id],

@@ -99,18 +99,13 @@ pub enum MonoCommands {
         #[arg()]
         note_id: u32,
 
-        /// Does not open text editor (unimplemented)
-        #[clap(long)]
-        headless: bool,
-
         /// Either overwrite or append text
         #[arg(short = 'm', long = "mode")]
         edit_mode: Option<EditMode>,
 
-        // For v2 do not require text
-        /// Text to append/overwrite
+        /// New item to change... (needs better name...)
         #[clap()]
-        text: Option<String>,
+        change: Option<String>,
     },
 
     /// Delete a note
