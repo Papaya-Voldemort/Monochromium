@@ -3,6 +3,7 @@ use crate::database::Database;
 use crate::database::db::SCHEMA;
 use crate::storage::write_all;
 use crate::types::{MonoError, OldNote};
+use crate::utils::slugify;
 use chrono::NaiveDateTime;
 use rusqlite::{Connection, Row, params};
 
@@ -49,7 +50,10 @@ impl Database {
         let mut migrated_files = Vec::new();
 
         for note in notes {
-            let full_path = path.join(format!("{}-{}.md", note.title, note.id));
+            let slug = slugify(&note.title);
+            let id = note.id;
+            let filename = format!("{id:04}_{slug}.md");
+            let full_path = path.join(filename);
             write_all(&full_path, note.content)?;
 
             migrated_files.push((note.id, full_path));

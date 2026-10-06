@@ -3,7 +3,7 @@ use crate::database::Database;
 use crate::storage::write_all;
 use crate::types::EditMode::FilePath;
 use crate::types::{MonoError, NoteTypes};
-use crate::utils::{make_title, string_check};
+use crate::utils::{make_title, slugify, string_check};
 use chrono::{Local, NaiveDate, NaiveDateTime, NaiveTime};
 use std::path::PathBuf;
 
@@ -33,10 +33,13 @@ pub fn add(
     let temp_path = PathBuf::new();
 
     let id = db.add_row(title.clone(), note_type, temp_path, datetime)?;
-
     let config = load_config()?;
-    let safe_title = title.replace(['/', '\\', ':', '*', '?', '"', '<', '>', '|'], "-");
-    let full_path = config.note_location.join(format!("{safe_title}-{id}.md"));
+
+    let slug = slugify(&title);
+
+    let filename = format!("{id:04}_{slug}.md");
+
+    let full_path = config.note_location.join(filename);
 
     write_all(&full_path, full_text.clone())?;
     db.update_row(id, full_path.to_string_lossy().to_string(), FilePath)?;
