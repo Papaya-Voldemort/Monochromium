@@ -1,15 +1,17 @@
-use crate::config::Config;
+use crate::config::load_config;
 use crate::database::Database;
 use crate::storage::read_file;
 use crate::types::{MonoError, NoteTypes};
 use chrono::{Duration, Local};
 use std::path::PathBuf;
 
-pub fn reminder(db: &Database, config: Config) -> Result<String, MonoError> {
+pub fn reminder(db: &Database) -> Result<String, MonoError> {
+    let config = load_config()?;
+
     let current_datetime = Local::now().naive_local();
     let interval = config.checkin_interval_minutes;
 
-    let rows = db.search_rows(None, 1, Some(NoteTypes::CheckIn))?;
+    let rows = db.search_rows(None, 1, Some(NoteTypes::CheckIn), None)?;
     let checkins = !rows.is_empty();
 
     let default = get_default(checkins);
@@ -40,27 +42,27 @@ pub fn reminder(db: &Database, config: Config) -> Result<String, MonoError> {
     }
 }
 
-fn get_default(checkins: bool) -> String {
-    let body = if checkins {
+fn get_default(has_checkins: bool) -> String {
+    if has_checkins {
         "It's been a while since your last check-in.\nYou can make one with `mono add --type check-in \"text\"`."
     } else {
         "No check-ins yet.\nStart one with `mono add --type check-in \"text\"`."
-    };
-
-    body.to_string()
+    }.to_string()
 }
 
 fn get_todo_list(db: &Database) -> Result<String, MonoError> {
     let mut notes = db.read_rows(-1, Some(NoteTypes::Todo))?;
+    if notes.is_empty() {
+        return Ok(String::new());
+    }
+
+    let mut lines = Vec::with_capacity(notes.len() + 1);
+    lines.push("-- todo --".to_string());
 
     for note in &mut notes {
-        note.content = Some(read_file(&PathBuf::from(&note.file_link))?);
+        let content = read_file(&PathBuf::from(&note.file_link))?;
+        lines.push(format!("[{}] {}", note.id, content));
     }
 
-    let mut pre: Vec<String> = vec!["".to_string(), "-- todo --".to_string()];
-    for note in notes {
-        pre.push(format!("[{}] {}", note.id, note.content.unwrap()));
-    }
-
-    Ok(pre.join("\n"))
+    Ok(lines.join("\n"))
 }

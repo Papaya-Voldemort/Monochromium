@@ -17,7 +17,7 @@ fn note_lifecycle_round_trip() -> Result<(), MonoError> {
         dt,
     )?;
 
-    let results = db.search_rows(Some("test".to_string()), 1, Some(NoteTypes::Other))?;
+    let results = db.search_rows(Some("test".to_string()), 1, Some(NoteTypes::Other), None)?;
 
     let search = results.first().unwrap();
 

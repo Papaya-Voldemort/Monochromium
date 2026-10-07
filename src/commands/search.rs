@@ -1,14 +1,14 @@
 use crate::database::Database;
 use crate::types::{MonoError, NoteTypes};
-use chrono::NaiveDate;
+use chrono::{NaiveDate, NaiveDateTime};
 
 // TODO: Update to fuzzy search file contents
 pub fn search(
     db: &Database,
     text: String,
     limit: Option<u16>,
-    _note_type: Option<NoteTypes>,
-    _date: Option<NaiveDate>,
+    note_type: Option<NoteTypes>,
+    date: Option<NaiveDate>,
 ) -> Result<Vec<String>, MonoError> {
     if text.trim().is_empty() {
         return Err(MonoError::InvalidInput(
@@ -16,8 +16,15 @@ pub fn search(
         ));
     }
 
+    let datetime: NaiveDateTime = date.unwrap().and_hms_opt(0, 0, 0).unwrap();
+
     let final_limit = limit.unwrap_or(10);
-    let notes = db.search_rows(Some(text.trim().to_string()), final_limit, None)?;
+    let notes = db.search_rows(
+        Some(text.trim().to_string()),
+        final_limit,
+        note_type,
+        Some(datetime),
+    )?;
 
     let mut output = Vec::new();
 
