@@ -1,5 +1,5 @@
+use crate::config::load_config;
 use crate::types::MonoError;
-use std::env;
 use std::fs;
 use std::io::Write;
 use std::path::PathBuf;
@@ -21,9 +21,10 @@ pub fn edit_file(target_path: &PathBuf) -> Result<(), MonoError> {
     temp.write_all(original_content.as_bytes())?;
     temp.flush()?;
 
-    let editor = env::var("VISUAL")
-        .or_else(|_| env::var("EDITOR"))
-        .unwrap_or_else(|_| "nvim".to_string());
+    let config = load_config()?;
+    let editor = std::env::var("VISUAL")
+        .or_else(|_| std::env::var("EDITOR"))
+        .unwrap_or(config.default_editor_command);
 
     let status = Command::new(&editor)
         .arg(temp.path())
@@ -33,8 +34,9 @@ pub fn edit_file(target_path: &PathBuf) -> Result<(), MonoError> {
         .status()?;
 
     if !status.success() {
-        eprintln!("Editor exited with a non-zero exit code.");
-        return Ok(());
+        return Err(MonoError::Io(std::io::Error::other(format!(
+            "Editor exited unsuccessfully: {status}"
+        ))));
     }
 
     let edited_content = fs::read_to_string(temp.path())?;

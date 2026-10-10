@@ -16,8 +16,10 @@ pub fn list(
     let final_limit: u16 = limit.unwrap_or(15);
     let mut notes = db.read_rows(final_limit as i32, note_type)?;
 
-    for note in &mut notes {
-        note.content = Some(read_file(&PathBuf::from(&note.file_link))?);
+    if view {
+        for note in &mut notes {
+            note.content = Some(read_file(&PathBuf::from(&note.file_link))?);
+        }
     }
 
     Ok(pretty_notes(notes, view))

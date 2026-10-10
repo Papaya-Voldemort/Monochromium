@@ -16,8 +16,11 @@ pub fn add(
     paste: bool,
 ) -> Result<String, MonoError> {
     let full_text = string_check(text, paste)?;
-    if full_text == "Please provide a message when making your note!" {
-        return Err(MonoError::InvalidInput(full_text));
+
+    if full_text.trim().is_empty() {
+        return Err(MonoError::InvalidInput(
+            "Note text cannot be empty".to_string(),
+        ));
     }
 
     let now = Local::now();

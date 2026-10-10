@@ -1,9 +1,15 @@
 use crate::database::Database;
+use crate::storage::delete_file;
 use crate::types::MonoError;
 
 pub fn delete(db: &Database, note_id: u32, approve: bool) -> Result<String, MonoError> {
     if approve {
+        let note = db.read_single_row(note_id)?;
+
+        delete_file(note.file_link)?;
+
         let deleted = db.delete_note(note_id)?;
+
         if deleted == 0 {
             return Ok(format!("No note found with ID {}", note_id));
         }

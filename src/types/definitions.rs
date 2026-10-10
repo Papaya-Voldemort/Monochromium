@@ -88,7 +88,7 @@ pub enum MonoCommands {
         #[arg()]
         note_id: u32,
 
-        /// Remove md formatting (unimplemented)
+        /// Output only the raw note content
         #[clap(short, long)]
         no_format: bool,
     },
@@ -100,15 +100,16 @@ pub enum MonoCommands {
         note_id: u32,
 
         /// Either overwrite or append text
-        #[arg(short = 'm', long = "mode")]
+        #[arg(short = 'm', long = "mode", requires = "change")]
         edit_mode: Option<EditMode>,
 
         /// New item to change... (needs better name...)
-        #[clap()]
+        #[arg(requires = "edit_mode")]
         change: Option<String>,
     },
 
     /// Delete a note
+    #[command(visible_alias = "rm")]
     Delete {
         /// The ID of the note you want to delete
         #[arg()]

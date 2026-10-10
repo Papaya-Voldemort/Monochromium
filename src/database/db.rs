@@ -10,8 +10,8 @@ impl Database {
         let db_path = data_dir.join("monochromium.db");
         let mut conn = Connection::open(db_path)?;
 
-        conn.execute_batch(SCHEMA)?;
         Self::check_version(&mut conn)?;
+        conn.execute_batch(SCHEMA)?;
 
         Ok(Self { conn })
     }

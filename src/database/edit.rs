@@ -1,5 +1,6 @@
 use super::Database;
 use crate::types::EditMode;
+use chrono::NaiveDateTime;
 use rusqlite::params;
 
 impl Database {
@@ -9,6 +10,16 @@ impl Database {
         change: String,
         mode: EditMode,
     ) -> Result<String, rusqlite::Error> {
+        if mode == EditMode::Date {
+            NaiveDateTime::parse_from_str(&change, "%Y-%m-%d %H:%M:%S%.f").map_err(|err| {
+                rusqlite::Error::FromSqlConversionFailure(
+                    3,
+                    rusqlite::types::Type::Text,
+                    Box::new(err),
+                )
+            })?;
+        }
+
         let column: &str = match mode {
             EditMode::Title => "title",
             EditMode::FilePath => "file_link",

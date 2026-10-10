@@ -18,7 +18,7 @@ pub fn get_stats(db: &Database) -> Result<String, MonoError> {
 
     Ok(format!(
         "\
-Monochromium Stats
+Monochromium Stats (Current Notes)
 
   {:<15} {:>width$}
   {:<15} {:>width$} {:>5.0}%

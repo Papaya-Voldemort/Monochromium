@@ -5,7 +5,9 @@ pub fn string_check(text: Option<String>, paste: bool) -> Result<String, MonoErr
     match text {
         Some(t) => Ok(t),
         None if paste => Ok(get_paste()?),
-        None => Ok("Please provide a message when making your note!".to_string()),
+        None => Err(MonoError::InvalidInput(
+            "Please provide a valid string when making a note".to_string(),
+        )),
     }
 }
 
@@ -21,9 +23,9 @@ mod tests {
     }
 
     #[test]
-    fn returns_error_message_when_no_text_and_no_paste() {
-        let result = string_check(None, false).unwrap();
+    fn rejects_missing_text_when_not_pasting() {
+        let result = string_check(None, false);
 
-        assert_eq!(result, "Please provide a message when making your note!");
+        assert!(matches!(result, Err(MonoError::InvalidInput(_))));
     }
 }

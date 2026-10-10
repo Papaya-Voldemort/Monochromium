@@ -21,9 +21,9 @@ fn main() {
 }
 
 fn run() -> Result<(), MonoError> {
-    let db = Database::new()?;
-
     let cli = MonoCLI::parse();
+
+    let db = Database::new()?;
 
     let copy_output = cli.copy;
 

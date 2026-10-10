@@ -2,14 +2,14 @@ use crate::types::MonoError;
 use crate::utils::{PathType, get_path};
 use directories::UserDirs;
 use serde::{Deserialize, Serialize};
-use std::fs;
 use std::path::PathBuf;
+use std::{env, fs};
 use toml::{from_str, to_string_pretty};
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Config {
-    default_editor_command: String,
+    pub default_editor_command: String,
     pub checkin_interval_minutes: i64,
     pub show_todo_list: bool,
     pub note_location: PathBuf,
@@ -21,8 +21,12 @@ impl Default for Config {
             .and_then(|u| u.document_dir().map(|d| d.join("Monochromium")))
             .unwrap_or_else(|| PathBuf::from("Monochromium"));
 
+        let editor = env::var("VISUAL")
+            .or_else(|_| env::var("EDITOR"))
+            .unwrap_or_else(|_| "nvim".to_string());
+
         Self {
-            default_editor_command: "nano".to_string(),
+            default_editor_command: editor,
             checkin_interval_minutes: 120,
             show_todo_list: true,
             note_location: default_notes,
