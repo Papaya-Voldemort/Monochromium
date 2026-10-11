@@ -77,7 +77,7 @@ pub enum MonoCommands {
         #[clap(short, long)]
         note_type: Option<NoteTypes>,
 
-        /// Filter by date (unimplemented)
+        /// Filter by date (YYYY-MM-DD)
         #[clap(long)]
         date: Option<NaiveDate>,
     },
@@ -93,17 +93,17 @@ pub enum MonoCommands {
         no_format: bool,
     },
 
-    /// Edit a notes content (beta: not finished)
+    /// Edit a note's content or metadata
     Edit {
         /// The id of the note you want to edit
         #[arg()]
         note_id: u32,
 
-        /// Either overwrite or append text
+        /// Update title, file path, type, or date instead of opening the editor
         #[arg(short = 'm', long = "mode", requires = "change")]
         edit_mode: Option<EditMode>,
 
-        /// New item to change... (needs better name...)
+        /// New value for the selected metadata field
         #[arg(requires = "edit_mode")]
         change: Option<String>,
     },

@@ -1,7 +1,6 @@
 use crate::database::Database;
-use crate::storage::read_file;
+use crate::storage::read_file_if_exists;
 use crate::types::MonoError;
-use std::path::PathBuf;
 
 pub fn export(db: &Database) -> Result<Vec<String>, MonoError> {
     let rows = db.read_rows(-1, None)?;
@@ -9,7 +8,9 @@ pub fn export(db: &Database) -> Result<Vec<String>, MonoError> {
     let mut output: Vec<String> = Vec::new();
 
     for note in rows {
-        let content = read_file(&PathBuf::from(&note.file_link))?;
+        let Some(content) = read_file_if_exists(&note.file_link)? else {
+            continue;
+        };
         let push = format!(
             "## {}\n\n**#{}** · {}  \n`{}`\n\n{}\n\n---\n",
             note.title,

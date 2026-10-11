@@ -27,9 +27,7 @@ jobs:
         run: cargo fmt --all --check
 
       - name: Run Clippy
-        env:
-          CARGO_BUILD_WARNINGS: deny
-        run: cargo clippy --all-targets --all-features
+        run: cargo clippy --all-targets --all-features -- -D warnings
 
       - name: Run Tests
         run: cargo test --all-features
@@ -37,9 +35,12 @@ jobs:
       - name: Run Build
         run: cargo build --release
 
-  windows:
+  platforms:
     needs: linux
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout Repository
@@ -53,3 +54,9 @@ jobs:
 
       - name: Run Build
         run: cargo build --release
+
+      - name: Run Tests
+        run: cargo test --locked --all-features
+
+      - name: Smoke Test CLI
+        run: cargo run --locked -- --help

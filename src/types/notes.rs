@@ -37,7 +37,7 @@ impl FromStr for NoteTypes {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "idea" => Ok(Self::Idea),
-            "check in" => Ok(Self::CheckIn),
+            "check in" | "check-in" | "checkin" => Ok(Self::CheckIn),
             "todo" => Ok(Self::Todo),
             "other" => Ok(Self::Other),
             _ => Err(MonoError::InvalidNoteType(s.to_string())),
@@ -64,7 +64,6 @@ pub struct Note {
     pub content: Option<String>,
 }
 
-// TODO: DB no longer controls content so this needs tweaking
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
 pub enum EditMode {
     Title,

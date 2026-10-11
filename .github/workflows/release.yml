@@ -67,8 +67,17 @@ jobs:
         - name: Cache Rust build
           uses: Swatinem/rust-cache@v2
 
+        - name: Run Tests
+          run: cargo test --locked --all-features
+
         - name: Build Release
           run: cargo build --release
+
+        - name: Smoke Test CLI
+          shell: bash
+          run: |
+            ./target/release/${{ matrix.executable }} --version
+            ./target/release/${{ matrix.executable }} --help
 
         - name: Rename Binary
           shell: bash

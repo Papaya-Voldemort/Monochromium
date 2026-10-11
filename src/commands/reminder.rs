@@ -1,9 +1,8 @@
 use crate::config::load_config;
 use crate::database::Database;
-use crate::storage::read_file;
+use crate::storage::read_file_if_exists;
 use crate::types::{MonoError, NoteTypes};
 use chrono::{Duration, Local};
-use std::path::PathBuf;
 
 pub fn reminder(db: &Database) -> Result<String, MonoError> {
     let config = load_config()?;
@@ -60,7 +59,9 @@ fn get_todo_list(db: &Database) -> Result<String, MonoError> {
     lines.push("-- todo --".to_string());
 
     for note in &mut notes {
-        let content = read_file(&PathBuf::from(&note.file_link))?;
+        let Some(content) = read_file_if_exists(&note.file_link)? else {
+            continue;
+        };
         lines.push(format!("[{}] {}", note.id, content));
     }
 

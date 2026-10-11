@@ -22,7 +22,7 @@ Monochromium is crazy light, modern, and allows for blazing fast workflows fully
 - Blazing-Fast, Small Binary
 - Multiple Note Types
 - Search and Filtering
-- Fully Local Notes with SQLite
+- Fully Local Notes with SQLite and MD Files
 - Human-Readable Terminal Output
 - Shell reminder system
 
@@ -70,7 +70,7 @@ mono init
 
 ## The Future
 
-I already love the state Monochromium is in, but not all of our I already love the state Monochromium is in, but not all of our [spec.md](https://github.com/Papaya-Voldemort/Monochromium/blob/main/spec.md) is implemented fully.
+I already love the state Monochromium is in, and I use it everyday now.
 We also have so many others plans for the future!
 I want to add at least the following:
 - More useful commands and flags

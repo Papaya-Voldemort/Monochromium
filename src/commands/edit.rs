@@ -1,6 +1,6 @@
 use crate::database::Database;
 use crate::storage::{edit_file, read_file};
-use crate::types::{EditMode, MonoError};
+use crate::types::{EditMode, MonoError, NoteTypes};
 
 pub struct Output {
     pub _old: Option<String>,
@@ -9,7 +9,6 @@ pub struct Output {
     pub output: String,
 }
 
-// TODO: Fix this function in 0.5.x to be more functional and use more intuitive intended behaviors
 pub fn edit(
     db: &Database,
     note_id: u32,
@@ -22,6 +21,23 @@ pub fn edit(
 
         let text =
             text.ok_or_else(|| MonoError::InvalidInput("Missing text content".to_string()))?;
+        let text = match update_type {
+            EditMode::Type => text.parse::<NoteTypes>()?.as_str().to_string(),
+            EditMode::FilePath => {
+                let path = std::path::Path::new(&text);
+                if !path.is_file() {
+                    return Err(MonoError::InvalidInput(
+                        "File path must point to an existing note file".to_string(),
+                    ));
+                }
+                read_file(&path.to_path_buf())?;
+                path.canonicalize()?.to_string_lossy().to_string()
+            }
+            EditMode::Title if text.trim().is_empty() => {
+                return Err(MonoError::InvalidInput("Title cannot be empty".to_string()));
+            }
+            _ => text,
+        };
 
         let old = db.update_row(note_id, text.clone(), update_type)?;
 
@@ -52,11 +68,16 @@ pub fn edit(
 
         let old_content = read_file(&path)?;
 
-        edit_file(&path)?;
+        let saved = edit_file(&path)?;
 
         let new_content = read_file(&path)?;
 
-        let out = "Edit made successfully!".to_string();
+        let out = if saved {
+            "Edit made successfully!"
+        } else {
+            "No changes saved."
+        }
+        .to_string();
 
         Ok(Output {
             _old: Some(old_content),

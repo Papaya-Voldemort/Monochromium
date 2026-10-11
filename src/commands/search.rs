@@ -1,8 +1,8 @@
 use crate::database::Database;
+use crate::storage::read_file_if_exists;
 use crate::types::{MonoError, NoteTypes};
 use chrono::NaiveDate;
 
-// TODO: Update to fuzzy search file contents
 pub fn search(
     db: &Database,
     text: String,
@@ -16,19 +16,24 @@ pub fn search(
         ));
     }
 
-    let datetime = date.and_then(|d| d.and_hms_opt(0, 0, 0));
-
     let final_limit = limit.unwrap_or(10);
-    let notes = db.search_rows(
-        Some(text.trim().to_string()),
-        final_limit,
-        note_type,
-        datetime,
-    )?;
-
+    let query = text.trim().to_lowercase();
+    let notes = db.read_rows(-1, note_type)?;
     let mut output = Vec::new();
 
     for note in notes {
+        if output.len() == final_limit as usize {
+            break;
+        }
+        if date.is_some_and(|date| note.date.date() != date) {
+            continue;
+        }
+        if !note.title.to_lowercase().contains(&query)
+            && !read_file_if_exists(&note.file_link)?
+                .is_some_and(|content| content.to_lowercase().contains(&query))
+        {
+            continue;
+        }
         let push = format!("{} \u{2022} ID: {}", note.title, note.id);
         output.push(push);
     }
