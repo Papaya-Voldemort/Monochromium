@@ -5,6 +5,7 @@ mod database;
 mod storage;
 mod types;
 mod utils;
+mod cypto;
 
 use crate::commands::{add, delete, edit, export, get_stats, init, list, reminder, search, view};
 use crate::database::Database;

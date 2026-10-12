@@ -38,3 +38,6 @@ rusqlite = { version = "0.40.2", default-features = false, features = ["bundled"
 thiserror = "2.0.20"
 tempfile = "3"
 shlex = "2"
+argon2 = "0.5"
+chacha20poly1305 = "0.10"
+zeroize = { version = "1", features = ["derive"] }
