@@ -31,4 +31,10 @@ pub enum MonoError {
 
     #[error("invalid note type: {0}")]
     InvalidNoteType(String),
+
+    #[error("Cryptographic operation failed: {0}")]
+    Crypto(String),
+
+    #[error("Random generation failed: {0}")]
+    Random(#[from] getrandom::Error),
 }

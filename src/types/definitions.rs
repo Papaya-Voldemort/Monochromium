@@ -131,4 +131,27 @@ pub enum MonoCommands {
 
     /// Util command for initializing config
     Init {},
+
+    // Cryptography commands
+    /// Lock a note
+    Lock {
+        /// The id of the note you want lock
+        #[arg()]
+        note_id: u32,
+
+        /// The password used to unlock the note later
+        #[arg()]
+        password: String,
+    },
+
+    /// Unlock a note
+    Unlock {
+        /// The id of the note you want to unlock
+        #[arg()]
+        note_id: u32,
+
+        /// The password you used to lock the note
+        #[arg()]
+        password: String,
+    },
 }

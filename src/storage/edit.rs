@@ -1,6 +1,7 @@
 use crate::config::load_config;
 use crate::types::MonoError;
 use std::fs;
+use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -69,6 +70,20 @@ fn editor_command(editor: &str) -> Result<Command, MonoError> {
     let mut command = Command::new(program);
     command.args(args);
     Ok(command)
+}
+
+pub fn _overwrite(path: &PathBuf, ciphertext: &[u8]) -> Result<(), MonoError> {
+    let mut file = OpenOptions::new().write(true).truncate(true).open(path)?;
+
+    file.write_all(ciphertext)?;
+    file.sync_all()?;
+    Ok(())
+}
+
+pub fn _rename(path: &PathBuf, new_path: &PathBuf) -> Result<(), MonoError> {
+    fs::rename(path, new_path)?;
+
+    Ok(())
 }
 
 #[cfg(test)]

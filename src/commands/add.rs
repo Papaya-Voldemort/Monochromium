@@ -69,7 +69,7 @@ fn save_note(
     let tx = db.conn.unchecked_transaction()?;
     let id = db.add_row(title.clone(), note_type, PathBuf::new(), date)?;
     let path = directory.join(format!("{id:04}_{}.md", slugify(&title)));
-    write_all(&path, content.to_string())?;
+    write_all(&path, content)?;
 
     let result = (|| {
         db.update_row(id, path.to_string_lossy().to_string(), FilePath)?;

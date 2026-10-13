@@ -27,17 +27,21 @@ codegen-units = 1
 panic = "abort"
 strip = true
 
+
 [dependencies]
 arboard = { version = "3.6", default-features = false }
 chrono = { version = "0.4.45", default-features = false, features = ["clock"] }
 clap = { version = "4.6", default-features = false, features = ["std", "derive", "help", "usage", "error-context", "suggestions"] }
-directories = "6.0.0"
+directories = "6.0"
 serde = { version = "1.0.229", features = ["derive"] }
-toml = "1.1.6"
-rusqlite = { version = "0.40.2", default-features = false, features = ["bundled"] }
+toml = "1.1"
+rusqlite = { version = "0.40", default-features = false, features = ["bundled"] }
 thiserror = "2.0.20"
 tempfile = "3"
 shlex = "2"
-argon2 = "0.5"
-chacha20poly1305 = "0.10"
-zeroize = { version = "1", features = ["derive"] }
+
+# Encryption
+argon2 = { version = "0.6", features = ["password-hash"] }
+chacha20poly1305 = "0.11"
+zeroize = { version = "1.8", features = ["derive"] }
+getrandom = "0.4"
