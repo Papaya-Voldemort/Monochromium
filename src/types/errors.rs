@@ -37,4 +37,7 @@ pub enum MonoError {
 
     #[error("Random generation failed: {0}")]
     Random(#[from] getrandom::Error),
+
+    #[error("Could not parse file extension")]
+    FileExtension,
 }

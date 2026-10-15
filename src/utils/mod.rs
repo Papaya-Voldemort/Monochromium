@@ -6,6 +6,7 @@ mod slugify;
 mod string_check;
 mod title;
 mod trim;
+mod password;
 
 pub use clipboard::{copy, get_paste};
 pub use get_path::{PathType, get_path};
@@ -15,3 +16,4 @@ pub use slugify::slugify;
 pub use string_check::string_check;
 pub use title::make_title;
 pub use trim::trim_text;
+pub use password::{prompt_unlock_password, prompt_lock_password};
