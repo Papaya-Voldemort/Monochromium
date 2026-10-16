@@ -2,13 +2,13 @@ use crate::cypto::encrypt_with_password;
 use crate::database::Database;
 use crate::storage::{read_file, shred_and_delete, write_all};
 use crate::types::{EditMode, MonoError};
+use crate::utils::prompt_lock_password;
 use std::fs;
 use std::path::PathBuf;
-use crate::utils::prompt_lock_password;
 
 pub fn lock(db: &Database, note_id: u32) -> Result<String, MonoError> {
     let password = prompt_lock_password()?;
-    
+
     let note = db.read_single_row(note_id)?;
     let note_path = note.file_link;
 

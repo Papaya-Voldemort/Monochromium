@@ -29,13 +29,14 @@ pub fn list(
     if view {
         for note in &mut notes {
             if check_file_type(&note.file_link)? == "enc"
-                && check_file_type(&note.file_link)? == "enc" {
-                    note.content = Some(format!(
-                        "This file is currently locked! Unlock it with `mono unlock {}`!",
-                        note.id
-                    ));
-                    continue;
-                }
+                && check_file_type(&note.file_link)? == "enc"
+            {
+                note.content = Some(format!(
+                    "This file is currently locked! Unlock it with `mono unlock {}`!",
+                    note.id
+                ));
+                continue;
+            }
             note.content = read_file_if_exists(&note.file_link)?;
         }
     }

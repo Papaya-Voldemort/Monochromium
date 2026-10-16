@@ -74,12 +74,8 @@ fn run() -> Result<(), MonoError> {
 
             MonoCommands::Reminder {} => CommandOutput::Raw(reminder(&db)?),
             MonoCommands::Init {} => CommandOutput::Text(init()?),
-            MonoCommands::Lock { note_id } => {
-                CommandOutput::Text(lock(&db, note_id)?)
-            }
-            MonoCommands::Unlock { note_id } => {
-                CommandOutput::Text(unlock(&db, note_id)?)
-            }
+            MonoCommands::Lock { note_id } => CommandOutput::Text(lock(&db, note_id)?),
+            MonoCommands::Unlock { note_id } => CommandOutput::Text(unlock(&db, note_id)?),
         },
         None => {
             let logo = r#"
