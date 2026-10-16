@@ -28,10 +28,17 @@ pub fn search(
         if date.is_some_and(|date| note.date.date() != date) {
             continue;
         }
-        if !note.title.to_lowercase().contains(&query)
-            && !read_file_if_exists(&note.file_link)?
-                .is_some_and(|content| content.to_lowercase().contains(&query))
-        {
+        let title_matches = note.title.to_lowercase().contains(&query);
+
+        let content_matches =
+            if title_matches || note.file_link.extension().is_some_and(|ext| ext == "enc") {
+                false
+            } else {
+                read_file_if_exists(&note.file_link)?
+                    .is_some_and(|content| content.to_lowercase().contains(&query))
+            };
+
+        if !title_matches && !content_matches {
             continue;
         }
         let push = format!("{} \u{2022} ID: {}", note.title, note.id);

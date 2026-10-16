@@ -6,9 +6,9 @@
 
 > A fast, local first CLI note-taking app
 
-![Monochromium](https://raw.githubusercontent.com/Papaya-Voldemort/Monochromium/main/banner.png)
+![Monochromium](https://raw.githubusercontent.com/Papaya-Voldemort/Monochromium/master/banner.png)
 
-![Demo](https://raw.githubusercontent.com/Papaya-Voldemort/Monochromium/main/demo.gif)
+![Demo](https://raw.githubusercontent.com/Papaya-Voldemort/Monochromium/master/demo.gif)
 
 Monochromium lets you capture ideas, tasks, and mental health check-ins all without leaving the terminal!
 

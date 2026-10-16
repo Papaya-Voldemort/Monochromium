@@ -1,6 +1,7 @@
 mod clipboard;
 mod get_path;
 mod parse_note;
+mod password;
 mod pretty_notes;
 mod slugify;
 mod string_check;
@@ -10,6 +11,7 @@ mod trim;
 pub use clipboard::{copy, get_paste};
 pub use get_path::{PathType, get_path};
 pub use parse_note::parse_note;
+pub use password::{prompt_lock_password, prompt_unlock_password};
 pub use pretty_notes::pretty_notes;
 pub use slugify::slugify;
 pub use string_check::string_check;

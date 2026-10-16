@@ -1,12 +1,15 @@
 // #![allow(warnings)]
 mod commands;
 mod config;
+mod cypto;
 mod database;
 mod storage;
 mod types;
 mod utils;
 
-use crate::commands::{add, delete, edit, export, get_stats, init, list, reminder, search, view};
+use crate::commands::{
+    add, delete, edit, export, get_stats, init, list, lock, reminder, search, unlock, view,
+};
 use crate::database::Database;
 use crate::types::{CommandOutput, MonoError};
 use crate::utils::copy;
@@ -71,6 +74,8 @@ fn run() -> Result<(), MonoError> {
 
             MonoCommands::Reminder {} => CommandOutput::Raw(reminder(&db)?),
             MonoCommands::Init {} => CommandOutput::Text(init()?),
+            MonoCommands::Lock { note_id } => CommandOutput::Text(lock(&db, note_id)?),
+            MonoCommands::Unlock { note_id } => CommandOutput::Text(unlock(&db, note_id)?),
         },
         None => {
             let logo = r#"
