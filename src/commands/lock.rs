@@ -3,7 +3,6 @@ use crate::database::Database;
 use crate::storage::{read_file, shred_and_delete, write_all};
 use crate::types::{EditMode, MonoError};
 use crate::utils::prompt_lock_password;
-use std::fs;
 use std::path::PathBuf;
 
 pub fn lock(db: &Database, note_id: u32) -> Result<String, MonoError> {
@@ -27,22 +26,24 @@ pub fn lock(db: &Database, note_id: u32) -> Result<String, MonoError> {
 
     write_all(&new_file_path, &encrypted)?;
 
-    if let Err(db_error) = db.update_row(
+    shred_and_delete(&note_path).map_err(|err| {
+        MonoError::Crypto(format!(
+            "Source cleanup failed: {err}; recovery copy: {}",
+            new_file_path.display()
+        ))
+    })?;
+
+    db.update_row(
         note_id,
         new_file_path.to_string_lossy().to_string(),
         EditMode::FilePath,
-    ) {
-        if let Err(cleanup_error) = fs::remove_file(&new_file_path) {
-            return Err(MonoError::Crypto(format!(
-                "Database update failed: {db_error}; \
-                 cleanup also failed: {cleanup_error}"
-            )));
-        }
-
-        return Err(db_error.into());
-    }
-
-    shred_and_delete(&note_path)?;
+    )
+    .map_err(|err| {
+        MonoError::Crypto(format!(
+            "Database update failed: {err}; recovery copy: {}",
+            new_file_path.display()
+        ))
+    })?;
 
     Ok("Encrypted successfully!".to_string())
 }

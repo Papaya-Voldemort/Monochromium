@@ -28,23 +28,24 @@ pub fn unlock(db: &Database, note_id: u32) -> Result<String, MonoError> {
 
     write_all(new_path, decrypted_string)?;
 
-    if let Err(db_error) = db.update_row(
+    shred_and_delete(path).map_err(|err| {
+        MonoError::Crypto(format!(
+            "Source cleanup failed: {err}; recovery copy: {}",
+            new_path.display()
+        ))
+    })?;
+
+    db.update_row(
         note_id,
         new_path.to_string_lossy().to_string(),
         EditMode::FilePath,
-    ) {
-        // Clean up plaintext if the DB update fails.
-        if let Err(cleanup_error) = shred_and_delete(new_path) {
-            return Err(MonoError::Crypto(format!(
-                "Database update failed: {db_error}; \
-                 plaintext cleanup also failed: {cleanup_error}"
-            )));
-        }
-
-        return Err(db_error.into());
-    }
-
-    shred_and_delete(path)?;
+    )
+    .map_err(|err| {
+        MonoError::Crypto(format!(
+            "Database update failed: {err}; recovery copy: {}",
+            new_path.display()
+        ))
+    })?;
 
     Ok("Decrypted successfully!".to_string())
 }

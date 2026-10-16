@@ -11,6 +11,7 @@ pub fn write_all(path: &PathBuf, content: impl AsRef<[u8]>) -> Result<(), MonoEr
 
     let mut temp = NamedTempFile::new_in(path.parent().unwrap_or(std::path::Path::new(".")))?;
     temp.write_all(content.as_ref())?;
+    temp.as_file().sync_all()?;
     temp.persist_noclobber(path)
         .map_err(|err| MonoError::Io(err.error))?;
 
