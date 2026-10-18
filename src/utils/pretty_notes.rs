@@ -9,7 +9,7 @@ pub fn pretty_notes(notes: Vec<Note>, view: bool) -> Vec<String> {
                     "{} • ID: {} • {}\n {}",
                     note.title,
                     note.id,
-                    note.date.format("%b %d, %Y at%l:%M %p"),
+                    note.date.format("%b %-d, %Y at %-I:%M %p"),
                     note.content.unwrap_or_default()
                 )
             } else {

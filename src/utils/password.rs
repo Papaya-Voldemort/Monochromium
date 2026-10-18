@@ -1,6 +1,7 @@
 use std::io;
+use zeroize::Zeroizing;
 
-pub fn prompt_lock_password() -> io::Result<String> {
+pub fn prompt_lock_password() -> io::Result<Zeroizing<String>> {
     let password = rpassword::prompt_password("Enter password: ")?;
 
     if password.is_empty() {
@@ -19,9 +20,11 @@ pub fn prompt_lock_password() -> io::Result<String> {
         ));
     }
 
-    Ok(password)
+    Ok(Zeroizing::new(password))
 }
 
-pub fn prompt_unlock_password() -> io::Result<String> {
-    rpassword::prompt_password("Enter password: ")
+pub fn prompt_unlock_password() -> io::Result<Zeroizing<String>> {
+    Ok(Zeroizing::new(rpassword::prompt_password(
+        "Enter password: ",
+    )?))
 }

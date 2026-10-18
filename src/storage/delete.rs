@@ -22,6 +22,8 @@ pub fn shred_and_delete(path: &PathBuf) -> Result<(), MonoError> {
     file.write_all(&zeros)?;
     file.flush()?;
 
+    file.sync_all()?;
+
     std::fs::remove_file(path)?;
 
     Ok(())

@@ -1,14 +1,22 @@
 use crate::cypto::encrypt_with_password;
 use crate::database::Database;
-use crate::storage::{read_file, shred_and_delete, write_all};
+use crate::storage::{check_file_type, read_file, shred_and_delete, write_all};
 use crate::types::{EditMode, MonoError};
 use crate::utils::prompt_lock_password;
 use std::path::PathBuf;
 
 pub fn lock(db: &Database, note_id: u32) -> Result<String, MonoError> {
+    let note = db.read_single_row(note_id)?;
+
+    if check_file_type(&note.file_link)? == "enc" {
+        return Ok(format!(
+            "This file is already locked! Unlock it with `mono unlock {}`!",
+            note.id
+        ));
+    }
+
     let password = prompt_lock_password()?;
 
-    let note = db.read_single_row(note_id)?;
     let note_path = note.file_link;
 
     let content = read_file(&note_path)?;
