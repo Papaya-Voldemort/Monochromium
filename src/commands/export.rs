@@ -1,6 +1,7 @@
 use crate::database::Database;
-use crate::storage::{check_file_type, read_file_if_exists};
+use crate::storage::read_file_if_exists;
 use crate::types::MonoError;
+use crate::utils::{is_locked, locked_notice};
 
 pub fn export(db: &Database) -> Result<Vec<String>, MonoError> {
     let rows = db.read_rows(-1, None)?;
@@ -8,11 +9,8 @@ pub fn export(db: &Database) -> Result<Vec<String>, MonoError> {
     let mut output: Vec<String> = Vec::new();
 
     for note in rows {
-        let content = if check_file_type(&note.file_link)? == "enc" {
-            format!(
-                "This file is currently locked! Unlock it with `mono unlock {}`!",
-                note.id
-            )
+        let content = if is_locked(&note.file_link)? {
+            locked_notice(note.id)?
         } else {
             let Some(content) = read_file_if_exists(&note.file_link)? else {
                 continue;

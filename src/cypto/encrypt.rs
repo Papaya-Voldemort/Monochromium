@@ -1,5 +1,5 @@
+use crate::cypto::argon::argon2_config;
 use crate::types::MonoError;
-use argon2::{Algorithm, Argon2, Params, Version};
 use chacha20poly1305::{
     XChaCha20Poly1305, XNonce,
     aead::{Aead, KeyInit},
@@ -13,13 +13,10 @@ pub fn encrypt_with_password(password: &[u8], plaintext: &[u8]) -> Result<Vec<u8
     getrandom::fill(&mut nonce_bytes)?;
 
     let mut key = Zeroizing::new([0u8; 32]);
-    Argon2::new(
-        Algorithm::Argon2id,
-        Version::V0x13,
-        Params::new(19 * 1024, 2, 1, Some(32)).expect("valid Argon2 parameters"),
-    )
-    .hash_password_into(password, &salt, &mut *key)
-    .map_err(|err| MonoError::Crypto(format!("Key derivation failed: {err}")))?;
+
+    argon2_config()
+        .hash_password_into(password, &salt, &mut *key)
+        .map_err(|err| MonoError::Crypto(format!("Key derivation failed: {err}")))?;
 
     let cipher = XChaCha20Poly1305::new_from_slice(&*key)
         .map_err(|err| MonoError::Crypto(format!("Invalid key: {err}")))?;

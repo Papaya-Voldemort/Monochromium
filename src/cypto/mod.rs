@@ -1,3 +1,4 @@
+mod argon;
 mod decrypt;
 mod encrypt;
 #[cfg(test)]

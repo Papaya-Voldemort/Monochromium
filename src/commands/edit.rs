@@ -1,6 +1,7 @@
 use crate::database::Database;
 use crate::storage::{edit_file, read_file};
 use crate::types::{EditMode, MonoError, NoteTypes};
+use crate::utils::{is_locked, locked_notice};
 
 pub struct Output {
     pub _old: Option<String>,
@@ -64,6 +65,15 @@ pub fn edit(
         })
     } else {
         let old_note = db.read_single_row(note_id)?;
+        if is_locked(&old_note.file_link)? {
+            return Ok(Output {
+                _old: None,
+                _new: None,
+                _update_type: None,
+                output: locked_notice(old_note.id)?,
+            });
+        }
+
         let path = old_note.file_link;
 
         let old_content = read_file(&path)?;

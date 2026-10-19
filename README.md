@@ -84,7 +84,7 @@ So yeah a little work to go for v1.0.0 but we are well on our way!
 
 ## Contributions
 
-> We are a very small team (of 1) so your PRs may take several days to review :)
+> We are a very small team (of 1 person :sob) so your PRs may take several days to review :)
 
 Contributions are completely welcome and accepted.
 
