@@ -71,7 +71,7 @@ pub fn edit(
                 _new: None,
                 _update_type: None,
                 output: locked_notice(old_note.id)?,
-            })
+            });
         }
 
         let path = old_note.file_link;
