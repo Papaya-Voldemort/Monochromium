@@ -1,16 +1,17 @@
-use crate::cypto::encrypt_with_password;
+use crate::crypto::encrypt_with_password;
 use crate::database::Database;
 use crate::storage::{check_file_type, read_file, shred_and_delete, write_all};
 use crate::types::{EditMode, MonoError};
 use crate::utils::prompt_lock_password;
 use std::path::PathBuf;
+use zeroize::Zeroizing;
 
 pub fn lock(db: &Database, note_id: u32) -> Result<String, MonoError> {
     let note = db.read_single_row(note_id)?;
 
     if check_file_type(&note.file_link)? == "enc" {
         return Ok(format!(
-            "This file is already locked! Unlock it with `mono unlock {}`!",
+            "This file appears already locked! Unlock it with `mono unlock {}`!",
             note.id
         ));
     }
@@ -19,7 +20,7 @@ pub fn lock(db: &Database, note_id: u32) -> Result<String, MonoError> {
 
     let note_path = note.file_link;
 
-    let content = read_file(&note_path)?;
+    let content = Zeroizing::new(read_file(&note_path)?);
     let encrypted = encrypt_with_password(password.as_bytes(), content.as_bytes())?;
 
     let mut new_os_str = note_path.clone().into_os_string();

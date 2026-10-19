@@ -26,6 +26,11 @@ pub fn edit(
             EditMode::Type => text.parse::<NoteTypes>()?.as_str().to_string(),
             EditMode::FilePath => {
                 let path = std::path::Path::new(&text);
+                if is_locked(path)? {
+                    return Err(MonoError::InvalidInput(
+                        "You can't change the path to an encrypted file".to_string(),
+                    ));
+                }
                 if !path.is_file() {
                     return Err(MonoError::InvalidInput(
                         "File path must point to an existing note file".to_string(),

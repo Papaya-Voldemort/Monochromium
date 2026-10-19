@@ -1,6 +1,7 @@
 use crate::database::Database;
 use crate::storage::read_file_if_exists;
 use crate::types::{MonoError, NoteTypes};
+use crate::utils::is_locked;
 use chrono::NaiveDate;
 
 pub fn search(
@@ -30,13 +31,12 @@ pub fn search(
         }
         let title_matches = note.title.to_lowercase().contains(&query);
 
-        let content_matches =
-            if title_matches || note.file_link.extension().is_some_and(|ext| ext == "enc") {
-                false
-            } else {
-                read_file_if_exists(&note.file_link)?
-                    .is_some_and(|content| content.to_lowercase().contains(&query))
-            };
+        let content_matches = if title_matches || is_locked(&note.file_link)? {
+            false
+        } else {
+            read_file_if_exists(&note.file_link)?
+                .is_some_and(|content| content.to_lowercase().contains(&query))
+        };
 
         if !title_matches && !content_matches {
             continue;

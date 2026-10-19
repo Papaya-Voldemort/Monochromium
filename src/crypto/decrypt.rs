@@ -1,4 +1,4 @@
-use crate::cypto::argon::argon2_config;
+use crate::crypto::argon::argon2_config;
 use crate::types::MonoError;
 use chacha20poly1305::{
     XChaCha20Poly1305, XNonce,
@@ -35,7 +35,7 @@ pub fn decrypt_with_password(password: &[u8], payload: &[u8]) -> Result<Vec<u8>,
 #[cfg(test)]
 mod tests {
     use super::decrypt_with_password;
-    use crate::{cypto::encrypt_with_password, types::MonoError};
+    use crate::{crypto::encrypt_with_password, types::MonoError};
 
     #[test]
     fn rejects_all_short_payloads() {

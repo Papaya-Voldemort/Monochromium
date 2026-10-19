@@ -25,6 +25,7 @@ Monochromium is crazy light, modern, and allows for blazing fast workflows fully
 - Fully Local Notes with SQLite and MD Files
 - Human-Readable Terminal Output
 - Shell reminder system
+- Full file Locking and Unlocking
 
 ## Install
 
@@ -45,7 +46,7 @@ cargo install monochromium
 
 ### From Github Binary
 
-Download the correct binary for your OS [here](https://github.com/Papaya-Voldemort/Monochromium/releases/tag/v0.4.2)
+Download the correct binary for your OS [here](https://github.com/Papaya-Voldemort/Monochromium/releases/latest)
 
 ### Verify
 ```bash
@@ -58,6 +59,14 @@ mono --version
 mono add "Ship v1.0"
 mono add -t checkin "feeling great"
 mono list
+```
+
+### Locking Notes
+
+Password-protect a note by encrypting its file on disk, then decrypt it when needed:
+```bash
+mono lock 3
+mono unlock 3
 ```
 
 ### Reminders

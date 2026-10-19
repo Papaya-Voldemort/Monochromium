@@ -1,4 +1,4 @@
-use crate::cypto::decrypt_with_password;
+use crate::crypto::decrypt_with_password;
 use crate::database::Database;
 use crate::storage::{check_file_type, shred_and_delete, write_all};
 use crate::types::{EditMode, MonoError};

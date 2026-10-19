@@ -1,5 +1,5 @@
 #[cfg(test)]
-use crate::cypto::{decrypt::decrypt_with_password, encrypt::encrypt_with_password};
+use crate::crypto::{decrypt::decrypt_with_password, encrypt::encrypt_with_password};
 
 #[test]
 fn roundtrip_encryption() {

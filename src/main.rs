@@ -1,7 +1,7 @@
 // #![allow(warnings)]
 mod commands;
 mod config;
-mod cypto;
+mod crypto;
 mod database;
 mod storage;
 mod types;
