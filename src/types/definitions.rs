@@ -146,4 +146,7 @@ pub enum MonoCommands {
         #[arg()]
         note_id: u32,
     },
+
+    /// Open config file in default editor
+    Config {},
 }

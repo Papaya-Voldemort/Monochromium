@@ -8,7 +8,7 @@ mod types;
 mod utils;
 
 use crate::commands::{
-    add, delete, edit, export, get_stats, init, list, lock, reminder, search, unlock, view,
+    add, config, delete, edit, export, get_stats, init, list, lock, reminder, search, unlock, view,
 };
 use crate::database::Database;
 use crate::types::{CommandOutput, MonoError};
@@ -46,11 +46,7 @@ fn run() -> Result<(), MonoError> {
                 note_id,
                 edit_mode,
                 change: text,
-            } => {
-                let output = edit(&db, note_id, edit_mode, text)?;
-
-                CommandOutput::Text(output.output)
-            }
+            } => CommandOutput::Text(edit(&db, note_id, edit_mode, text)?.output),
 
             MonoCommands::List {
                 limit,
@@ -76,6 +72,7 @@ fn run() -> Result<(), MonoError> {
             MonoCommands::Init {} => CommandOutput::Text(init()?),
             MonoCommands::Lock { note_id } => CommandOutput::Text(lock(&db, note_id)?),
             MonoCommands::Unlock { note_id } => CommandOutput::Text(unlock(&db, note_id)?),
+            MonoCommands::Config {} => CommandOutput::Text(config()?),
         },
         None => {
             let logo = r#"
