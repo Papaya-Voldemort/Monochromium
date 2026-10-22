@@ -1,13 +1,15 @@
 use crate::database::Database;
 use crate::types::MonoError;
-use crate::types::NoteTypes::{CheckIn, Idea, Other, Todo};
+use std::collections::HashMap;
 
 pub fn get_stats(db: &Database) -> Result<String, MonoError> {
-    let total_notes = db.read_rows(-1, None)?.len();
-    let total_checkins = db.read_rows(-1, Some(CheckIn))?.len();
-    let total_todos = db.read_rows(-1, Some(Todo))?.len();
-    let total_ideas = db.read_rows(-1, Some(Idea))?.len();
-    let total_other = db.read_rows(-1, Some(Other))?.len();
+    let counts: HashMap<String, u32> = db.count_rows()?.into_iter().collect();
+
+    let total_checkins = counts.get("check in").copied().unwrap_or(0);
+    let total_todos = counts.get("todo").copied().unwrap_or(0);
+    let total_ideas = counts.get("idea").copied().unwrap_or(0);
+    let total_other = counts.get("other").copied().unwrap_or(0);
+    let total_notes = total_checkins + total_todos + total_ideas + total_other;
 
     let checkin_percent = percent(total_checkins, total_notes);
     let todo_percent = percent(total_todos, total_notes);
@@ -44,7 +46,7 @@ Monochromium Stats (Current Notes)
     ))
 }
 
-fn percent(part: usize, total: usize) -> f64 {
+fn percent(part: u32, total: u32) -> f64 {
     if total == 0 {
         0.0
     } else {

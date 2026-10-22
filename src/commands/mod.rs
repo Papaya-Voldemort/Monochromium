@@ -1,4 +1,5 @@
 mod add;
+mod config;
 mod delete;
 mod edit;
 mod export;
@@ -12,9 +13,9 @@ mod stats;
 mod tests;
 mod unlock;
 mod view;
-mod config;
 
 pub use add::add;
+pub use config::config;
 pub use delete::delete;
 pub use edit::edit;
 pub use export::export;
@@ -26,4 +27,3 @@ pub use search::search;
 pub use stats::get_stats;
 pub use unlock::unlock;
 pub use view::view;
-pub use config::config;

@@ -49,4 +49,18 @@ impl Database {
 
         Ok(note)
     }
+
+    pub fn count_rows(&self) -> Result<Vec<(String, u32)>, rusqlite::Error> {
+        let mut stmt = self
+            .conn
+            .prepare("SELECT type, COUNT(*) FROM notes GROUP BY type")?;
+
+        let counts = stmt
+            .query_map([], |row| {
+                Ok(((row.get::<_, String>(0))?, row.get::<_, u32>(1)?))
+            })?
+            .collect::<Result<Vec<_>, _>>()?;
+
+        Ok(counts)
+    }
 }
