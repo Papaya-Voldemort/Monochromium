@@ -55,41 +55,76 @@ jobs:
             executable: mono
             ext: ""
 
-    runs-on: ${{matrix.runner}}
+    runs-on: ${{ matrix.runner }}
 
     steps:
-        - name: Checkout Repository
-          uses: actions/checkout@v5
+      - name: Checkout Repository
+        uses: actions/checkout@v5
 
-        - name: Install Rust
-          uses: dtolnay/rust-toolchain@stable
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.os_name == 'macos' && 'x86_64-apple-darwin' || '' }}
 
-        - name: Cache Rust build
-          uses: Swatinem/rust-cache@v2
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
 
-        - name: Run Tests
-          run: cargo test --locked --all-features
+      - name: Run Tests
+        run: cargo test --locked --all-features
 
-        - name: Build Release
-          run: cargo build --release
+      - name: Build Release
+        run: cargo build --release --locked
 
-        - name: Smoke Test CLI
-          shell: bash
-          run: |
-            ./target/release/${{ matrix.executable }} --version
-            ./target/release/${{ matrix.executable }} --help
+      - name: Build Intel (macOS only)
+        if: matrix.os_name == 'macos'
+        run: cargo build --release --locked --target x86_64-apple-darwin
 
-        - name: Rename Binary
-          shell: bash
-          run: |
-            mv "target/release/${{ matrix.executable }}" \
-               "target/release/monochromium-${{ github.ref_name }}-${{ matrix.os_name }}-${{ matrix.arch }}${{ matrix.ext }}"
+      - name: Run Intel Tests via Rosetta (macOS only)
+        if: matrix.os_name == 'macos'
+        run: cargo test --locked --all-features --target x86_64-apple-darwin
 
-        - name: Upload Binary Artifact
-          uses: actions/upload-artifact@v4
-          with:
-            name: monochromium-${{ matrix.os_name }}-${{ matrix.arch }}
-            path: target/release/monochromium-${{ github.ref_name }}-${{ matrix.os_name }}-${{ matrix.arch }}${{ matrix.ext }}
+      - name: Smoke Test CLI
+        shell: bash
+        run: |
+          ./target/release/${{ matrix.executable }} --version
+          ./target/release/${{ matrix.executable }} --help
+
+      - name: Rename Binary
+        shell: bash
+        run: |
+          mv "target/release/${{ matrix.executable }}" \
+             "target/release/monochromium-${{ github.ref_name }}-${{ matrix.os_name }}-${{ matrix.arch }}${{ matrix.ext }}"
+
+      - name: Build Universal Binary (macOS only)
+        if: matrix.os_name == 'macos'
+        run: |
+          lipo -create \
+            target/release/monochromium-${{ github.ref_name }}-macos-arm64 \
+            target/x86_64-apple-darwin/release/mono \
+            -output target/release/monochromium-${{ github.ref_name }}-macos-universal
+          # verify both slices are present
+          lipo -info target/release/monochromium-${{ github.ref_name }}-macos-universal
+
+      - name: Rename Intel Binary (macOS only)
+        if: matrix.os_name == 'macos'
+        run: |
+          mv "target/x86_64-apple-darwin/release/mono" \
+             "target/release/monochromium-${{ github.ref_name }}-macos-x86_64"
+
+      - name: Upload Binary Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: monochromium-${{ matrix.os_name }}-${{ matrix.arch }}
+          path: target/release/monochromium-${{ github.ref_name }}-${{ matrix.os_name }}-${{ matrix.arch }}${{ matrix.ext }}
+
+      - name: Upload Intel + Universal Artifacts (macOS only)
+        if: matrix.os_name == 'macos'
+        uses: actions/upload-artifact@v4
+        with:
+          name: monochromium-macos-x86_64-and-universal
+          path: |
+            target/release/monochromium-${{ github.ref_name }}-macos-x86_64
+            target/release/monochromium-${{ github.ref_name }}-macos-universal
 
   release:
     needs: build
