@@ -1,7 +1,7 @@
 use crate::database::Database;
 use crate::storage::read_file_if_exists;
 use crate::types::{MonoError, NoteTypes};
-use crate::utils::is_locked;
+use crate::utils::{is_locked, pretty_notes};
 use chrono::NaiveDate;
 
 pub fn search(
@@ -20,10 +20,10 @@ pub fn search(
     let final_limit = limit.unwrap_or(10);
     let query = text.trim().to_lowercase();
     let notes = db.read_rows(-1, note_type)?;
-    let mut output = Vec::new();
+    let mut search = Vec::new();
 
     for note in notes {
-        if output.len() == final_limit as usize {
+        if search.len() == final_limit as usize {
             break;
         }
         if date.is_some_and(|date| note.date.date() != date) {
@@ -41,9 +41,10 @@ pub fn search(
         if !title_matches && !content_matches {
             continue;
         }
-        let push = format!("{} \u{2022} ID: {}", note.title, note.id);
-        output.push(push);
+        search.push(note);
     }
+
+    let output = pretty_notes(search, false);
 
     Ok(output)
 }
