@@ -38,7 +38,8 @@ fn run() -> Result<(), MonoError> {
                 time,
                 date,
                 paste,
-            } => CommandOutput::Text(add(&db, text, note_type, time, date, paste)?),
+                value,
+            } => CommandOutput::Text(add(&db, text, note_type, time, date, paste, value)?),
             MonoCommands::Delete { note_id, approve } => {
                 CommandOutput::Text(delete(&db, note_id, approve)?)
             }

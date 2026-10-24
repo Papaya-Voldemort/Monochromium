@@ -12,7 +12,7 @@ impl Database {
         note_type: Option<NoteTypes>,
         date: Option<NaiveDateTime>,
     ) -> Result<Vec<Note>, rusqlite::Error> {
-        let mut query = String::from("SELECT id, title, type, date, file_link FROM notes");
+        let mut query = String::from("SELECT id, title, type, date, file_link, value FROM notes");
         let mut conditions = Vec::new();
         let mut params: Vec<Box<dyn ToSql>> = Vec::new();
 

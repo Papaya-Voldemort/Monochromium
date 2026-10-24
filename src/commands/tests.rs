@@ -19,6 +19,7 @@ fn note(
         kind,
         path,
         date.and_hms_opt(9, 30, 0).unwrap(),
+        None,
     )?)
 }
 
@@ -230,4 +231,19 @@ fn missing_files_do_not_abort_bulk_commands() -> Result<(), MonoError> {
         1
     );
     Ok(())
+}
+
+#[test]
+fn value_flag_accepts_negative_and_rejects_out_of_range() {
+    use crate::types::{MonoCLI, MonoCommands};
+    use clap::Parser;
+
+    let cli = MonoCLI::try_parse_from(["mono", "add", "text", "-v", "-3"]).unwrap();
+    match cli.command {
+        Some(MonoCommands::Add { value, .. }) => assert_eq!(value, Some(-3)),
+        _ => panic!("expected add command"),
+    }
+
+    assert!(MonoCLI::try_parse_from(["mono", "add", "text", "-v", "6"]).is_err());
+    assert!(MonoCLI::try_parse_from(["mono", "add", "text", "-v", "-6"]).is_err());
 }

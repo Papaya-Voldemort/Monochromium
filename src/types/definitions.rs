@@ -38,6 +38,10 @@ pub enum MonoCommands {
         /// Use clipboard content as the note body
         #[clap(short, long)]
         paste: bool,
+
+        /// Value assigned to each note [check-in mood, todo priority, idea hype] (-5..=5)
+        #[clap(short, long, value_parser = clap::value_parser!(i64).range(-5..=5), allow_negative_numbers = true)]
+        value: Option<i64>,
     },
 
     /// List out existing notes
@@ -132,6 +136,9 @@ pub enum MonoCommands {
     /// Util command for initializing config
     Init {},
 
+    /// Open config file in default editor
+    Config {},
+
     // Cryptography commands
     /// Lock a note
     Lock {
@@ -146,7 +153,4 @@ pub enum MonoCommands {
         #[arg()]
         note_id: u32,
     },
-
-    /// Open config file in default editor
-    Config {},
 }

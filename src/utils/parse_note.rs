@@ -24,6 +24,7 @@ pub fn parse_note(row: &Row) -> Result<Note, rusqlite::Error> {
         date,
         file_link,
         content: None,
+        value: row.get(5)?,
     })
 }
 
@@ -44,7 +45,8 @@ mod tests {
                 title TEXT,
                 type TEXT,
                 date TEXT,
-                file_link TEXT
+                file_link TEXT,
+                value INTEGER
             )
             ",
             [],
@@ -65,7 +67,7 @@ mod tests {
         )?;
 
         let note = conn.query_row(
-            "SELECT id, title, type, date, file_link FROM notes WHERE id = 1",
+            "SELECT id, title, type, date, file_link, value FROM notes WHERE id = 1",
             [],
             parse_note,
         )?;
