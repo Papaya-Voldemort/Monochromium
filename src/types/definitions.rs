@@ -44,6 +44,75 @@ pub enum MonoCommands {
         value: Option<i64>,
     },
 
+    /// Quick mood check-in (sugar for: mono add -t checkin)
+    Checkin {
+        /// Note text content
+        #[arg(value_name = "TEXT")]
+        text: Option<String>,
+
+        /// Logged time of note (HH:MM or HH:MM:SS) [default: current time]
+        #[clap(long)]
+        time: Option<NaiveTime>,
+
+        /// Logged date of note (YYYY-MM-DD) [default: current date]
+        #[clap(long)]
+        date: Option<NaiveDate>,
+
+        /// Use clipboard content as the note body
+        #[clap(short, long)]
+        paste: bool,
+
+        /// Mood tracking (-5..=5)
+        #[clap(short, long, value_parser = clap::value_parser!(i64).range(-5..=5), allow_negative_numbers = true)]
+        mood: Option<i64>,
+    },
+
+    /// Quick todo (sugar for: mono add -t todo)
+    Todo {
+        /// Note text content
+        #[arg(value_name = "TEXT")]
+        text: Option<String>,
+
+        /// Logged time of note (HH:MM or HH:MM:SS) [default: current time]
+        #[clap(long)]
+        time: Option<NaiveTime>,
+
+        /// Logged date of note (YYYY-MM-DD) [default: current date]
+        #[clap(long)]
+        date: Option<NaiveDate>,
+
+        /// Use clipboard content as the note body
+        #[clap(short, long)]
+        paste: bool,
+
+        /// Task priority or importance level (-5..=5)
+        #[clap(short = 'i', long, value_parser = clap::value_parser!(i64).range(-5..=5), allow_negative_numbers = true)]
+        priority: Option<i64>,
+    },
+
+    /// Quick idea capture (sugar for: mono add -t idea)
+    Idea {
+        /// Note text content
+        #[arg(value_name = "TEXT")]
+        text: Option<String>,
+
+        /// Logged time of note (HH:MM or HH:MM:SS) [default: current time]
+        #[clap(long)]
+        time: Option<NaiveTime>,
+
+        /// Logged date of note (YYYY-MM-DD) [default: current date]
+        #[clap(long)]
+        date: Option<NaiveDate>,
+
+        /// Use clipboard content as the note body
+        #[clap(short, long)]
+        paste: bool,
+
+        /// How good of an idea it is (-5..=5)
+        #[clap(short = 'y', long, value_parser = clap::value_parser!(i64).range(-5..=5), allow_negative_numbers = true)]
+        hype: Option<i64>,
+    },
+
     /// List out existing notes
     List {
         /// Max amount of notes to be listed

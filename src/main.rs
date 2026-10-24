@@ -11,7 +11,7 @@ use crate::commands::{
     add, config, delete, edit, export, get_stats, init, list, lock, reminder, search, unlock, view,
 };
 use crate::database::Database;
-use crate::types::{CommandOutput, MonoError};
+use crate::types::{CommandOutput, MonoError, NoteTypes};
 use crate::utils::copy;
 use clap::{CommandFactory, Parser};
 use types::{MonoCLI, MonoCommands};
@@ -40,6 +40,51 @@ fn run() -> Result<(), MonoError> {
                 paste,
                 value,
             } => CommandOutput::Text(add(&db, text, note_type, time, date, paste, value)?),
+            MonoCommands::Checkin {
+                text,
+                time,
+                date,
+                paste,
+                mood,
+            } => CommandOutput::Text(add(
+                &db,
+                text,
+                Some(NoteTypes::CheckIn),
+                time,
+                date,
+                paste,
+                mood,
+            )?),
+            MonoCommands::Todo {
+                text,
+                time,
+                date,
+                paste,
+                priority,
+            } => CommandOutput::Text(add(
+                &db,
+                text,
+                Some(NoteTypes::Todo),
+                time,
+                date,
+                paste,
+                priority,
+            )?),
+            MonoCommands::Idea {
+                text,
+                time,
+                date,
+                paste,
+                hype,
+            } => CommandOutput::Text(add(
+                &db,
+                text,
+                Some(NoteTypes::Idea),
+                time,
+                date,
+                paste,
+                hype,
+            )?),
             MonoCommands::Delete { note_id, approve } => {
                 CommandOutput::Text(delete(&db, note_id, approve)?)
             }

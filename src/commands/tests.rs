@@ -247,3 +247,31 @@ fn value_flag_accepts_negative_and_rejects_out_of_range() {
     assert!(MonoCLI::try_parse_from(["mono", "add", "text", "-v", "6"]).is_err());
     assert!(MonoCLI::try_parse_from(["mono", "add", "text", "-v", "-6"]).is_err());
 }
+
+#[test]
+fn sugar_commands_parse_scores_and_reject_out_of_range() {
+    use crate::types::{MonoCLI, MonoCommands};
+    use clap::Parser;
+
+    let cli = MonoCLI::try_parse_from(["mono", "checkin", "text", "-m", "-3"]).unwrap();
+    match cli.command {
+        Some(MonoCommands::Checkin { mood, .. }) => assert_eq!(mood, Some(-3)),
+        _ => panic!("expected checkin command"),
+    }
+
+    let cli = MonoCLI::try_parse_from(["mono", "todo", "text", "-i", "2"]).unwrap();
+    match cli.command {
+        Some(MonoCommands::Todo { priority, .. }) => assert_eq!(priority, Some(2)),
+        _ => panic!("expected todo command"),
+    }
+
+    let cli = MonoCLI::try_parse_from(["mono", "idea", "text", "-y", "5"]).unwrap();
+    match cli.command {
+        Some(MonoCommands::Idea { hype, .. }) => assert_eq!(hype, Some(5)),
+        _ => panic!("expected idea command"),
+    }
+
+    assert!(MonoCLI::try_parse_from(["mono", "checkin", "text", "-m", "6"]).is_err());
+    assert!(MonoCLI::try_parse_from(["mono", "todo", "text", "-i", "6"]).is_err());
+    assert!(MonoCLI::try_parse_from(["mono", "idea", "text", "-y", "6"]).is_err());
+}
