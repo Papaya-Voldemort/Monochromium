@@ -1,4 +1,5 @@
 use crate::types::Note;
+use crate::utils::DATETIME_FORMAT;
 
 pub fn pretty_notes(notes: Vec<Note>, view: bool) -> Vec<String> {
     notes
@@ -9,7 +10,7 @@ pub fn pretty_notes(notes: Vec<Note>, view: bool) -> Vec<String> {
                     "{} • ID: {} • {}\n {}",
                     note.title,
                     note.id,
-                    note.date.format("%b %-d, %Y at %-I:%M %p"),
+                    note.date.format(DATETIME_FORMAT),
                     note.content.unwrap_or_default()
                 )
             } else {
