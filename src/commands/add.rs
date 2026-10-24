@@ -3,7 +3,7 @@ use crate::database::Database;
 use crate::storage::{delete_file, write_all};
 use crate::types::EditMode::FilePath;
 use crate::types::{MonoError, Note, NoteTypes};
-use crate::utils::{make_title, slugify, string_check};
+use crate::utils::{DATE_FORMAT, TIME_FORMAT, make_title, slugify, string_check};
 use chrono::{Local, NaiveDate, NaiveDateTime, NaiveTime};
 use std::path::{Path, PathBuf};
 
@@ -47,8 +47,8 @@ pub fn add(
         "{}\n#{} · {} · {}\n{}\n\n{}",
         note.title,
         note.id,
-        note.date.format("%b %-d, %Y"),
-        note.date.format("%-I:%M %p"),
+        note.date.format(DATE_FORMAT),
+        note.date.format(TIME_FORMAT),
         note.file_link.display(),
         full_text,
     );

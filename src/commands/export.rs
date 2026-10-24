@@ -1,7 +1,7 @@
 use crate::database::Database;
 use crate::storage::read_file_if_exists;
 use crate::types::MonoError;
-use crate::utils::{is_locked, locked_notice};
+use crate::utils::{DATETIME_FORMAT, is_locked, locked_notice};
 
 pub fn export(db: &Database) -> Result<Vec<String>, MonoError> {
     let rows = db.read_rows(-1, None)?;
@@ -23,7 +23,7 @@ pub fn export(db: &Database) -> Result<Vec<String>, MonoError> {
             "## {}\n\n**#{}** · {}  \n`{}`\n\n{}\n\n---\n",
             note.title,
             note.id,
-            note.date.format("%b %-d, %Y at %-I:%M %p"),
+            note.date.format(DATETIME_FORMAT),
             note.file_link.display(),
             content,
         );

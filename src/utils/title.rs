@@ -1,5 +1,5 @@
 use crate::types::NoteTypes;
-use crate::utils::trim_text;
+use crate::utils::{SHORT_DATETIME_FORMAT, trim_text};
 use chrono::{Local, NaiveDate, NaiveDateTime, NaiveTime};
 
 pub fn make_title(
@@ -14,7 +14,7 @@ pub fn make_title(
             let time = time.unwrap_or(now.time());
             let date = date.unwrap_or(now.date_naive());
             let datetime: NaiveDateTime = date.and_time(time);
-            let readable_date = datetime.format("%b %-d, %-I:%M %p").to_string();
+            let readable_date = datetime.format(SHORT_DATETIME_FORMAT).to_string();
             format!("Check-In: {}", readable_date)
         }
         _ => trim_text(text.clone(), 5),
