@@ -1,22 +1,24 @@
 use crate::types::Note;
 use crate::utils::DATETIME_FORMAT;
 
+pub fn pretty_note(note: Note, view: bool) -> String {
+    if view {
+        format!(
+            "{} • ID: {} • {}\n {}",
+            note.title,
+            note.id,
+            note.date.format(DATETIME_FORMAT),
+            note.content.unwrap_or_default()
+        )
+    } else {
+        format!("{} • ID: {}", note.title, note.id)
+    }
+}
+
 pub fn pretty_notes(notes: Vec<Note>, view: bool) -> Vec<String> {
     notes
         .into_iter()
-        .map(|note| {
-            if view {
-                format!(
-                    "{} • ID: {} • {}\n {}",
-                    note.title,
-                    note.id,
-                    note.date.format(DATETIME_FORMAT),
-                    note.content.unwrap_or_default()
-                )
-            } else {
-                format!("{} • ID: {}", note.title, note.id)
-            }
-        })
+        .map(|note| pretty_note(note, view))
         .collect()
 }
 

@@ -19,7 +19,7 @@ pub use get_path::{PathType, get_path};
 pub use locked_check::{is_locked, locked_notice};
 pub use parse_note::parse_note;
 pub use password::{prompt_lock_password, prompt_unlock_password};
-pub use pretty_notes::pretty_notes;
+pub use pretty_notes::{pretty_note, pretty_notes};
 pub use slugify::slugify;
 pub use string_check::string_check;
 pub use title::make_title;
