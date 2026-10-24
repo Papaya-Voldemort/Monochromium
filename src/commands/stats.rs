@@ -1,9 +1,18 @@
 use crate::database::Database;
-use crate::types::MonoError;
+use crate::types::{MonoError, NoteTypes};
+use crate::utils::{MOOD_SHOWN, fetch_mood_days, mood_footer, mood_table};
+use chrono::{Duration, Local, NaiveDate};
 use std::collections::HashMap;
 
-pub fn get_stats(db: &Database) -> Result<String, MonoError> {
-    let counts: HashMap<String, u32> = db.count_rows()?.into_iter().collect();
+pub fn get_stats(db: &Database, short: bool) -> Result<String, MonoError> {
+    let today: NaiveDate = Local::now().date_naive();
+    let window_start = today - Duration::days(MOOD_SHOWN as i64 - 1);
+
+    let checkins = db.read_rows(-1, Some(NoteTypes::CheckIn), Some(window_start), None)?;
+    let mood = fetch_mood_days(today, checkins);
+
+    // Stats counts
+    let counts: HashMap<String, u32> = db.count_rows(None)?.into_iter().collect();
 
     let total_checkins = counts.get("check in").copied().unwrap_or(0);
     let total_todos = counts.get("todo").copied().unwrap_or(0);
@@ -18,7 +27,7 @@ pub fn get_stats(db: &Database) -> Result<String, MonoError> {
 
     let count_width = total_notes.to_string().len();
 
-    Ok(format!(
+    let mut out = format!(
         "\
 Monochromium Stats (Current Notes)
 
@@ -43,7 +52,18 @@ Monochromium Stats (Current Notes)
         total_other,
         other_percent,
         width = count_width
-    ))
+    );
+
+    if mood.iter().any(|day| !day.scores.is_empty()) {
+        let view = if short {
+            mood_footer(&mood)
+        } else {
+            mood_table(&mood)
+        };
+        out.push('\n');
+        out.push_str(&view);
+    }
+    Ok(out)
 }
 
 fn percent(part: u32, total: u32) -> f64 {

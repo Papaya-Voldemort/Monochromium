@@ -4,7 +4,7 @@ use crate::types::MonoError;
 use crate::utils::{DATETIME_FORMAT, is_locked, locked_notice};
 
 pub fn export(db: &Database) -> Result<Vec<String>, MonoError> {
-    let rows = db.read_rows(-1, None)?;
+    let rows = db.read_rows(-1, None, None, None)?;
 
     let mut output: Vec<String> = Vec::new();
 

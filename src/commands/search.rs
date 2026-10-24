@@ -19,7 +19,7 @@ pub fn search(
 
     let final_limit = limit.unwrap_or(10);
     let query = text.trim().to_lowercase();
-    let notes = db.read_rows(-1, note_type)?;
+    let notes = db.read_rows(-1, note_type, None, None)?;
     let mut search = Vec::new();
 
     for note in notes {

@@ -110,7 +110,7 @@ fn run() -> Result<(), MonoError> {
             MonoCommands::View { note_id, no_format } => {
                 CommandOutput::Text(view(&db, note_id, no_format)?)
             }
-            MonoCommands::Stats {} => CommandOutput::Raw(get_stats(&db)?),
+            MonoCommands::Stats { short } => CommandOutput::Raw(get_stats(&db, short)?),
 
             MonoCommands::Export {} => CommandOutput::Lines(export(&db)?),
 

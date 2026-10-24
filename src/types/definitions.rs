@@ -194,7 +194,11 @@ pub enum MonoCommands {
     },
 
     /// Display a basic stats overview (beta)
-    Stats {},
+    Stats {
+        /// Show short version of stats
+        #[clap(short, long)]
+        short: bool,
+    },
 
     /// Output all the notes
     Export {},

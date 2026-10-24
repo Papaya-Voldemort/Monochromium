@@ -1,8 +1,8 @@
-use super::{delete, edit, export, list, search};
+use super::{delete, edit, export, get_stats, list, search};
 use crate::database::Database;
 use crate::types::{EditMode, MonoError, NoteTypes};
 use chrono::{Duration, Local, NaiveDate};
-use std::{fs, path::Path};
+use std::{fs, path::Path, path::PathBuf};
 
 fn note(
     db: &Database,
@@ -274,4 +274,42 @@ fn sugar_commands_parse_scores_and_reject_out_of_range() {
     assert!(MonoCLI::try_parse_from(["mono", "checkin", "text", "-m", "6"]).is_err());
     assert!(MonoCLI::try_parse_from(["mono", "todo", "text", "-i", "6"]).is_err());
     assert!(MonoCLI::try_parse_from(["mono", "idea", "text", "-y", "6"]).is_err());
+}
+
+#[test]
+fn stats_render_mood_views_for_scored_checkins() -> Result<(), MonoError> {
+    let db = Database::new_in_memory()?;
+    let today = Local::now().date_naive();
+    let checkin = |days_back: i64, value: Option<i64>| -> Result<(), MonoError> {
+        db.add_row(
+            "mood".to_string(),
+            NoteTypes::CheckIn,
+            PathBuf::from("notes/mood.md"),
+            (today - Duration::days(days_back))
+                .and_hms_opt(12, 0, 0)
+                .unwrap(),
+            value,
+        )?;
+        Ok(())
+    };
+    checkin(0, Some(2))?;
+    checkin(0, Some(3))?;
+    checkin(1, Some(-1))?;
+    checkin(4, None)?;
+    checkin(15, Some(1))?; // warm-up day: feeds the rolling average, never shown
+
+    let full = get_stats(&db, false)?;
+    assert!(full.contains("Mood (last 14 days)"));
+    let today_row = full.lines().find(|line| line.contains("[+2, +3]")).unwrap();
+    assert!(today_row.contains("+2.5"));
+    assert!(full.contains("unscored"));
+    assert!(full.contains("no check-in"));
+    assert!(full.contains("Logged: 3/4 scored"));
+
+    let short = get_stats(&db, true)?;
+    assert!(short.contains("Mood (14d)"));
+    assert!(short.contains("7d avg"));
+    assert!(!short.contains("Mood (last 14 days)"));
+
+    Ok(())
 }

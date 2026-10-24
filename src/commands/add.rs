@@ -108,7 +108,7 @@ mod tests {
             None,
         );
         assert!(result.is_err());
-        assert!(db.read_rows(-1, None)?.is_empty());
+        assert!(db.read_rows(-1, None, None, None)?.is_empty());
         assert_eq!(std::fs::read_to_string(path)?, "Existing content");
         Ok(())
     }
@@ -133,7 +133,7 @@ mod tests {
             )
             .is_err()
         );
-        assert!(db.read_rows(-1, None)?.is_empty());
+        assert!(db.read_rows(-1, None, None, None)?.is_empty());
         assert_eq!(std::fs::read_dir(directory.path())?.count(), 0);
         Ok(())
     }
