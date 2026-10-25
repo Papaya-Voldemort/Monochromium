@@ -41,6 +41,7 @@ mod tests {
                     .unwrap(),
                 file_link: PathBuf::new(),
                 content: Some("This is the content of the first note.".to_string()),
+                value: None,
             },
             Note {
                 id: 2,
@@ -52,6 +53,7 @@ mod tests {
                     .unwrap(),
                 file_link: PathBuf::new(),
                 content: Some("Milk, bread, eggs, and peanut butter.".to_string()),
+                value: None,
             },
             Note {
                 id: 3,
@@ -63,6 +65,7 @@ mod tests {
                     .unwrap(),
                 file_link: PathBuf::new(),
                 content: Some("Feeling productive and ready to work.".to_string()),
+                value: None,
             },
         ]
     }

@@ -14,6 +14,7 @@ pub fn add(
     time: Option<NaiveTime>,
     date: Option<NaiveDate>,
     paste: bool,
+    value: Option<i64>,
 ) -> Result<String, MonoError> {
     let full_text = string_check(text, paste)?;
 
@@ -41,6 +42,7 @@ pub fn add(
         datetime,
         &full_text,
         &config.note_location,
+        value,
     )?;
 
     let output = format!(
@@ -63,11 +65,12 @@ fn save_note(
     date: NaiveDateTime,
     content: &str,
     directory: &Path,
+    value: Option<i64>,
 ) -> Result<Note, MonoError> {
     std::fs::create_dir_all(directory)?;
     let directory = directory.canonicalize()?;
     let tx = db.conn.unchecked_transaction()?;
-    let id = db.add_row(title.clone(), note_type, PathBuf::new(), date)?;
+    let id = db.add_row(title.clone(), note_type, PathBuf::new(), date, value)?;
     let path = directory.join(format!("{id:04}_{}.md", slugify(&title)));
     write_all(&path, content)?;
 
@@ -102,9 +105,10 @@ mod tests {
             Local::now().naive_local(),
             "New content",
             directory.path(),
+            None,
         );
         assert!(result.is_err());
-        assert!(db.read_rows(-1, None)?.is_empty());
+        assert!(db.read_rows(-1, None, None, None)?.is_empty());
         assert_eq!(std::fs::read_to_string(path)?, "Existing content");
         Ok(())
     }
@@ -124,11 +128,12 @@ mod tests {
                 NoteTypes::Other,
                 Local::now().naive_local(),
                 "New content",
-                directory.path()
+                directory.path(),
+                None
             )
             .is_err()
         );
-        assert!(db.read_rows(-1, None)?.is_empty());
+        assert!(db.read_rows(-1, None, None, None)?.is_empty());
         assert_eq!(std::fs::read_dir(directory.path())?.count(), 0);
         Ok(())
     }

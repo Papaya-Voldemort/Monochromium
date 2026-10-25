@@ -62,6 +62,7 @@ pub struct Note {
     pub date: NaiveDateTime,
     pub file_link: PathBuf,
     pub content: Option<String>,
+    pub value: Option<i32>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]

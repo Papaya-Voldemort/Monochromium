@@ -50,7 +50,7 @@ fn get_default(has_checkins: bool) -> String {
 }
 
 fn get_todo_list(db: &Database) -> Result<String, MonoError> {
-    let mut notes = db.read_rows(-1, Some(NoteTypes::Todo))?;
+    let mut notes = db.read_rows(-1, Some(NoteTypes::Todo), None, None)?;
     if notes.is_empty() {
         return Ok(String::new());
     }

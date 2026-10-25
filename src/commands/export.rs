@@ -4,7 +4,7 @@ use crate::types::MonoError;
 use crate::utils::{DATETIME_FORMAT, is_locked, locked_notice};
 
 pub fn export(db: &Database) -> Result<Vec<String>, MonoError> {
-    let rows = db.read_rows(-1, None)?;
+    let rows = db.read_rows(-1, None, None, None)?;
 
     let mut output: Vec<String> = Vec::new();
 
@@ -19,13 +19,19 @@ pub fn export(db: &Database) -> Result<Vec<String>, MonoError> {
             content
         };
 
+        let value = note
+            .value
+            .map(|num| num.to_string())
+            .unwrap_or_else(|| "None".to_string());
+
         let push = format!(
-            "## {}\n\n**#{}** · {}  \n`{}`\n\n{}\n\n---\n",
-            note.title,
+            "---\nid: {}\ndate: {}\nvalue: {}\nlink: {}\n---\n\n## {}\n\n{}\n\n---\n",
             note.id,
             note.date.format(DATETIME_FORMAT),
+            value,
             note.file_link.display(),
-            content,
+            note.title,
+            content
         );
         output.push(push);
     }

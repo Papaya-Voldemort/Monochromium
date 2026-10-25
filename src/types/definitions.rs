@@ -38,6 +38,79 @@ pub enum MonoCommands {
         /// Use clipboard content as the note body
         #[clap(short, long)]
         paste: bool,
+
+        /// Value assigned to each note [check-in mood, todo priority, idea hype] (-5..=5)
+        #[clap(short, long, value_parser = clap::value_parser!(i64).range(-5..=5), allow_negative_numbers = true)]
+        value: Option<i64>,
+    },
+
+    /// Quick mood check-in (sugar for: mono add -t checkin)
+    Checkin {
+        /// Note text content
+        #[arg(value_name = "TEXT")]
+        text: Option<String>,
+
+        /// Logged time of note (HH:MM or HH:MM:SS) [default: current time]
+        #[clap(long)]
+        time: Option<NaiveTime>,
+
+        /// Logged date of note (YYYY-MM-DD) [default: current date]
+        #[clap(long)]
+        date: Option<NaiveDate>,
+
+        /// Use clipboard content as the note body
+        #[clap(short, long)]
+        paste: bool,
+
+        /// Mood tracking (-5..=5)
+        #[clap(short, long, value_parser = clap::value_parser!(i64).range(-5..=5), allow_negative_numbers = true)]
+        mood: Option<i64>,
+    },
+
+    /// Quick todo (sugar for: mono add -t todo)
+    Todo {
+        /// Note text content
+        #[arg(value_name = "TEXT")]
+        text: Option<String>,
+
+        /// Logged time of note (HH:MM or HH:MM:SS) [default: current time]
+        #[clap(long)]
+        time: Option<NaiveTime>,
+
+        /// Logged date of note (YYYY-MM-DD) [default: current date]
+        #[clap(long)]
+        date: Option<NaiveDate>,
+
+        /// Use clipboard content as the note body
+        #[clap(short, long)]
+        paste: bool,
+
+        /// Task priority or importance level (-5..=5)
+        #[clap(short = 'i', long, value_parser = clap::value_parser!(i64).range(-5..=5), allow_negative_numbers = true)]
+        priority: Option<i64>,
+    },
+
+    /// Quick idea capture (sugar for: mono add -t idea)
+    Idea {
+        /// Note text content
+        #[arg(value_name = "TEXT")]
+        text: Option<String>,
+
+        /// Logged time of note (HH:MM or HH:MM:SS) [default: current time]
+        #[clap(long)]
+        time: Option<NaiveTime>,
+
+        /// Logged date of note (YYYY-MM-DD) [default: current date]
+        #[clap(long)]
+        date: Option<NaiveDate>,
+
+        /// Use clipboard content as the note body
+        #[clap(short, long)]
+        paste: bool,
+
+        /// How good of an idea it is (-5..=5)
+        #[clap(short = 'y', long, value_parser = clap::value_parser!(i64).range(-5..=5), allow_negative_numbers = true)]
+        hype: Option<i64>,
     },
 
     /// List out existing notes
@@ -121,7 +194,11 @@ pub enum MonoCommands {
     },
 
     /// Display a basic stats overview (beta)
-    Stats {},
+    Stats {
+        /// Show short version of stats
+        #[clap(short, long)]
+        short: bool,
+    },
 
     /// Output all the notes
     Export {},
@@ -131,6 +208,9 @@ pub enum MonoCommands {
 
     /// Util command for initializing config
     Init {},
+
+    /// Open config file in default editor
+    Config {},
 
     // Cryptography commands
     /// Lock a note
@@ -146,7 +226,4 @@ pub enum MonoCommands {
         #[arg()]
         note_id: u32,
     },
-
-    /// Open config file in default editor
-    Config {},
 }
