@@ -105,6 +105,30 @@ fn list_applies_today_and_since_filters() -> Result<(), MonoError> {
     let results = list(&db, None, None, false, Some(today), false)?;
     assert_eq!(results.len(), 2);
     assert!(!results.iter().any(|line| line.contains("yesterday")));
+
+    // combined filters keep the later of `since` and today as the lower bound
+    assert_eq!(
+        list(
+            &db,
+            None,
+            None,
+            true,
+            Some(today - Duration::days(1)),
+            false
+        )?,
+        [format!("today • ID: {id}")]
+    );
+    assert!(
+        list(
+            &db,
+            None,
+            None,
+            true,
+            Some(today + Duration::days(1)),
+            false
+        )?
+        .is_empty()
+    );
     Ok(())
 }
 
@@ -234,6 +258,43 @@ fn missing_files_do_not_abort_bulk_commands() -> Result<(), MonoError> {
 }
 
 #[test]
+fn export_includes_scores_in_note_metadata() -> Result<(), MonoError> {
+    let db = Database::new_in_memory()?;
+    let directory = tempfile::tempdir()?;
+    let today = Local::now().date_naive();
+    let mood_path = directory.path().join("mood.md");
+    fs::write(&mood_path, "Rough day")?;
+    db.add_row(
+        "mood".to_string(),
+        NoteTypes::CheckIn,
+        mood_path,
+        today.and_hms_opt(9, 30, 0).unwrap(),
+        Some(-3),
+    )?;
+    note(
+        &db,
+        directory.path(),
+        "plain",
+        "Unscored body",
+        NoteTypes::Other,
+        today,
+    )?;
+
+    let output = export(&db)?;
+    let scored = output
+        .iter()
+        .find(|entry| entry.contains("## mood"))
+        .unwrap();
+    assert!(scored.contains("value: -3"));
+    let unscored = output
+        .iter()
+        .find(|entry| entry.contains("## plain"))
+        .unwrap();
+    assert!(unscored.contains("value: None"));
+    Ok(())
+}
+
+#[test]
 fn value_flag_accepts_negative_and_rejects_out_of_range() {
     use crate::types::{MonoCLI, MonoCommands};
     use clap::Parser;
@@ -302,6 +363,14 @@ fn stats_render_mood_views_for_scored_checkins() -> Result<(), MonoError> {
     assert!(full.contains("Mood (last 14 days)"));
     let today_row = full.lines().find(|line| line.contains("[+2, +3]")).unwrap();
     assert!(today_row.contains("+2.5"));
+
+    // the warm-up day must reach the oldest displayed row's rolling average
+    let oldest_row = full
+        .lines()
+        .find(|line| line.contains("no check-in"))
+        .unwrap();
+    assert!(oldest_row.contains("+1.0"));
+
     assert!(full.contains("unscored"));
     assert!(full.contains("no check-in"));
     assert!(full.contains("Logged: 3/4 scored"));

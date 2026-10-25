@@ -20,7 +20,7 @@ pub use clipboard::{copy, get_paste};
 pub use dates::day_of;
 pub use get_path::{PathType, get_path};
 pub use locked_check::{is_locked, locked_notice};
-pub use mood::{MOOD_SHOWN, fetch_mood_days, mood_footer, mood_table};
+pub use mood::{MOOD_SPAN, fetch_mood_days, mood_footer, mood_table};
 pub use parse_note::parse_note;
 pub use password::{prompt_lock_password, prompt_unlock_password};
 pub use pretty_notes::{pretty_note, pretty_notes};

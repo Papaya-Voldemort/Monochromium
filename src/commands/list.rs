@@ -15,7 +15,10 @@ pub fn list(
     let final_limit: u16 = limit.unwrap_or(15);
     let current_date = Local::now().date_naive();
     let (since, until) = if today {
-        (Some(current_date), Some(current_date + Duration::days(1)))
+        (
+            Some(since.map_or(current_date, |date| date.max(current_date))),
+            Some(current_date + Duration::days(1)),
+        )
     } else {
         (since, None)
     };

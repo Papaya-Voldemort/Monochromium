@@ -1,12 +1,12 @@
 use crate::database::Database;
 use crate::types::{MonoError, NoteTypes};
-use crate::utils::{MOOD_SHOWN, fetch_mood_days, mood_footer, mood_table};
+use crate::utils::{MOOD_SPAN, fetch_mood_days, mood_footer, mood_table};
 use chrono::{Duration, Local, NaiveDate};
 use std::collections::HashMap;
 
 pub fn get_stats(db: &Database, short: bool) -> Result<String, MonoError> {
     let today: NaiveDate = Local::now().date_naive();
-    let window_start = today - Duration::days(MOOD_SHOWN as i64 - 1);
+    let window_start = today - Duration::days(MOOD_SPAN as i64 - 1);
 
     let checkins = db.read_rows(-1, Some(NoteTypes::CheckIn), Some(window_start), None)?;
     let mood = fetch_mood_days(today, checkins);

@@ -5,7 +5,7 @@ use owo_colors::{OwoColorize, Stream};
 use std::collections::HashMap;
 
 pub const MOOD_SHOWN: usize = 14;
-const MOOD_SPAN: usize = 20;
+pub const MOOD_SPAN: usize = 20;
 const ROLLING_WINDOW: usize = 7;
 pub struct MoodDay {
     pub date: NaiveDate,
