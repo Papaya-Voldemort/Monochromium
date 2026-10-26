@@ -2,7 +2,7 @@
 
 ![Hackatime](https://hackatime.hackclub.com/api/v1/badge/U09197C6M2B/Papaya-Voldemort/Monochromium)
 
-> FOR STARDANCE REVIEWERS: IF THE COMMAND IS NOT FOUND AFTER YOU INSTALL IT, MAKE SURE YOU RELOAD YOUR SHELL
+> **For Stardance Reviews:** If `mono` is not found try running `exec $SHELL` to reload your shell!
 
 > A fast, local first CLI note-taking app
 
@@ -29,6 +29,12 @@ Monochromium is crazy light, modern, and allows for blazing fast workflows fully
 
 ## Install
 
+### From Brew (recommended)
+```bash
+brew tap Papaya-Voldemort/tap
+brew install Papaya-Voldemort/tap/monochromium
+```
+
 ### From Source
 
 > Requires Rust
@@ -37,7 +43,7 @@ git clone https://github.com/Papaya-Voldemort/Monochromium
 cd Monochromium
 cargo install --path .
 ```
-### From Cargo (Recommended)
+### From Cargo
 
 > Requires Rust
 ```bash
@@ -93,7 +99,7 @@ So yeah a little work to go for v1.0.0 but we are well on our way!
 
 ## Contributions
 
-> We are a very small team (of 1 person :sob) so your PRs may take several days to review :)
+> We are a very small team (of 1 person :sob:) so your PRs may take several days to review :)
 
 Contributions are completely welcome and accepted.
 
