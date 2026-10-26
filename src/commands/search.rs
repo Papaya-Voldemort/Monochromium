@@ -44,7 +44,7 @@ pub fn search(
         search.push(note);
     }
 
-    let output = pretty_notes(search, false);
+    let output = pretty_notes(search, false, false);
 
     Ok(output)
 }

@@ -35,5 +35,5 @@ pub fn list(
         }
     }
 
-    Ok(pretty_notes(notes, view))
+    Ok(pretty_notes(notes, view, false))
 }
