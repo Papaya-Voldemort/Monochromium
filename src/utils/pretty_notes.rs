@@ -1,54 +1,51 @@
 use crate::types::Note;
 use crate::utils::DATETIME_FORMAT;
 
-pub fn pretty_note(note: Note, view: bool, verbose: bool) -> String {
-    match (view, verbose) {
-        (false, false) => {
-            format!("{} • ID: {}", note.title, note.id)
-        }
-        (true, false) => {
-            format!(
-                "{} • ID: {} • {}\n {}",
-                note.title,
-                note.id,
-                note.date.format(DATETIME_FORMAT),
-                note.content.unwrap_or_default()
-            )
-        }
-        (false, true) => {
-            format!(
-                "{} • ID: {} • Type: {:?} • {} • Value: {} • File: {}",
-                note.title,
-                note.id,
+pub fn pretty_note(note: &Note, view: bool, verbose: bool) -> String {
+    let value = || note.value.map_or_else(|| "n/a".into(), |v| v.to_string());
+
+    if view {
+        let mut out = note.title.clone();
+        out.push_str(&format!("\nID: {}", note.id));
+        if verbose {
+            out.push_str(&format!(
+                "\nType: {:?} · Value: {}",
                 note.note_type,
-                note.date.format(DATETIME_FORMAT),
-                note.value
-                    .map(|v| v.to_string())
-                    .unwrap_or_else(|| "n/a".into()),
-                note.file_link.display()
-            )
+                value()
+            ));
         }
-        (true, true) => {
-            format!(
-                "{} • ID: {} • Type: {:?} • {} • Value: {} • File: {}\n{}",
-                note.title,
-                note.id,
+        out.push_str(&format!("\n{}", note.date.format(DATETIME_FORMAT)));
+        if verbose {
+            out.push_str(&format!("\nFile: {}", note.file_link.display()));
+        }
+        if let Some(body) = note.content.as_deref().filter(|c| !c.is_empty()) {
+            out.push_str("\n\n");
+            out.push_str(body);
+        }
+        out
+    } else {
+        let mut line = format!("{:>3}  {}", note.id, note.title);
+        if verbose {
+            let file = note
+                .file_link
+                .file_name()
+                .map(|f| f.to_string_lossy())
+                .unwrap_or_else(|| note.file_link.as_os_str().to_string_lossy());
+            line.push_str(&format!(
+                "  [{:?} · Value: {} · {}]",
                 note.note_type,
-                note.date.format(DATETIME_FORMAT),
-                note.value
-                    .map(|v| v.to_string())
-                    .unwrap_or_else(|| "n/a".into()),
-                note.file_link.display(),
-                note.content.unwrap_or_default()
-            )
+                value(),
+                file
+            ));
         }
+        line
     }
 }
 
 pub fn pretty_notes(notes: Vec<Note>, view: bool, verbose: bool) -> Vec<String> {
     notes
         .into_iter()
-        .map(|note| pretty_note(note, view, verbose))
+        .map(|note| pretty_note(&note, view, verbose))
         .collect()
 }
 

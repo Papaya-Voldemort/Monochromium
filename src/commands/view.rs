@@ -21,7 +21,7 @@ pub fn view(
 
     note.content = Some(read_file(&note.file_link)?);
 
-    let output = pretty_note(note, true, verbose);
+    let output = pretty_note(&note, true, verbose);
 
     Ok(output)
 }
