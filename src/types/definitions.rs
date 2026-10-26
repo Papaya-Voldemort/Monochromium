@@ -164,6 +164,10 @@ pub enum MonoCommands {
         /// Output only the raw note content
         #[clap(short, long)]
         no_format: bool,
+
+        /// Output more details
+        #[clap(short, long)]
+        verbose: bool,
     },
 
     /// Edit a note's content or metadata

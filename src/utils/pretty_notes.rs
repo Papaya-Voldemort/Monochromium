@@ -1,24 +1,54 @@
 use crate::types::Note;
 use crate::utils::DATETIME_FORMAT;
 
-pub fn pretty_note(note: Note, view: bool) -> String {
-    if view {
-        format!(
-            "{} • ID: {} • {}\n {}",
-            note.title,
-            note.id,
-            note.date.format(DATETIME_FORMAT),
-            note.content.unwrap_or_default()
-        )
-    } else {
-        format!("{} • ID: {}", note.title, note.id)
+pub fn pretty_note(note: Note, view: bool, verbose: bool) -> String {
+    match (view, verbose) {
+        (false, false) => {
+            format!("{} • ID: {}", note.title, note.id)
+        }
+        (true, false) => {
+            format!(
+                "{} • ID: {} • {}\n {}",
+                note.title,
+                note.id,
+                note.date.format(DATETIME_FORMAT),
+                note.content.unwrap_or_default()
+            )
+        }
+        (false, true) => {
+            format!(
+                "{} • ID: {} • Type: {:?} • {} • Value: {} • File: {}",
+                note.title,
+                note.id,
+                note.note_type,
+                note.date.format(DATETIME_FORMAT),
+                note.value
+                    .map(|v| v.to_string())
+                    .unwrap_or_else(|| "n/a".into()),
+                note.file_link.display()
+            )
+        }
+        (true, true) => {
+            format!(
+                "{} • ID: {} • Type: {:?} • {} • Value: {} • File: {}\n{}",
+                note.title,
+                note.id,
+                note.note_type,
+                note.date.format(DATETIME_FORMAT),
+                note.value
+                    .map(|v| v.to_string())
+                    .unwrap_or_else(|| "n/a".into()),
+                note.file_link.display(),
+                note.content.unwrap_or_default()
+            )
+        }
     }
 }
 
-pub fn pretty_notes(notes: Vec<Note>, view: bool) -> Vec<String> {
+pub fn pretty_notes(notes: Vec<Note>, view: bool, verbose: bool) -> Vec<String> {
     notes
         .into_iter()
-        .map(|note| pretty_note(note, view))
+        .map(|note| pretty_note(note, view, verbose))
         .collect()
 }
 
@@ -74,7 +104,7 @@ mod tests {
     fn test_pretty_notes_formating_with_view() {
         let test_notes = test_notes();
 
-        let test_out = pretty_notes(test_notes, true);
+        let test_out = pretty_notes(test_notes, true, false);
 
         let expected = vec![
             "First test note • ID: 1 • Sep 21, 2026 at 9:30 AM\n This is the content of the first note.".to_string(),
@@ -89,7 +119,7 @@ mod tests {
     fn test_pretty_notes_formating_without_view() {
         let test_notes = test_notes();
 
-        let test_out = pretty_notes(test_notes, false);
+        let test_out = pretty_notes(test_notes, false, false);
 
         let expected = vec![
             "First test note • ID: 1".to_string(),

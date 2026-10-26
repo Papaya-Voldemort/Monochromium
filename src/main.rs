@@ -107,9 +107,11 @@ fn run() -> Result<(), MonoError> {
                 note_type,
                 date,
             } => CommandOutput::Lines(search(&db, text, limit, note_type, date)?),
-            MonoCommands::View { note_id, no_format } => {
-                CommandOutput::Text(view(&db, note_id, no_format)?)
-            }
+            MonoCommands::View {
+                note_id,
+                no_format,
+                verbose,
+            } => CommandOutput::Text(view(&db, note_id, no_format, verbose)?),
             MonoCommands::Stats { short } => CommandOutput::Raw(get_stats(&db, short)?),
 
             MonoCommands::Export {} => CommandOutput::Lines(export(&db)?),
