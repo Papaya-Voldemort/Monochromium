@@ -11,6 +11,7 @@ pub fn list(
     today: bool,
     since: Option<NaiveDate>,
     view: bool,
+    verbose: bool,
 ) -> Result<Vec<String>, MonoError> {
     let final_limit: u16 = limit.unwrap_or(15);
     let current_date = Local::now().date_naive();
@@ -35,5 +36,5 @@ pub fn list(
         }
     }
 
-    Ok(pretty_notes(notes, view, false))
+    Ok(pretty_notes(notes, view, verbose))
 }

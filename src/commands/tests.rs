@@ -99,10 +99,10 @@ fn list_applies_today_and_since_filters() -> Result<(), MonoError> {
         today + Duration::days(1),
     )?;
     assert_eq!(
-        list(&db, Some(1), None, true, None, false)?,
+        list(&db, Some(1), None, true, None, false, false)?,
         [format!("{id:>3}  today")]
     );
-    let results = list(&db, None, None, false, Some(today), false)?;
+    let results = list(&db, None, None, false, Some(today), false, false)?;
     assert_eq!(results.len(), 2);
     assert!(!results.iter().any(|line| line.contains("yesterday")));
 
@@ -113,6 +113,7 @@ fn list_applies_today_and_since_filters() -> Result<(), MonoError> {
             None,
             true,
             Some(today - Duration::days(1)),
+            false,
             false
         )?,
         [format!("{id:>3}  today")]
@@ -124,6 +125,7 @@ fn list_applies_today_and_since_filters() -> Result<(), MonoError> {
             None,
             true,
             Some(today + Duration::days(1)),
+            false,
             false
         )?
         .is_empty()
@@ -248,7 +250,7 @@ fn missing_files_do_not_abort_bulk_commands() -> Result<(), MonoError> {
     let output = export(&db)?;
     assert_eq!(output.len(), 1);
     assert!(output[0].contains("Kept content"));
-    assert_eq!(list(&db, None, None, false, None, true)?.len(), 2);
+    assert_eq!(list(&db, None, None, false, None, true, false)?.len(), 2);
     assert_eq!(
         search(&db, "Kept content".to_string(), None, None, None)?.len(),
         1
@@ -364,7 +366,6 @@ fn stats_render_mood_views_for_scored_checkins() -> Result<(), MonoError> {
     let today_row = full.lines().find(|line| line.contains("[+2, +3]")).unwrap();
     assert!(today_row.contains("+2.5"));
 
-    // the warm-up day must reach the oldest displayed row's rolling average
     let oldest_row = full
         .lines()
         .find(|line| line.contains("no check-in"))

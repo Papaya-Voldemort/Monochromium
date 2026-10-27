@@ -134,6 +134,10 @@ pub enum MonoCommands {
         /// Show note content as well
         #[clap(short, long)]
         view: bool,
+
+        /// Shw note meta data
+        #[clap(short = 'V', long)]
+        verbose: bool,
     },
 
     /// Search through notes

@@ -103,7 +103,8 @@ fn run() -> Result<(), MonoError> {
                 today,
                 since,
                 view,
-            } => CommandOutput::Lines(list(&db, limit, note_type, today, since, view)?),
+                verbose,
+            } => CommandOutput::Lines(list(&db, limit, note_type, today, since, view, verbose)?),
             MonoCommands::Search {
                 text,
                 limit,
