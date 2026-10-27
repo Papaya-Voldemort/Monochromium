@@ -60,7 +60,7 @@ fn search_matches_bodies_and_filters_before_limiting() -> Result<(), MonoError> 
         Some(NoteTypes::Idea),
         None,
     )?;
-    assert_eq!(results, [format!("older • ID: {id}")]);
+    assert_eq!(results, [format!("{id:>3}  older")]);
     assert_eq!(
         search(&db, "BODYONLYWORD".to_string(), None, None, Some(yesterday))?,
         results
@@ -100,13 +100,12 @@ fn list_applies_today_and_since_filters() -> Result<(), MonoError> {
     )?;
     assert_eq!(
         list(&db, Some(1), None, true, None, false)?,
-        [format!("today • ID: {id}")]
+        [format!("{id:>3}  today")]
     );
     let results = list(&db, None, None, false, Some(today), false)?;
     assert_eq!(results.len(), 2);
     assert!(!results.iter().any(|line| line.contains("yesterday")));
 
-    // combined filters keep the later of `since` and today as the lower bound
     assert_eq!(
         list(
             &db,
@@ -116,7 +115,7 @@ fn list_applies_today_and_since_filters() -> Result<(), MonoError> {
             Some(today - Duration::days(1)),
             false
         )?,
-        [format!("today • ID: {id}")]
+        [format!("{id:>3}  today")]
     );
     assert!(
         list(
@@ -357,9 +356,10 @@ fn stats_render_mood_views_for_scored_checkins() -> Result<(), MonoError> {
     checkin(0, Some(3))?;
     checkin(1, Some(-1))?;
     checkin(4, None)?;
-    checkin(15, Some(1))?; // warm-up day: feeds the rolling average, never shown
+    checkin(15, Some(1))?;
 
-    let full = get_stats(&db, false)?;
+    let full = get_stats(&db, false, false)?;
+    println!("{full:?}");
     assert!(full.contains("Mood (last 14 days)"));
     let today_row = full.lines().find(|line| line.contains("[+2, +3]")).unwrap();
     assert!(today_row.contains("+2.5"));
@@ -375,7 +375,7 @@ fn stats_render_mood_views_for_scored_checkins() -> Result<(), MonoError> {
     assert!(full.contains("no check-in"));
     assert!(full.contains("Logged: 3/4 scored"));
 
-    let short = get_stats(&db, true)?;
+    let short = get_stats(&db, true, false)?;
     assert!(short.contains("Mood (14d)"));
     assert!(short.contains("7d avg"));
     assert!(!short.contains("Mood (last 14 days)"));

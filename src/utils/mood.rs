@@ -1,7 +1,7 @@
 use crate::types::Note;
 use crate::utils::day_of;
 use chrono::{Datelike, Duration, NaiveDate};
-use owo_colors::{OwoColorize, Stream};
+use owo_colors::OwoColorize;
 use std::collections::HashMap;
 
 pub const MOOD_SHOWN: usize = 14;
@@ -10,6 +10,39 @@ const ROLLING_WINDOW: usize = 7;
 pub struct MoodDay {
     pub date: NaiveDate,
     pub scores: Vec<Option<i32>>,
+}
+
+pub struct Ink {
+    colorize: bool,
+}
+
+impl Ink {
+    fn paint(&self, text: &str, style: impl Fn(&str) -> String) -> String {
+        if self.colorize {
+            style(text)
+        } else {
+            text.to_string()
+        }
+    }
+
+    pub fn dim(&self, text: &str) -> String {
+        self.paint(text, |t| t.dimmed().to_string())
+    }
+    pub fn bold(&self, text: &str) -> String {
+        self.paint(text, |t| t.bold().to_string())
+    }
+    pub fn green(&self, text: &str) -> String {
+        self.paint(text, |t| t.green().to_string())
+    }
+    pub fn bright_green(&self, text: &str) -> String {
+        self.paint(text, |t| t.bright_green().to_string())
+    }
+    pub fn red(&self, text: &str) -> String {
+        self.paint(text, |t| t.red().to_string())
+    }
+    pub fn bright_red(&self, text: &str) -> String {
+        self.paint(text, |t| t.bright_red().to_string())
+    }
 }
 
 pub fn fetch_mood_days(today: NaiveDate, notes: Vec<Note>) -> Vec<MoodDay> {
@@ -69,37 +102,8 @@ fn signed(value: f64) -> String {
         format!("{value:+.1}")
     }
 }
-
-fn paint(text: &str, style: impl Fn(&str) -> String) -> String {
-    text.if_supports_color(Stream::Stdout, |t| style(t))
-        .to_string()
-}
-
-fn dim(text: &str) -> String {
-    paint(text, |t| t.dimmed().to_string())
-}
-
-fn bold(text: &str) -> String {
-    paint(text, |t| t.bold().to_string())
-}
-
-fn green(text: &str) -> String {
-    paint(text, |t| t.green().to_string())
-}
-
-fn bright_green(text: &str) -> String {
-    paint(text, |t| t.bright_green().to_string())
-}
-
-fn red(text: &str) -> String {
-    paint(text, |t| t.red().to_string())
-}
-
-fn bright_red(text: &str) -> String {
-    paint(text, |t| t.bright_red().to_string())
-}
-
-pub fn mood_table(days: &[MoodDay]) -> String {
+pub fn mood_table(days: &[MoodDay], colorize: bool) -> String {
+    let ink = Ink { colorize };
     let first = days.len() - MOOD_SHOWN;
     let daily: Vec<Option<f64>> = days.iter().map(|d| daily_avg(&d.scores)).collect();
     let rolling: Vec<Option<f64>> = (0..daily.len()).map(|i| rolling_avg(&daily, i)).collect();
@@ -120,9 +124,9 @@ pub fn mood_table(days: &[MoodDay]) -> String {
         lines.push(format!(
             "  {}  {}  {}  {roll:>6}  {}",
             day.date.format("%b %d"),
-            mood_bar(daily[i]),
-            daily_cell(daily[i]),
-            score_pills(&day.scores),
+            mood_bar(daily[i], colorize),
+            daily_cell(daily[i], colorize),
+            score_pills(&day.scores, colorize),
         ));
     }
 
@@ -137,87 +141,93 @@ pub fn mood_table(days: &[MoodDay]) -> String {
     if let Some((date, avg)) = best {
         parts.push(format!(
             "{} {} ({})",
-            dim("Peak:"),
+            ink.dim("Peak:"),
             date.format("%b %d"),
-            green(&signed(avg))
+            ink.green(&signed(avg))
         ));
     }
     if let Some((date, avg)) = worst {
         parts.push(format!(
             "{} {} ({})",
-            dim("Low:"),
+            ink.dim("Low:"),
             date.format("%b %d"),
-            red(&signed(avg))
+            ink.red(&signed(avg))
         ));
     }
-    parts.push(format!("{} {scored}/{total} scored", dim("Logged:")));
+    parts.push(format!("{} {scored}/{total} scored", ink.dim("Logged:")));
 
     lines.push(String::new());
     lines.push(format!("  {}", parts.join("   ")));
     lines.join("\n")
 }
 
-fn mood_bar(avg: Option<f64>) -> String {
+fn mood_bar(avg: Option<f64>, colorize: bool) -> String {
+    let ink = Ink { colorize };
     let Some(avg) = avg else {
-        return format!("     {}     ", dim("┃"));
+        return format!("     {}     ", ink.dim("┃"));
     };
     if avg == 0.0 {
-        return format!("     {}     ", bold("╋"));
+        return format!("     {}     ", ink.bold("╋"));
     }
     let mut blocks = "█".repeat(avg.abs() as usize);
     if avg.abs().fract() >= 0.5 {
         blocks.push(if avg > 0.0 { '▌' } else { '▐' });
     }
     if avg > 0.0 {
-        format!("     ┃{}", green(&format!("{blocks:<5}")))
+        format!("     ┃{}", ink.green(&format!("{blocks:<5}")))
     } else {
-        format!("{}┃     ", red(&format!("{blocks:>5}")))
+        format!("{}┃     ", ink.red(&format!("{blocks:>5}")))
     }
 }
 
-fn daily_cell(avg: Option<f64>) -> String {
+fn daily_cell(avg: Option<f64>, colorize: bool) -> String {
+    let ink = Ink { colorize };
     let Some(avg) = avg else {
-        return format!("    {}", dim("—"));
+        return format!("    {}", ink.dim("—"));
     };
     let plain = signed(avg);
     let pad = " ".repeat(5 - plain.len());
     let colored = if avg > 0.0 {
-        green(&plain)
+        ink.green(&plain)
     } else if avg < 0.0 {
-        red(&plain)
+        ink.red(&plain)
     } else {
         plain
     };
     format!("{pad}{colored}")
 }
 
-fn score_pills(scores: &[Option<i32>]) -> String {
+fn score_pills(scores: &[Option<i32>], colorize: bool) -> String {
+    let ink = Ink { colorize };
     if scores.is_empty() {
-        return dim("no check-in");
+        return ink.dim("no check-in");
     }
     let pills: Vec<String> = scores
         .iter()
         .map(|score| match score {
-            None => dim("unscored"),
+            None => ink.dim("unscored"),
             Some(0) => "0".to_string(),
-            Some(v) if *v > 0 => green(&format!("{v:+}")),
-            Some(v) => red(&format!("{v:+}")),
+            Some(v) if *v > 0 => ink.green(&format!("{v:+}")),
+            Some(v) => ink.red(&format!("{v:+}")),
         })
         .collect();
     format!("[{}]", pills.join(", "))
 }
 
-pub fn mood_footer(days: &[MoodDay]) -> String {
+pub fn mood_footer(days: &[MoodDay], colorize: bool) -> String {
+    let ink = Ink { colorize };
     let first = days.len() - MOOD_SHOWN;
     let shown = &days[first..];
     let week = MOOD_SHOWN / 2;
 
-    let glyphs: Vec<String> = shown.iter().map(|d| mood_glyph(&d.scores)).collect();
+    let glyphs: Vec<String> = shown
+        .iter()
+        .map(|d| mood_glyph(&d.scores, colorize))
+        .collect();
     let daily: Vec<Option<f64>> = days.iter().map(|d| daily_avg(&d.scores)).collect();
     let last = rolling_avg(&daily, daily.len() - 1);
-    let avg = last.map_or_else(|| dim("·"), |v| bold(&signed(v)));
+    let avg = last.map_or_else(|| ink.dim("·"), |v| ink.bold(&signed(v)));
 
-    // "Oct 11–17" within a month, "Sep 28–Oct 4" across the boundary
     let label = |from: usize, to: usize| {
         let start = shown[from].date;
         let end = shown[to].date;
@@ -232,7 +242,11 @@ pub fn mood_footer(days: &[MoodDay]) -> String {
     let (best, worst) = best_and_worst(shown);
     let range = match (&best, &worst) {
         (Some((_, b)), Some((_, w))) => {
-            format!("    range {}..{}", dim(&signed(*w)), dim(&signed(*b)))
+            format!(
+                "    range {}..{}",
+                ink.dim(&signed(*w)),
+                ink.dim(&signed(*b))
+            )
         }
         _ => String::new(),
     };
@@ -241,25 +255,26 @@ pub fn mood_footer(days: &[MoodDay]) -> String {
         "  {:<15}[{} {} {}]  7d avg {avg}\n{}{}   {}{}",
         format!("Mood ({MOOD_SHOWN}d)"),
         glyphs[..week].join(" "),
-        dim("│"),
+        ink.dim("│"),
         glyphs[week..].join(" "),
         " ".repeat(18),
-        dim(&format!("{:<13}", label(0, week - 1))),
-        dim(&format!("{:<13}", label(week, MOOD_SHOWN - 1))),
+        ink.dim(&format!("{:<13}", label(0, week - 1))),
+        ink.dim(&format!("{:<13}", label(week, MOOD_SHOWN - 1))),
         range,
     )
 }
 
-fn mood_glyph(scores: &[Option<i32>]) -> String {
+fn mood_glyph(scores: &[Option<i32>], colorize: bool) -> String {
+    let ink = Ink { colorize };
     if scores.is_empty() {
-        return dim("·");
+        return ink.dim("·");
     }
     match daily_avg(scores) {
-        None => dim("○"),
+        None => ink.dim("○"),
         Some(0.0) => "▬".to_string(),
-        Some(avg) if avg >= 3.0 => bright_green("▲"),
-        Some(avg) if avg > 0.0 => green("▴"),
-        Some(avg) if avg <= -3.0 => bright_red("▼"),
-        Some(_) => red("▾"),
+        Some(avg) if avg >= 3.0 => ink.bright_green("▲"),
+        Some(avg) if avg > 0.0 => ink.green("▴"),
+        Some(avg) if avg <= -3.0 => ink.bright_red("▼"),
+        Some(_) => ink.red("▾"),
     }
 }

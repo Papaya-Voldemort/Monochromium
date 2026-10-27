@@ -12,3 +12,8 @@ repos:
         entry: cargo clippy --all-targets -- -D warnings
         language: system
         pass_filenames: false
+      - id: cargo_test
+        name: cargo test
+        entry: cargo test --all-features
+        language: system
+        pass_filenames: false

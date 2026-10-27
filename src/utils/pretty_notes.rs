@@ -104,9 +104,9 @@ mod tests {
         let test_out = pretty_notes(test_notes, true, false);
 
         let expected = vec![
-            "First test note • ID: 1 • Sep 21, 2026 at 9:30 AM\n This is the content of the first note.".to_string(),
-            "Buy groceries • ID: 2 • Sep 22, 2026 at 4:45 PM\n Milk, bread, eggs, and peanut butter.".to_string(),
-            "Morning check-in • ID: 3 • Sep 23, 2026 at 7:05 AM\n Feeling productive and ready to work.".to_string(),
+            "First test note\nID: 1\nSep 21, 2026 at 9:30 AM\n\nThis is the content of the first note.".to_string(),
+            "Buy groceries\nID: 2\nSep 22, 2026 at 4:45 PM\n\nMilk, bread, eggs, and peanut butter.".to_string(),
+            "Morning check-in\nID: 3\nSep 23, 2026 at 7:05 AM\n\nFeeling productive and ready to work.".to_string(),
         ];
 
         assert_eq!(test_out, expected);
@@ -119,9 +119,39 @@ mod tests {
         let test_out = pretty_notes(test_notes, false, false);
 
         let expected = vec![
-            "First test note • ID: 1".to_string(),
-            "Buy groceries • ID: 2".to_string(),
-            "Morning check-in • ID: 3".to_string(),
+            "  1  First test note".to_string(),
+            "  2  Buy groceries".to_string(),
+            "  3  Morning check-in".to_string(),
+        ];
+
+        assert_eq!(test_out, expected);
+    }
+
+    #[test]
+    fn test_pretty_notes_formating_verbose_list() {
+        let test_notes = test_notes();
+
+        let test_out = pretty_notes(test_notes, false, true);
+
+        let expected = vec![
+            "  1  First test note  [Other · Value: n/a · ]".to_string(),
+            "  2  Buy groceries  [Other · Value: n/a · ]".to_string(),
+            "  3  Morning check-in  [Other · Value: n/a · ]".to_string(),
+        ];
+
+        assert_eq!(test_out, expected);
+    }
+
+    #[test]
+    fn test_pretty_notes_formating_verbose_view() {
+        let test_notes = test_notes();
+
+        let test_out = pretty_notes(test_notes, true, true);
+
+        let expected = vec![
+            "First test note\nID: 1\nType: Other · Value: n/a\nSep 21, 2026 at 9:30 AM\nFile: \n\nThis is the content of the first note.".to_string(),
+            "Buy groceries\nID: 2\nType: Other · Value: n/a\nSep 22, 2026 at 4:45 PM\nFile: \n\nMilk, bread, eggs, and peanut butter.".to_string(),
+            "Morning check-in\nID: 3\nType: Other · Value: n/a\nSep 23, 2026 at 7:05 AM\nFile: \n\nFeeling productive and ready to work.".to_string(),
         ];
 
         assert_eq!(test_out, expected);

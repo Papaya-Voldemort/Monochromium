@@ -14,6 +14,7 @@ use crate::database::Database;
 use crate::types::{CommandOutput, MonoError, NoteTypes};
 use crate::utils::copy;
 use clap::{CommandFactory, Parser};
+use std::io::IsTerminal;
 use types::{MonoCLI, MonoCommands};
 
 fn main() {
@@ -29,6 +30,8 @@ fn run() -> Result<(), MonoError> {
     let db = Database::new()?;
 
     let copy_output = cli.copy;
+
+    let colorize = std::io::stdout().is_terminal() && std::env::var_os("NO_COLOR").is_none();
 
     let output = match cli.command {
         Some(cmd) => match cmd {
@@ -112,7 +115,7 @@ fn run() -> Result<(), MonoError> {
                 no_format,
                 verbose,
             } => CommandOutput::Text(view(&db, note_id, no_format, verbose)?),
-            MonoCommands::Stats { short } => CommandOutput::Raw(get_stats(&db, short)?),
+            MonoCommands::Stats { short } => CommandOutput::Raw(get_stats(&db, short, colorize)?),
 
             MonoCommands::Export {} => CommandOutput::Lines(export(&db)?),
 
