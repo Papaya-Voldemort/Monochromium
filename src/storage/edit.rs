@@ -7,28 +7,13 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use tempfile::Builder;
 
-pub fn edit_file(target_path: &PathBuf) -> Result<bool, MonoError> {
-    let original_content: String = if target_path.exists() {
-        fs::read_to_string(target_path)?
-    } else {
-        String::new()
-    };
-
-    let mut temp = Builder::new()
-        .prefix("cli-edit-")
-        .suffix(".md")
-        .tempfile_in(target_path.parent().unwrap_or(Path::new(".")))?;
-
-    temp.write_all(original_content.as_bytes())?;
-    temp.flush()?;
-
-    let config = load_config()?;
+fn run_editor_on(path: &Path) -> Result<(), MonoError> {
     let editor = std::env::var("VISUAL")
         .or_else(|_| std::env::var("EDITOR"))
-        .unwrap_or(config.default_editor_command);
+        .or_else(|_| load_config().map(|c| c.default_editor_command))?;
 
     let status = editor_command(&editor)?
-        .arg(temp.path())
+        .arg(path)
         .stdin(std::process::Stdio::inherit())
         .stdout(std::process::Stdio::inherit())
         .stderr(std::process::Stdio::inherit())
@@ -36,8 +21,7 @@ pub fn edit_file(target_path: &PathBuf) -> Result<bool, MonoError> {
         .map_err(|err| {
             if err.kind() == std::io::ErrorKind::NotFound {
                 MonoError::Config(format!(
-                    "could not launch editor '{editor}' — set $EDITOR or $VISUAL, \
-                     or run `mono config` to choose one"
+                    "could not launch editor '{editor}' — set $EDITOR or $VISUAL"
                 ))
             } else {
                 MonoError::Io(err)
@@ -49,14 +33,44 @@ pub fn edit_file(target_path: &PathBuf) -> Result<bool, MonoError> {
             "Editor exited unsuccessfully: {status}"
         ))));
     }
+    Ok(())
+}
+
+pub fn edit_text(initial: &str) -> Result<Option<String>, MonoError> {
+    let mut temp = Builder::new()
+        .prefix("cli-add-")
+        .suffix(".md")
+        .tempfile_in(std::env::temp_dir())?;
+    temp.write_all(initial.as_bytes())?;
+    temp.flush()?;
+
+    run_editor_on(temp.path())?;
+
+    let edited = fs::read_to_string(temp.path())?;
+    if edited == initial || edited.trim().is_empty() {
+        return Ok(None);
+    }
+    Ok(Some(edited))
+}
+
+pub fn edit_file(target_path: &PathBuf) -> Result<bool, MonoError> {
+    let original_content: String = if target_path.exists() {
+        fs::read_to_string(target_path)?
+    } else {
+        String::new()
+    };
+
+    let mut temp = Builder::new()
+        .prefix("cli-edit-")
+        .suffix(".md")
+        .tempfile_in(target_path.parent().unwrap_or(Path::new(".")))?;
+    temp.write_all(original_content.as_bytes())?;
+    temp.flush()?;
+
+    run_editor_on(temp.path())?;
 
     let edited_content = fs::read_to_string(temp.path())?;
-
-    if edited_content == original_content {
-        return Ok(false);
-    }
-
-    if edited_content.trim().is_empty() {
+    if edited_content == original_content || edited_content.trim().is_empty() {
         return Ok(false);
     }
 
@@ -113,6 +127,16 @@ mod tests {
         assert_eq!(command.get_args().collect::<Vec<_>>(), ["--wait"]);
         assert!(editor_command(" ").is_err());
         assert!(editor_command("editor 'unfinished").is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn edit_text_returns_saved_buffer() -> Result<(), MonoError> {
+        unsafe {
+            std::env::set_var("VISUAL", r#"sh -c 'echo hello from editor > "$0"'"#);
+        }
+        let text = edit_text("")?.expect("editor produced text");
+        assert_eq!(text.trim_end(), "hello from editor");
         Ok(())
     }
 }
