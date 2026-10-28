@@ -32,7 +32,17 @@ pub fn edit_file(target_path: &PathBuf) -> Result<bool, MonoError> {
         .stdin(std::process::Stdio::inherit())
         .stdout(std::process::Stdio::inherit())
         .stderr(std::process::Stdio::inherit())
-        .status()?;
+        .status()
+        .map_err(|err| {
+            if err.kind() == std::io::ErrorKind::NotFound {
+                MonoError::Config(format!(
+                    "could not launch editor '{editor}' — set $EDITOR or $VISUAL, \
+                     or run `mono config` to choose one"
+                ))
+            } else {
+                MonoError::Io(err)
+            }
+        })?;
 
     if !status.success() {
         return Err(MonoError::Io(std::io::Error::other(format!(

@@ -33,7 +33,7 @@ Monochromium is packed with high-value features, check them out!
 ### Quick Commands
 
 - `mono add "content"`: Add a note of any type!
-- `mono checkin "content"`: Make a mental health check in
+- `mono checkin "content"`: Make a mental health check-in
 - `mono todo "content"`: Create a quick task
 - `mono idea "content"`: Jot down your best ideas
 
@@ -41,8 +41,8 @@ Monochromium is packed with high-value features, check them out!
 
 - `mono view <id>`: View a specific note and its contents
 - `mono list`: List the latest notes
-- `mono search "query"`: Query your notes content and metadata!
-- `mono export`: Export EVERYTHING including metadata in a nice toml format
+- `mono search "query"`: Query your notes' content and metadata!
+- `mono export`: Export EVERYTHING including metadata in a nice TOML format
 
 ### Powerful Flags
 
@@ -72,7 +72,7 @@ shell history so keep that in mind.
 
 ### Reminder and TODO List
 
-Add a todo list and a reminder to make checkins to your shell!
+Add a todo list and a reminder to make check-ins to your shell!
 
 `mono init` adds the following lines to your shell config to run on start:
 
@@ -101,7 +101,7 @@ cargo install monochromium
 
 > If `mono` is not found try running `exec $SHELL` to reload your shell!
 
-### From Prebuilt Github Binary
+### From Prebuilt GitHub Binary
 
 Download the correct binary for your OS [here](https://github.com/Papaya-Voldemort/Monochromium/releases/latest)
 
@@ -129,4 +129,4 @@ Contributions are completely welcome and accepted.
 
 Feel free to submit a PR or an Issue for anything!
 
-For larger changes please make and link and issue to keep things more trackable.
+For larger changes please make and link an issue to keep things more trackable.

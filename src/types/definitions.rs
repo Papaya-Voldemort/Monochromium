@@ -135,7 +135,7 @@ pub enum MonoCommands {
         #[clap(short, long)]
         view: bool,
 
-        /// Shw note meta data
+        /// Show note metadata
         #[clap(short = 'V', long)]
         verbose: bool,
     },
@@ -159,7 +159,7 @@ pub enum MonoCommands {
         date: Option<NaiveDate>,
     },
 
-    /// View a notes content
+    /// View a note's content
     View {
         /// The id of the note you want to view
         #[arg()]
@@ -223,7 +223,7 @@ pub enum MonoCommands {
     // Cryptography commands
     /// Lock a note
     Lock {
-        /// The id of the note you want lock
+        /// The id of the note you want to lock
         #[arg()]
         note_id: u32,
     },
