@@ -8,96 +8,118 @@
 
 ![Monochromium](https://raw.githubusercontent.com/Papaya-Voldemort/Monochromium/master/images/banner.png)
 
-> **For Stardance Reviews:** If `mono` is not found try running `exec $SHELL` to reload your shell!
+## Why Monochromium?
+
+Leaving the terminal is awful, it takes a couple seconds longer than it should, breaks your flow, and who knows if you
+ever make it back.
+That's where Monochromium comes in, it helps you stay in the terminal by providing a way to take notes right in it.
+
+It's as simple as `mono add "hello world"`, and that's it. You're done.
 
 ![Demo](https://raw.githubusercontent.com/Papaya-Voldemort/Monochromium/master/images/demo.gif)
 
-Monochromium lets you capture ideas, tasks, and mental health check-ins all without leaving the terminal!
+Notes are fully local and can be accessed by your normal terminal commands like `cat`, `nano`, `nvim` and any others!
 
-## Why Monochromium?
+Monochromium keeps your mental health in mind too. It helps you see patterns in your mood across days!
 
-Most note-taking apps are clunky, require opening another app, and are not built for developers in the slightest.
+## Quick Install
 
-Monochromium is crazy light, modern, and allows for blazing fast workflows fully in plain text!
+Want to skip the reading? [Jump to Install](#Install).
 
 ## Features
-- Blazing-Fast, Small Binary
-- Multiple Note Types
-- Search and Filtering
-- Fully Local Notes with SQLite and MD Files
-- Human-Readable Terminal Output
-- Shell reminder system
-- Full file Locking and Unlocking
+
+Monochromium is packed with high-value features, check them out!
+
+### Quick Commands
+
+- `mono add "content"`: Add a note of any type!
+- `mono checkin "content"`: Make a mental health check in
+- `mono todo "content"`: Create a quick task
+- `mono idea "content"`: Jot down your best ideas
+
+### Fast Reads
+
+- `mono view <id>`: View a specific note and its contents
+- `mono list`: List the latest notes
+- `mono search "query"`: Query your notes content and metadata!
+- `mono export`: Export EVERYTHING including metadata in a nice toml format
+
+### Powerful Flags
+
+Try using flags like `-c` to copy the output to your clipboard, `-v` on list to see the contents of the listed notes,
+and many more!
+
+Run `mono help` to see the general help or `mono <command> --help` to see help for that specific command.
+
+### Stats and Mood Tracking (beta)
+
+Introducing the most powerful (beta) feature of Monochromium! The `mono stats` command!
+
+Thought those values for mood tracking were dumb? NOPE this is what they are for! Behold the beauty!
+
+![Stats](https://raw.githubusercontent.com/Papaya-Voldemort/Monochromium/master/images/stats.png)
+
+Anyway it's super useful to track your mood over time in a super low friction way!
+
+### Cryptography (Note Locking/Unlocking)
+
+Try locking your notes with `mono lock <id>` and unlock them with `mono unlock <id>`!
+
+We use **Argon2** and **chacha20poly1305** to securely lock your files. Metadata is NOT locked so keep that in mind.
+
+Monochromium is only self reviewed for security and is not cryptographically perfect, notes may also show up in your
+shell history so keep that in mind.
+
+### Reminder and TODO List
+
+Add a todo list and a reminder to make checkins to your shell!
+
+`mono init` adds the following lines to your shell config to run on start:
+
+```bash
+# >>> monochromium >>>
+mono reminder 2>/dev/null
+# <<< monochromium <<<
+```
 
 ## Install
 
-### From Brew (recommended)
+### From Homebrew (recommended)
+
 ```bash
 brew tap Papaya-Voldemort/tap
 brew install Papaya-Voldemort/tap/monochromium
 ```
 
-### From Source
+### From Cargo/Crates.io
 
-> Requires Rust
-```bash
-git clone https://github.com/Papaya-Voldemort/Monochromium
-cd Monochromium
-cargo install --path .
-```
-### From Cargo
+> Requires Rust and Cargo
 
-> Requires Rust
 ```bash
 cargo install monochromium
 ```
 
-### From Github Binary
+> If `mono` is not found try running `exec $SHELL` to reload your shell!
+
+### From Prebuilt Github Binary
 
 Download the correct binary for your OS [here](https://github.com/Papaya-Voldemort/Monochromium/releases/latest)
 
 ### Verify
+
+Current Latest Version: ![GitHub tag](https://img.shields.io/github/v/tag/Papaya-Voldemort/Monochromium)
+
 ```bash
 mono --version
 ```
 
-## Usage
+## Where your notes live
 
-```bash
-mono add "Ship v1.0"
-mono add -t checkin "feeling great"
-mono list
-```
+Your notes live in two places as `.md` files and SQLite entries.
 
-### Locking Notes
+The `.md` files are stored in a folder within your Documents folder.
 
-Password-protect a note by encrypting its file on disk, then decrypt it when needed:
-```bash
-mono lock 3
-mono unlock 3
-```
-
-### Reminders
-
-To opt into reminders, run the following command
-> Mono Init updates your zshrc
-```bash
-mono init
-```
-
-## The Future
-
-I already love the state Monochromium is in, and I use it everyday now.
-We also have so many others plans for the future!
-I want to add at least the following:
-- More useful commands and flags
-- Colored Outputs
-- More Tests and Validation
-- Smaller Binary
-- Fuzzy Search
-- A few others
-
-So yeah a little work to go for v1.0.0 but we are well on our way!
+The SQLite db handles the connecting file path and other metadata like the note type, title, etc.
 
 ## Contributions
 
@@ -105,9 +127,6 @@ So yeah a little work to go for v1.0.0 but we are well on our way!
 
 Contributions are completely welcome and accepted.
 
-Feel free to submit a PR or a Issue for anything!
+Feel free to submit a PR or an Issue for anything!
 
 For larger changes please make and link and issue to keep things more trackable.
-
-## License
-MIT
