@@ -19,6 +19,7 @@ impl Default for Config {
     fn default() -> Self {
         let default_notes = UserDirs::new()
             .and_then(|u| u.document_dir().map(|d| d.join("Monochromium")))
+            .or_else(|| UserDirs::new().map(|u| u.home_dir().join("Monochromium")))
             .unwrap_or_else(|| PathBuf::from("Monochromium"));
 
         let editor = env::var("VISUAL")
