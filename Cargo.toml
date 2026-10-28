@@ -10,8 +10,7 @@ keywords = ["notes", "cli", "terminal", "productivity"]
 categories = ["command-line-utilities"]
 
 exclude = [
-    "demo.gif",
-    "banner.png",
+    "images/",
     ".github/",
     "spec.md"
 ]

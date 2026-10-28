@@ -1,14 +1,16 @@
 # Monochromium
 
+> A fast, local-first CLI note-taking app for developers
+
 ![Hackatime](https://hackatime.hackclub.com/api/v1/badge/U09197C6M2B/Papaya-Voldemort/Monochromium)
+[![Crates.io](https://img.shields.io/crates/v/monochromium)](https://crates.io/crates/monochromium)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+
+![Monochromium](https://raw.githubusercontent.com/Papaya-Voldemort/Monochromium/master/images/banner.png)
 
 > **For Stardance Reviews:** If `mono` is not found try running `exec $SHELL` to reload your shell!
 
-> A fast, local first CLI note-taking app
-
-![Monochromium](https://raw.githubusercontent.com/Papaya-Voldemort/Monochromium/master/banner.png)
-
-![Demo](https://raw.githubusercontent.com/Papaya-Voldemort/Monochromium/master/demo.gif)
+![Demo](https://raw.githubusercontent.com/Papaya-Voldemort/Monochromium/master/images/demo.gif)
 
 Monochromium lets you capture ideas, tasks, and mental health check-ins all without leaving the terminal!
 
