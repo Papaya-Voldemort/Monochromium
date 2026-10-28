@@ -132,7 +132,17 @@ fn run() -> Result<(), MonoError> {
  █ ▀ █ █▄█ █ ▀█ █▄█ █▄▄ █▀█ █▀▄ █▄█ █ ▀ █ █ █▄█ █ ▀ █
 "#;
 
-            let mut cmd = MonoCLI::command();
+            let bin = std::env::args()
+                .next()
+                .and_then(|p| {
+                    std::path::Path::new(&p)
+                        .file_name()
+                        .and_then(|n| n.to_str().map(String::from))
+                })
+                .unwrap_or_else(|| "mono".to_string());
+
+            let mut cmd = MonoCLI::command().bin_name(bin);
+
             let help_text = cmd.render_help().to_string();
 
             CommandOutput::Text(format!("{logo}\n{help_text}"))
