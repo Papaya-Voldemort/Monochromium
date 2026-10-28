@@ -6,7 +6,9 @@ use crate::utils::prompt_unlock_password;
 use std::fs;
 
 pub fn unlock(db: &Database, note_id: u32) -> Result<String, MonoError> {
-    let note = db.read_single_row(note_id)?;
+    let Some(note) = db.read_single_row_opt(note_id)? else {
+        return Ok(format!("No note found with ID {note_id}"));
+    };
 
     if check_file_type(&note.file_link)? != "enc" {
         return Ok(format!(

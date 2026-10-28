@@ -7,13 +7,12 @@ use tempfile::Builder;
 
 pub fn delete(db: &Database, note_id: u32, approve: bool) -> Result<String, MonoError> {
     if approve {
-        let note = db.read_single_row(note_id)?;
-        let tx = db.conn.unchecked_transaction()?;
-        let deleted = db.delete_note(note_id)?;
+        let Some(note) = db.read_single_row_opt(note_id)? else {
+            return Ok(format!("No note found with ID {note_id}"));
+        };
 
-        if deleted == 0 {
-            return Ok(format!("No note found with ID {}", note_id));
-        }
+        let tx = db.conn.unchecked_transaction()?;
+        db.delete_note(note_id)?;
 
         let backup = if note.file_link.try_exists()? {
             let backup = Builder::new()

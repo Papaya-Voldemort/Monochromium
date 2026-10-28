@@ -2,7 +2,7 @@ use super::Database;
 use crate::types::{Note, NoteTypes};
 use crate::utils::parse_note;
 use chrono::NaiveDate;
-use rusqlite::params;
+use rusqlite::{OptionalExtension, params};
 const BOUND_FORMAT: &str = "%Y-%m-%d 00:00:00";
 
 fn to_bound(bound: Option<NaiveDate>) -> Option<String> {
@@ -61,6 +61,21 @@ impl Database {
             params![note_id],
             parse_note,
         )?;
+
+        Ok(note)
+    }
+
+    pub fn read_single_row_opt(&self, note_id: u32) -> Result<Option<Note>, rusqlite::Error> {
+        let note = self
+            .conn
+            .query_row(
+                "SELECT id, title, type, date, file_link, value
+         FROM notes
+         WHERE id = ?1",
+                params![note_id],
+                parse_note,
+            )
+            .optional()?;
 
         Ok(note)
     }

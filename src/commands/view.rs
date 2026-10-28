@@ -9,7 +9,9 @@ pub fn view(
     no_format: bool,
     verbose: bool,
 ) -> Result<String, MonoError> {
-    let mut note = db.read_single_row(note_id)?;
+    let Some(mut note) = db.read_single_row_opt(note_id)? else {
+        return Ok(format!("No note found with ID {note_id}"));
+    };
 
     if is_locked(&note.file_link)? {
         return locked_notice(note.id);
