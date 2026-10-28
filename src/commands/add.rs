@@ -1,7 +1,8 @@
 use crate::config::load_config;
 use crate::database::Database;
-use crate::storage::{delete_file, write_all};
+use crate::storage::{delete_file, edit_text, write_all};
 use crate::types::EditMode::FilePath;
+use crate::types::MonoError::InvalidInput;
 use crate::types::{MonoError, Note, NoteTypes};
 use crate::utils::{DATE_FORMAT, TIME_FORMAT, make_title, slugify, string_check};
 use chrono::{Local, NaiveDate, NaiveDateTime, NaiveTime};
@@ -16,7 +17,13 @@ pub fn add(
     paste: bool,
     value: Option<i64>,
 ) -> Result<String, MonoError> {
-    let full_text = string_check(text, paste)?;
+    let full_text = match string_check(text, paste) {
+        Ok(ok) => ok,
+        Err(InvalidInput(_)) => {
+            edit_text("")?.ok_or_else(|| InvalidInput("Note text cannot be empty".to_string()))?
+        }
+        Err(e) => return Err(e),
+    };
 
     if full_text.trim().is_empty() {
         return Err(MonoError::InvalidInput(
