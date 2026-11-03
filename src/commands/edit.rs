@@ -60,6 +60,9 @@ pub fn edit(
             EditMode::Date => {
                 format!("Replaced old date \"{}\" with \"{}\"!", old, text)
             }
+            EditMode::Value => {
+                format!("Replaced old value \"{}\" with \"{}\"!", old, text)
+            }
         };
 
         Ok(Output {

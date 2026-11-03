@@ -25,13 +25,25 @@ impl Database {
             EditMode::FilePath => "file_link",
             EditMode::Date => "date",
             EditMode::Type => "type",
+            EditMode::Value => "value",
         };
 
-        let query = format!("SELECT {} FROM notes WHERE id = ?1", column);
-
-        let before: String = self
-            .conn
-            .query_row(query.as_str(), params![note_id], |row| row.get(0))?;
+        let before: String = match mode {
+            EditMode::Value => {
+                let old: Option<i64> = self.conn.query_row(
+                    "SELECT value FROM notes WHERE id = ?1",
+                    params![note_id],
+                    |row| row.get(0),
+                )?;
+                old.map(|v| v.to_string())
+                    .unwrap_or_else(|| "none".to_string())
+            }
+            _ => self.conn.query_row(
+                &format!("SELECT {} FROM notes WHERE id = ?1", column),
+                params![note_id],
+                |row| row.get(0),
+            )?,
+        };
 
         let query = format!("UPDATE notes SET {} = ?1 WHERE id = ?2", column);
 

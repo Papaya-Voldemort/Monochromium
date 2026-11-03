@@ -71,4 +71,5 @@ pub enum EditMode {
     FilePath,
     Type,
     Date,
+    Value,
 }
