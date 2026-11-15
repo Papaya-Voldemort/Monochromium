@@ -1,4 +1,4 @@
-# Monochromium
+# Monochromium <a href="https://stardance.hackclub.com/"><img src="https://github.com/hackclub/stardance/raw/main/stardance-logo-df399a7f.png" alt="Hack Club Stardance" height="40"></a>
 
 > A fast, local-first CLI note-taking app for developers
 
