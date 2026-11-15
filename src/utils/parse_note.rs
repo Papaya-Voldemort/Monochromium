@@ -4,27 +4,27 @@ use rusqlite::Row;
 use std::path::PathBuf;
 
 pub fn parse_note(row: &Row) -> Result<Note, rusqlite::Error> {
-    let date_str: String = row.get(3)?;
+    let date_str: String = row.get("date")?;
     let date = NaiveDateTime::parse_from_str(&date_str, "%Y-%m-%d %H:%M:%S%.f").map_err(|err| {
         rusqlite::Error::FromSqlConversionFailure(3, rusqlite::types::Type::Text, Box::new(err))
     })?;
 
-    let note_type_raw: String = row.get(2)?;
+    let note_type_raw: String = row.get("type")?;
     let note_type: NoteTypes = note_type_raw.parse().map_err(|err| {
         rusqlite::Error::FromSqlConversionFailure(2, rusqlite::types::Type::Text, Box::new(err))
     })?;
 
-    let file_link_raw: String = row.get(4)?;
+    let file_link_raw: String = row.get("file_link")?;
     let file_link = PathBuf::from(file_link_raw);
 
     Ok(Note {
-        id: row.get(0)?,
-        title: row.get(1)?,
+        id: row.get("id")?,
+        title: row.get("title")?,
         note_type,
         date,
         file_link,
         content: None,
-        value: row.get(5)?,
+        value: row.get("value")?,
     })
 }
 

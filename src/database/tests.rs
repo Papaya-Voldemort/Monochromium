@@ -1,6 +1,6 @@
 #[cfg(test)]
 use crate::database::Database;
-use crate::types::{EditMode, MonoError};
+use crate::types::{FieldUpdate, MonoError};
 use crate::types::{Note, NoteTypes};
 use std::path::PathBuf;
 
@@ -34,7 +34,7 @@ fn note_lifecycle_round_trip() -> Result<(), MonoError> {
 
     assert_eq!(search, &comp);
 
-    let _edit = db.update_row(test_note_id, "-test-".to_string(), EditMode::Title)?;
+    let _edit = db.update_row(test_note_id, FieldUpdate::Title("-test-".to_string()))?;
 
     let read = db.read_single_row(test_note_id)?;
 

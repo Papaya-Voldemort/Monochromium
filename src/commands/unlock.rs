@@ -1,7 +1,7 @@
 use crate::crypto::decrypt_with_password;
 use crate::database::Database;
 use crate::storage::{check_file_type, shred_and_delete, write_all};
-use crate::types::{EditMode, MonoError};
+use crate::types::{FieldUpdate, MonoError};
 use crate::utils::prompt_unlock_password;
 use std::fs;
 
@@ -47,8 +47,7 @@ pub fn unlock(db: &Database, note_id: u32) -> Result<String, MonoError> {
 
     db.update_row(
         note_id,
-        new_path.to_string_lossy().to_string(),
-        EditMode::FilePath,
+        FieldUpdate::FilePath(new_path.to_string_lossy().to_string()),
     )
     .map_err(|err| {
         MonoError::Crypto(format!(

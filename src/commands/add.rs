@@ -1,7 +1,7 @@
 use crate::config::load_config;
 use crate::database::Database;
 use crate::storage::{delete_file, edit_text, write_all};
-use crate::types::EditMode::FilePath;
+use crate::types::FieldUpdate::FilePath;
 use crate::types::MonoError::InvalidInput;
 use crate::types::{MonoError, Note, NoteTypes};
 use crate::utils::{DATE_FORMAT, TIME_FORMAT, make_title, slugify, string_check};
@@ -82,7 +82,7 @@ fn save_note(
     write_all(&path, content)?;
 
     let result = (|| {
-        db.update_row(id, path.to_string_lossy().to_string(), FilePath)?;
+        db.update_row(id, FilePath(path.to_string_lossy().to_string()))?;
         let note = db.read_single_row(id)?;
         tx.commit()?;
         Ok::<_, MonoError>(note)
