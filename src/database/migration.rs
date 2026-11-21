@@ -8,7 +8,7 @@ use chrono::NaiveDateTime;
 use rusqlite::{Connection, Row, params};
 use std::path::Path;
 
-const CURRENT_SCHEMA_VERSION: u32 = 3;
+const CURRENT_SCHEMA_VERSION: u32 = 4;
 const V2_SCHEMA_VERSION: u32 = 2;
 
 impl Database {
@@ -54,23 +54,48 @@ impl Database {
             )
         };
 
-        match (has_content, has_file_link, has_value) {
-            (true, false, _) if version <= CURRENT_SCHEMA_VERSION => {
+        let any_todo_empty_or_zero = if has_value {
+            conn.query_row(
+                "SELECT EXISTS(
+            SELECT 1 FROM notes
+            WHERE type = 'todo'
+              AND (value IS NULL OR value = 0 OR value = '0' OR value = '')
+        )",
+                [],
+                |row| row.get::<_, bool>(0),
+            )?
+        } else {
+            false
+        };
+
+        match (
+            has_content,
+            has_file_link,
+            has_value,
+            any_todo_empty_or_zero,
+        ) {
+            (true, false, _, _) if version <= CURRENT_SCHEMA_VERSION => {
                 let directory = match directory {
                     Some(path) => path.to_path_buf(),
                     None => load_config()?.note_location,
                 };
                 Self::migrate_v1_to_v2(conn, &directory)?;
                 Self::migrate_v2_to_v3(conn)?;
+                Self::migrate_v3_to_v4(conn)?;
             }
 
-            (false, true, false) if version <= CURRENT_SCHEMA_VERSION => {
+            (false, true, false, _) if version <= CURRENT_SCHEMA_VERSION => {
                 Self::migrate_v2_to_v3(conn)?;
+                Self::migrate_v3_to_v4(conn)?;
             }
 
-            (false, true, true) if version == CURRENT_SCHEMA_VERSION => {}
+            (false, true, true, true) if version <= CURRENT_SCHEMA_VERSION => {
+                Self::migrate_v3_to_v4(conn)?;
+            }
 
-            (false, true, true) if version < CURRENT_SCHEMA_VERSION => {
+            (false, true, true, false) if version == CURRENT_SCHEMA_VERSION => {}
+
+            (false, true, true, false) if version < CURRENT_SCHEMA_VERSION => {
                 let tx = conn.transaction()?;
                 tx.pragma_update(None, "user_version", CURRENT_SCHEMA_VERSION)?;
                 tx.commit()?;
@@ -147,6 +172,23 @@ impl Database {
 
         Ok(())
     }
+
+    fn migrate_v3_to_v4(conn: &mut Connection) -> Result<(), MonoError> {
+        let tx = conn.transaction()?;
+
+        tx.execute(
+            "UPDATE notes
+         SET value = 1
+         WHERE type = 'todo'
+           AND (value IS NULL OR value = 0 OR value = '0' OR value = '')",
+            [],
+        )?;
+        tx.pragma_update(None, "user_version", CURRENT_SCHEMA_VERSION)?;
+
+        tx.commit()?;
+
+        Ok(())
+    }
 }
 
 fn parse_old_note(row: &Row) -> Result<OldNote, rusqlite::Error> {
@@ -209,22 +251,58 @@ mod tests {
     }
 
     #[test]
-    fn migrates_v2_databases_to_v3() -> Result<(), MonoError> {
+    fn migrates_v2_databases_to_v4() -> Result<(), MonoError> {
         for stamped_version in [1, 2, 3] {
             let mut conn = v2_db(stamped_version)?;
             Database::check_version(&mut conn)?;
-            assert_eq!(version(&conn)?, 3);
+            assert_eq!(version(&conn)?, 4);
             let (title, file_link, value): (String, String, Option<i64>) =
                 conn.query_row("SELECT title, file_link, value FROM notes", [], |row| {
                     Ok((row.get(0)?, row.get(1)?, row.get(2)?))
                 })?;
             assert_eq!(title, "V2 note");
             assert_eq!(file_link, "notes/0002_v2-note.md");
-            assert_eq!(value, None);
+            assert_eq!(value, Some(1));
 
             Database::check_version(&mut conn)?;
-            assert_eq!(version(&conn)?, 3);
+            assert_eq!(version(&conn)?, 4);
         }
+        Ok(())
+    }
+
+    #[test]
+    fn migrates_v3_todos_with_empty_values_to_v4() -> Result<(), MonoError> {
+        let mut conn = Connection::open_in_memory()?;
+        conn.execute_batch(
+            "CREATE TABLE notes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                type TEXT DEFAULT 'other' CHECK (TYPE IN ('todo', 'check in', 'idea', 'other')),
+                date TEXT DEFAULT CURRENT_TIMESTAMP,
+                file_link TEXT,
+                value INTEGER
+            );
+            INSERT INTO notes (id, title, type, file_link, value) VALUES
+                (1, 'null todo', 'todo', 'notes/1.md', NULL),
+                (2, 'zero todo', 'todo', 'notes/2.md', 0),
+                (3, 'empty todo', 'todo', 'notes/3.md', ''),
+                (4, 'scored todo', 'todo', 'notes/4.md', 5),
+                (5, 'zero idea', 'idea', 'notes/5.md', 0),
+                (6, 'null idea', 'idea', 'notes/6.md', NULL);",
+        )?;
+        conn.pragma_update(None, "user_version", 3)?;
+
+        Database::check_version(&mut conn)?;
+        assert_eq!(version(&conn)?, 4);
+
+        let values: Vec<Option<i64>> = conn
+            .prepare("SELECT value FROM notes ORDER BY id")?
+            .query_map([], |row| row.get(0))?
+            .collect::<Result<_, _>>()?;
+        assert_eq!(values, [Some(1), Some(1), Some(1), Some(5), Some(0), None]);
+
+        Database::check_version(&mut conn)?;
+        assert_eq!(version(&conn)?, 4);
         Ok(())
     }
 
@@ -234,7 +312,7 @@ mod tests {
             let directory = tempfile::tempdir()?;
             let mut conn = legacy_db(old_version)?;
             Database::check_version_at(&mut conn, Some(directory.path()))?;
-            assert_eq!(version(&conn)?, 3);
+            assert_eq!(version(&conn)?, 4);
             assert!(conn.prepare("SELECT content FROM notes").is_err());
             let note = conn.query_row(
                 "SELECT id, title, type, date, file_link, value FROM notes",
@@ -262,11 +340,11 @@ mod tests {
     fn initializes_fresh_and_repairs_converted_schema_versions() -> Result<(), MonoError> {
         let mut conn = Connection::open_in_memory()?;
         Database::check_version(&mut conn)?;
-        assert_eq!(version(&conn)?, 3);
+        assert_eq!(version(&conn)?, 4);
         for old_version in [0, 1, 2] {
             conn.pragma_update(None, "user_version", old_version)?;
             Database::check_version(&mut conn)?;
-            assert_eq!(version(&conn)?, 3);
+            assert_eq!(version(&conn)?, 4);
             assert!(conn.prepare("SELECT file_link FROM notes").is_ok());
             assert!(conn.prepare("SELECT value FROM notes").is_ok());
         }
@@ -293,7 +371,7 @@ mod tests {
 
         conn.execute_batch("DROP TRIGGER refuse_update")?;
         Database::check_version_at(&mut conn, Some(directory.path()))?;
-        assert_eq!(version(&conn)?, 3);
+        assert_eq!(version(&conn)?, 4);
         Ok(())
     }
 
@@ -313,9 +391,9 @@ mod tests {
     fn rejects_future_schema_versions() -> Result<(), MonoError> {
         let mut conn = Connection::open_in_memory()?;
         conn.execute_batch(SCHEMA)?;
-        conn.pragma_update(None, "user_version", 4)?;
+        conn.pragma_update(None, "user_version", 5)?;
         assert!(Database::check_version(&mut conn).is_err());
-        assert_eq!(version(&conn)?, 4);
+        assert_eq!(version(&conn)?, 5);
         Ok(())
     }
 }
