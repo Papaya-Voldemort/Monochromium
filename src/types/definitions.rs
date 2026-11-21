@@ -201,6 +201,12 @@ pub enum MonoCommands {
         approve: bool,
     },
 
+    /// Check off a todo
+    Done {
+        #[arg(required = true)]
+        note_id: Vec<u32>,
+    },
+
     /// Display a basic stats overview (beta)
     Stats {
         /// Show short version of stats

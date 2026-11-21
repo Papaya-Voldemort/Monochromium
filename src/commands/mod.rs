@@ -1,6 +1,7 @@
 mod add;
 mod config;
 mod delete;
+mod done;
 mod edit;
 mod export;
 mod init;
@@ -17,6 +18,7 @@ mod view;
 pub use add::add;
 pub use config::config;
 pub use delete::delete;
+pub use done::done;
 pub use edit::edit;
 pub use export::export;
 pub use init::init;
