@@ -430,3 +430,28 @@ fn done_checks_off_todos_with_a_positive_score() -> Result<(), MonoError> {
 
     Ok(())
 }
+
+#[test]
+fn done_reports_missing_note_ids_and_still_handles_the_rest() -> Result<(), MonoError> {
+    let db = Database::new_in_memory()?;
+    let directory = tempfile::tempdir()?;
+    let path = directory.path().join("real.md");
+    fs::write(&path, "real")?;
+    let real = db.add_row(
+        "real".to_string(),
+        NoteTypes::Todo,
+        path,
+        Local::now().date_naive().and_hms_opt(9, 30, 0).unwrap(),
+        Some(Score::new(3)?),
+    )?;
+    let missing = real + 999;
+
+    let output = handle_todos(&db, vec![real, missing], true)?;
+
+    assert_eq!(output.len(), 2);
+    assert!(output.contains(&format!("Checked off note {real}.")));
+    assert!(output.contains(&format!("Note {missing} does not exist.")));
+    assert_eq!(db.read_single_row(real)?.value, Some(Score::new(-3)?));
+
+    Ok(())
+}

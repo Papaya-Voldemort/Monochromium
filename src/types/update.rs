@@ -68,7 +68,7 @@ impl Score {
         self.0 > 0
     }
 
-    pub const fn is_negetive(self) -> bool {
+    pub const fn is_negative(self) -> bool {
         self.0 < 0
     }
 
