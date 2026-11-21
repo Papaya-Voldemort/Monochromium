@@ -1,6 +1,6 @@
-use super::{delete, edit, export, get_stats, list, search};
+use super::{delete, done, edit, export, get_stats, list, search};
 use crate::database::Database;
-use crate::types::{EditMode, MonoError, NoteTypes};
+use crate::types::{EditMode, MonoError, NoteTypes, Score};
 use chrono::{Duration, Local, NaiveDate};
 use std::{fs, path::Path, path::PathBuf};
 
@@ -270,7 +270,7 @@ fn export_includes_scores_in_note_metadata() -> Result<(), MonoError> {
         NoteTypes::CheckIn,
         mood_path,
         today.and_hms_opt(9, 30, 0).unwrap(),
-        Some(-3),
+        Some(Score::new(-3)?),
     )?;
     note(
         &db,
@@ -342,7 +342,7 @@ fn sugar_commands_parse_scores_and_reject_out_of_range() {
 fn stats_render_mood_views_for_scored_checkins() -> Result<(), MonoError> {
     let db = Database::new_in_memory()?;
     let today = Local::now().date_naive();
-    let checkin = |days_back: i64, value: Option<i64>| -> Result<(), MonoError> {
+    let checkin = |days_back: i64, value: Option<Score>| -> Result<(), MonoError> {
         db.add_row(
             "mood".to_string(),
             NoteTypes::CheckIn,
@@ -354,11 +354,11 @@ fn stats_render_mood_views_for_scored_checkins() -> Result<(), MonoError> {
         )?;
         Ok(())
     };
-    checkin(0, Some(2))?;
-    checkin(0, Some(3))?;
-    checkin(1, Some(-1))?;
+    checkin(0, Some(Score::new(2)?))?;
+    checkin(0, Some(Score::new(3)?))?;
+    checkin(1, Some(Score::new(-1)?))?;
     checkin(4, None)?;
-    checkin(15, Some(1))?;
+    checkin(15, Some(Score::new(1)?))?;
 
     let full = get_stats(&db, false, false)?;
     println!("{full:?}");
@@ -380,6 +380,53 @@ fn stats_render_mood_views_for_scored_checkins() -> Result<(), MonoError> {
     assert!(short.contains("Mood (14d)"));
     assert!(short.contains("7d avg"));
     assert!(!short.contains("Mood (last 14 days)"));
+
+    Ok(())
+}
+
+#[test]
+fn done_checks_off_todos_with_a_positive_score() -> Result<(), MonoError> {
+    let db = Database::new_in_memory()?;
+    let directory = tempfile::tempdir()?;
+    let today = Local::now().date_naive();
+    let add = |title: &str, kind: NoteTypes, value: Option<Score>| -> Result<u32, MonoError> {
+        let path = directory.path().join(format!("{title}.md"));
+        fs::write(&path, title)?;
+        Ok(db.add_row(
+            title.to_string(),
+            kind,
+            path,
+            today.and_hms_opt(9, 30, 0).unwrap(),
+            value,
+        )?)
+    };
+
+    let open = add("open", NoteTypes::Todo, Some(Score::new(4)?))?;
+    let checked = add("checked", NoteTypes::Todo, Some(Score::new(-2)?))?;
+    let unscored = add("unscored", NoteTypes::Todo, None)?;
+    let idea = add("idea", NoteTypes::Other, Some(Score::new(1)?))?;
+
+    let output = done(&db, vec![open, checked, unscored, idea])?;
+    let expected = [
+        format!("Checked off note {open}."),
+        format!("Note {checked} is already checked off."),
+        format!("Note {unscored} has no value to check off."),
+        format!("Note {idea} is a other, not a todo. Only todo's can be checked off."),
+    ];
+    assert_eq!(output.len(), expected.len());
+    for line in expected {
+        assert!(output.contains(&line), "missing {line:?} in {output:?}");
+    }
+
+    assert_eq!(db.read_single_row(open)?.value, Some(Score::new(-4)?));
+    assert_eq!(db.read_single_row(checked)?.value, Some(Score::new(-2)?));
+    assert_eq!(db.read_single_row(unscored)?.value, None);
+
+    assert_eq!(
+        done(&db, vec![open])?,
+        [format!("Note {open} is already checked off.")]
+    );
+    assert_eq!(db.read_single_row(open)?.value, Some(Score::new(-4)?));
 
     Ok(())
 }

@@ -3,7 +3,7 @@ use crate::database::Database;
 use crate::storage::{delete_file, edit_text, write_all};
 use crate::types::FieldUpdate::FilePath;
 use crate::types::MonoError::InvalidInput;
-use crate::types::{MonoError, Note, NoteTypes};
+use crate::types::{MonoError, Note, NoteTypes, Score};
 use crate::utils::{DATE_FORMAT, TIME_FORMAT, make_title, slugify, string_check};
 use chrono::{Local, NaiveDate, NaiveDateTime, NaiveTime};
 use std::path::{Path, PathBuf};
@@ -17,6 +17,8 @@ pub fn add(
     paste: bool,
     value: Option<i64>,
 ) -> Result<String, MonoError> {
+    let value = value.map(Score::new).transpose()?;
+
     let full_text = match string_check(text, paste) {
         Ok(ok) => ok,
         Err(InvalidInput(_)) => {
@@ -72,7 +74,7 @@ fn save_note(
     date: NaiveDateTime,
     content: &str,
     directory: &Path,
-    value: Option<i64>,
+    value: Option<Score>,
 ) -> Result<Note, MonoError> {
     std::fs::create_dir_all(directory)?;
     let directory = directory.canonicalize()?;

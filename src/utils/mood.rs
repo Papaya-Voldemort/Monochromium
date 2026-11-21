@@ -1,4 +1,4 @@
-use crate::types::Note;
+use crate::types::{Note, Score};
 use crate::utils::day_of;
 use chrono::{Datelike, Duration, NaiveDate};
 use owo_colors::OwoColorize;
@@ -9,7 +9,7 @@ pub const MOOD_SPAN: usize = 20;
 const ROLLING_WINDOW: usize = 7;
 pub struct MoodDay {
     pub date: NaiveDate,
-    pub scores: Vec<Option<i32>>,
+    pub scores: Vec<Option<Score>>,
 }
 
 pub struct Ink {
@@ -46,7 +46,7 @@ impl Ink {
 }
 
 pub fn fetch_mood_days(today: NaiveDate, notes: Vec<Note>) -> Vec<MoodDay> {
-    let mut by_day: HashMap<NaiveDate, Vec<Option<i32>>> = HashMap::new();
+    let mut by_day: HashMap<NaiveDate, Vec<Option<Score>>> = HashMap::new();
     for note in notes {
         by_day.entry(day_of(&note)).or_default().push(note.value);
     }
@@ -68,8 +68,8 @@ fn mean(vals: impl Iterator<Item = f64>) -> Option<f64> {
     (count > 0).then(|| sum / count as f64)
 }
 
-fn daily_avg(scores: &[Option<i32>]) -> Option<f64> {
-    mean(scores.iter().flatten().map(|&v| v as f64))
+fn daily_avg(scores: &[Option<Score>]) -> Option<f64> {
+    mean(scores.iter().flatten().map(|score| f64::from(score.get())))
 }
 
 fn rolling_avg(daily: &[Option<f64>], end: usize) -> Option<f64> {
@@ -197,7 +197,7 @@ fn daily_cell(avg: Option<f64>, colorize: bool) -> String {
     format!("{pad}{colored}")
 }
 
-fn score_pills(scores: &[Option<i32>], colorize: bool) -> String {
+fn score_pills(scores: &[Option<Score>], colorize: bool) -> String {
     let ink = Ink { colorize };
     if scores.is_empty() {
         return ink.dim("no check-in");
@@ -206,9 +206,9 @@ fn score_pills(scores: &[Option<i32>], colorize: bool) -> String {
         .iter()
         .map(|score| match score {
             None => ink.dim("unscored"),
-            Some(0) => "0".to_string(),
-            Some(v) if *v > 0 => ink.green(&format!("{v:+}")),
-            Some(v) => ink.red(&format!("{v:+}")),
+            Some(score) if score.is_zero() => "0".to_string(),
+            Some(score) if score.is_positive() => ink.green(&format!("{:+}", score.get())),
+            Some(score) => ink.red(&format!("{:+}", score.get())),
         })
         .collect();
     format!("[{}]", pills.join(", "))
@@ -264,7 +264,7 @@ pub fn mood_footer(days: &[MoodDay], colorize: bool) -> String {
     )
 }
 
-fn mood_glyph(scores: &[Option<i32>], colorize: bool) -> String {
+fn mood_glyph(scores: &[Option<Score>], colorize: bool) -> String {
     let ink = Ink { colorize };
     if scores.is_empty() {
         return ink.dim("·");

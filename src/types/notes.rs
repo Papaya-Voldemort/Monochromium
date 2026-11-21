@@ -1,4 +1,4 @@
-use crate::types::MonoError;
+use crate::types::{MonoError, Score};
 use chrono::NaiveDateTime;
 use clap::ValueEnum;
 use std::fmt;
@@ -62,7 +62,7 @@ pub struct Note {
     pub date: NaiveDateTime,
     pub file_link: PathBuf,
     pub content: Option<String>,
-    pub value: Option<i32>,
+    pub value: Option<Score>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]

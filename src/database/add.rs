@@ -1,5 +1,5 @@
 use super::Database;
-use crate::types::NoteTypes;
+use crate::types::{NoteTypes, Score};
 use chrono::NaiveDateTime;
 use rusqlite::params;
 use std::path::PathBuf;
@@ -11,7 +11,7 @@ impl Database {
         note_type: NoteTypes,
         file_link: PathBuf,
         date: NaiveDateTime,
-        value: Option<i64>,
+        value: Option<Score>,
     ) -> Result<u32, rusqlite::Error> {
         let note_type = note_type.as_str();
         let date = date.to_string();

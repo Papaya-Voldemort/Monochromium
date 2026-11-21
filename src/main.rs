@@ -92,7 +92,7 @@ fn run() -> Result<(), MonoError> {
             MonoCommands::Delete { note_id, approve } => {
                 CommandOutput::Text(delete(&db, note_id, approve)?)
             }
-            MonoCommands::Done { note_id } => CommandOutput::Text(done(&db, note_id)?),
+            MonoCommands::Done { note_id } => CommandOutput::Lines(done(&db, note_id)?),
             MonoCommands::Edit {
                 note_id,
                 edit_mode,
