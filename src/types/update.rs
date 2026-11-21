@@ -44,10 +44,6 @@ pub struct UpdateResult {
     pub after: Note,
 }
 
-/// A check-in mood, todo priority or idea hype in [`SCORE_MIN`]..=[`SCORE_MAX`].
-///
-/// The single representation of the `notes.value` column: every entry point
-/// (`new`, `parse` and the SQL conversion) enforces the range.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Score(i8);
 

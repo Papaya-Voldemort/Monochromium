@@ -1,11 +1,19 @@
 use crate::{
     database::Database,
-    types::{FieldUpdate, MonoError, NoteTypes::Todo},
+    types::{
+        FieldUpdate,
+        MonoError::{self, InvalidInput},
+        NoteTypes::Todo,
+    },
 };
 
 pub fn done(db: &Database, note_ids: Vec<u32>) -> Result<Vec<String>, MonoError> {
     let notes = db.read_specific_rows(&note_ids)?;
     let mut output = Vec::new();
+
+    if note_ids.is_empty() {
+        return Err(InvalidInput("No note ids provided as input".to_string()));
+    }
 
     for note in notes {
         if note.note_type != Todo {

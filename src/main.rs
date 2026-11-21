@@ -72,7 +72,7 @@ fn run() -> Result<(), MonoError> {
                 time,
                 date,
                 paste,
-                priority,
+                Some(priority.unwrap_or(1)),
             )?),
             MonoCommands::Idea {
                 text,
