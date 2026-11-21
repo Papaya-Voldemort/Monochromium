@@ -203,9 +203,17 @@ pub enum MonoCommands {
     },
 
     /// Check off a todo
-    Done {
+    Check {
+        /// Note ids to check off (ei: 1, 2, 3)
         #[arg(required = true)]
-        note_id: Vec<u32>,
+        note_ids: Vec<u32>,
+    },
+
+    /// Uncheck a todo
+    Uncheck {
+        /// Note ids to uncheck (ei: 1, 2, 3)
+        #[arg(required = true)]
+        note_ids: Vec<u32>,
     },
 
     /// Display a basic stats overview (beta)

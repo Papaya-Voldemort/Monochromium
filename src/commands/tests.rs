@@ -1,4 +1,4 @@
-use super::{delete, done, edit, export, get_stats, list, search};
+use super::{delete, edit, export, get_stats, handle_todos, list, search};
 use crate::database::Database;
 use crate::types::{EditMode, MonoError, NoteTypes, Score};
 use chrono::{Duration, Local, NaiveDate};
@@ -406,12 +406,12 @@ fn done_checks_off_todos_with_a_positive_score() -> Result<(), MonoError> {
     let unscored = add("unscored", NoteTypes::Todo, None)?;
     let idea = add("idea", NoteTypes::Other, Some(Score::new(1)?))?;
 
-    let output = done(&db, vec![open, checked, unscored, idea])?;
+    let output = handle_todos(&db, vec![open, checked, unscored, idea], true)?;
     let expected = [
         format!("Checked off note {open}."),
         format!("Note {checked} is already checked off."),
         format!("Note {unscored} has no value to check off."),
-        format!("Note {idea} is a other, not a todo. Only todo's can be checked off."),
+        format!("Note {idea} is a other, not a todo. Only todo's can be checked on/off."),
     ];
     assert_eq!(output.len(), expected.len());
     for line in expected {
@@ -423,7 +423,7 @@ fn done_checks_off_todos_with_a_positive_score() -> Result<(), MonoError> {
     assert_eq!(db.read_single_row(unscored)?.value, None);
 
     assert_eq!(
-        done(&db, vec![open])?,
+        handle_todos(&db, vec![open], true)?,
         [format!("Note {open} is already checked off.")]
     );
     assert_eq!(db.read_single_row(open)?.value, Some(Score::new(-4)?));
