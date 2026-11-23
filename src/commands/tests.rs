@@ -166,6 +166,60 @@ fn deletion_failures_preserve_database_row_and_file() -> Result<(), MonoError> {
     Ok(())
 }
 
+#[cfg(unix)]
+#[test]
+fn batch_deletion_failures_preserve_every_row_and_file() -> Result<(), MonoError> {
+    use std::os::unix::fs::PermissionsExt;
+
+    for fail_commit in [false, true] {
+        let db = Database::new_in_memory()?;
+        let first_dir = tempfile::tempdir()?;
+        let second_dir = tempfile::tempdir()?;
+        let today = Local::now().date_naive();
+        let first = note(
+            &db,
+            first_dir.path(),
+            "one",
+            "First",
+            NoteTypes::Other,
+            today,
+        )?;
+        let second = note(
+            &db,
+            second_dir.path(),
+            "two",
+            "Second",
+            NoteTypes::Other,
+            today,
+        )?;
+
+        if fail_commit {
+            db.conn.execute_batch(
+                "PRAGMA foreign_keys = ON;
+                 CREATE TABLE dependencies (note_id INTEGER REFERENCES notes(id) DEFERRABLE INITIALLY DEFERRED);
+                 INSERT INTO dependencies VALUES (2);",
+            )?;
+        } else {
+            // The first backup succeeds; the second can't be created in a read-only directory.
+            fs::set_permissions(second_dir.path(), fs::Permissions::from_mode(0o555))?;
+        }
+
+        let result = delete(&db, vec![first, second], true);
+        fs::set_permissions(second_dir.path(), fs::Permissions::from_mode(0o755))?;
+
+        assert!(result.is_err());
+        for (id, dir, body) in [
+            (first, first_dir.path(), "First"),
+            (second, second_dir.path(), "Second"),
+        ] {
+            let row = db.read_single_row(id)?;
+            assert_eq!(fs::read_to_string(row.file_link)?, body);
+            assert_eq!(fs::read_dir(dir)?.count(), 1);
+        }
+    }
+    Ok(())
+}
+
 #[test]
 fn deletion_removes_notes_and_handles_missing_files() -> Result<(), MonoError> {
     let db = Database::new_in_memory()?;
