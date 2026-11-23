@@ -194,9 +194,9 @@ pub enum MonoCommands {
     /// Delete a note
     #[command(visible_alias = "rm")]
     Delete {
-        /// The ID of the note you want to delete
+        /// The ids of the notes to delete (ei: 1, 2, 3)
         #[arg()]
-        note_id: u32,
+        note_id: Vec<u32>,
 
         /// Approval flag to actually delete the note
         #[clap(short, long)]
