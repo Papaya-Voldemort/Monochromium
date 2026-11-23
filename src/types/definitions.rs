@@ -87,6 +87,7 @@ pub enum MonoCommands {
         paste: bool,
 
         /// Task priority or importance level (-5..=5)
+        /// Note: Negetive values are considered checked off and won't show in todo reminders
         #[clap(short = 'i', long, value_parser = clap::value_parser!(i64).range(SCORE_RANGE), allow_negative_numbers = true)]
         priority: Option<i64>,
     },
