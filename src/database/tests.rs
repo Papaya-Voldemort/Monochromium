@@ -42,7 +42,7 @@ fn note_lifecycle_round_trip() -> Result<(), MonoError> {
 
     assert_eq!(after_edit, read.title);
 
-    let _delete = db.delete_note(test_note_id)?;
+    let _delete = db.delete_note(&[test_note_id])?;
 
     let check_deleted = db.read_single_row(test_note_id);
 

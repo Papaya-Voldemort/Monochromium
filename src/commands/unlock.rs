@@ -38,7 +38,7 @@ pub fn unlock(db: &Database, note_id: u32) -> Result<String, MonoError> {
 
     write_all(new_path, decrypted_string)?;
 
-    shred_and_delete(path).map_err(|err| {
+    shred_and_delete(vec![path.as_ref()]).map_err(|err| {
         MonoError::Crypto(format!(
             "Source cleanup failed: {err}; recovery copy: {}",
             new_path.display()

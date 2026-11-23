@@ -90,7 +90,7 @@ fn run() -> Result<(), MonoError> {
                 hype,
             )?),
             MonoCommands::Delete { note_id, approve } => {
-                CommandOutput::Text(delete(&db, note_id, approve)?)
+                CommandOutput::Lines(delete(&db, note_id, approve)?)
             }
             MonoCommands::Check { note_ids } => {
                 CommandOutput::Lines(handle_todos(&db, note_ids, true)?)

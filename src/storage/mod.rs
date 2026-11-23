@@ -5,7 +5,7 @@ mod read;
 mod write;
 
 pub use check::check_file_type;
-pub use delete::{delete_file, shred_and_delete};
+pub use delete::{delete_files, shred_and_delete};
 pub use edit::{edit_file, edit_text};
 pub use read::{read_file, read_file_if_exists};
 pub use write::write_all;

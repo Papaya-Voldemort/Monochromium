@@ -1,6 +1,6 @@
 use crate::config::load_config;
 use crate::database::Database;
-use crate::storage::{delete_file, edit_text, write_all};
+use crate::storage::{delete_files, edit_text, write_all};
 use crate::types::FieldUpdate::FilePath;
 use crate::types::MonoError::InvalidInput;
 use crate::types::{MonoError, Note, NoteTypes, Score};
@@ -91,7 +91,7 @@ fn save_note(
     })();
 
     if result.is_err() {
-        delete_file(path)?;
+        delete_files(vec![path.as_ref()])?;
     }
 
     result
