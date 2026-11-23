@@ -1,3 +1,4 @@
+use crate::types::SCORE_RANGE;
 use crate::types::notes::{EditMode, NoteTypes};
 use chrono::{NaiveDate, NaiveTime};
 use clap::{Parser, Subcommand};
@@ -40,7 +41,7 @@ pub enum MonoCommands {
         paste: bool,
 
         /// Value assigned to each note [check-in mood, todo priority, idea hype] (-5..=5)
-        #[clap(short, long, value_parser = clap::value_parser!(i64).range(-5..=5), allow_negative_numbers = true)]
+        #[clap(short, long, value_parser = clap::value_parser!(i64).range(SCORE_RANGE), allow_negative_numbers = true)]
         value: Option<i64>,
     },
 
@@ -63,7 +64,7 @@ pub enum MonoCommands {
         paste: bool,
 
         /// Mood tracking (-5..=5)
-        #[clap(short, long, value_parser = clap::value_parser!(i64).range(-5..=5), allow_negative_numbers = true)]
+        #[clap(short, long, value_parser = clap::value_parser!(i64).range(SCORE_RANGE), allow_negative_numbers = true)]
         mood: Option<i64>,
     },
 
@@ -86,7 +87,8 @@ pub enum MonoCommands {
         paste: bool,
 
         /// Task priority or importance level (-5..=5)
-        #[clap(short = 'i', long, value_parser = clap::value_parser!(i64).range(-5..=5), allow_negative_numbers = true)]
+        /// Note: Negetive values are considered checked off and won't show in todo reminders
+        #[clap(short = 'i', long, value_parser = clap::value_parser!(i64).range(SCORE_RANGE), allow_negative_numbers = true)]
         priority: Option<i64>,
     },
 
@@ -109,7 +111,7 @@ pub enum MonoCommands {
         paste: bool,
 
         /// How good of an idea it is (-5..=5)
-        #[clap(short = 'y', long, value_parser = clap::value_parser!(i64).range(-5..=5), allow_negative_numbers = true)]
+        #[clap(short = 'y', long, value_parser = clap::value_parser!(i64).range(SCORE_RANGE), allow_negative_numbers = true)]
         hype: Option<i64>,
     },
 
@@ -199,6 +201,20 @@ pub enum MonoCommands {
         /// Approval flag to actually delete the note
         #[clap(short, long)]
         approve: bool,
+    },
+
+    /// Check off a todo
+    Check {
+        /// Note ids to check off (ei: 1, 2, 3)
+        #[arg(required = true)]
+        note_ids: Vec<u32>,
+    },
+
+    /// Uncheck a todo
+    Uncheck {
+        /// Note ids to uncheck (ei: 1, 2, 3)
+        #[arg(required = true)]
+        note_ids: Vec<u32>,
     },
 
     /// Display a basic stats overview (beta)

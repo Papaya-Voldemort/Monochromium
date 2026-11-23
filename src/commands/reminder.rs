@@ -56,13 +56,19 @@ fn get_todo_list(db: &Database) -> Result<String, MonoError> {
     }
 
     let mut lines = Vec::with_capacity(notes.len() + 1);
-    lines.push("-- todo --".to_string());
 
     for note in &mut notes {
+        if note.value.is_some() && note.value.unwrap().is_negative() {
+            continue;
+        };
         let Some(content) = read_file_if_exists(&note.file_link)? else {
             continue;
         };
         lines.push(format!("[{}] {}", note.id, content));
+    }
+
+    if !lines.is_empty() {
+        lines.insert(0, "-- todo --".to_string());
     }
 
     Ok(lines.join("\n"))

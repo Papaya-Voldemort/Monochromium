@@ -36,6 +36,8 @@ Monochromium is packed with high-value features, check them out!
 - `mono checkin "content"`: Make a mental health check-in
 - `mono todo "content"`: Create a quick task
 - `mono idea "content"`: Jot down your best ideas
+- `mono check <id>...`: Check off one or more todos
+- `mono uncheck <id>...`: Mark checked todos as not done
 
 ### Fast Reads
 

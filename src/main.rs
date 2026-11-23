@@ -8,7 +8,8 @@ mod types;
 mod utils;
 
 use crate::commands::{
-    add, config, delete, edit, export, get_stats, init, list, lock, reminder, search, unlock, view,
+    add, config, delete, edit, export, get_stats, handle_todos, init, list, lock, reminder, search,
+    unlock, view,
 };
 use crate::database::Database;
 use crate::types::{CommandOutput, MonoError, NoteTypes};
@@ -71,7 +72,7 @@ fn run() -> Result<(), MonoError> {
                 time,
                 date,
                 paste,
-                priority,
+                Some(priority.unwrap_or(1)),
             )?),
             MonoCommands::Idea {
                 text,
@@ -90,6 +91,12 @@ fn run() -> Result<(), MonoError> {
             )?),
             MonoCommands::Delete { note_id, approve } => {
                 CommandOutput::Text(delete(&db, note_id, approve)?)
+            }
+            MonoCommands::Check { note_ids } => {
+                CommandOutput::Lines(handle_todos(&db, note_ids, true)?)
+            }
+            MonoCommands::Uncheck { note_ids } => {
+                CommandOutput::Lines(handle_todos(&db, note_ids, false)?)
             }
             MonoCommands::Edit {
                 note_id,

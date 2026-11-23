@@ -1,6 +1,6 @@
 #[cfg(test)]
 use crate::database::Database;
-use crate::types::{FieldUpdate, MonoError};
+use crate::types::{FieldUpdate, MonoError, Score};
 use crate::types::{Note, NoteTypes};
 use std::path::PathBuf;
 
@@ -56,13 +56,14 @@ fn value_round_trips_through_reads() -> Result<(), MonoError> {
     let db = Database::new_in_memory()?;
 
     let dt = chrono::Utc::now().naive_utc();
+    let score = Score::new(3)?;
 
     let scored_id = db.add_row(
         "scored".to_string(),
         NoteTypes::CheckIn,
         PathBuf::from("path/scored.md"),
         dt,
-        Some(3),
+        Some(score),
     )?;
     let unscored_id = db.add_row(
         "unscored".to_string(),
@@ -72,11 +73,11 @@ fn value_round_trips_through_reads() -> Result<(), MonoError> {
         None,
     )?;
 
-    assert_eq!(db.read_single_row(scored_id)?.value, Some(3));
+    assert_eq!(db.read_single_row(scored_id)?.value, Some(score));
     assert_eq!(db.read_single_row(unscored_id)?.value, None);
 
     let rows = db.read_rows(-1, Some(NoteTypes::CheckIn), None, None)?;
-    assert!(rows.iter().any(|note| note.value == Some(3)));
+    assert!(rows.iter().any(|note| note.value == Some(score)));
     assert!(rows.iter().any(|note| note.value.is_none()));
 
     Ok(())
