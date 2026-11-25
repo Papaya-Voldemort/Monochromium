@@ -2,6 +2,7 @@ use crate::config::load_config;
 use crate::database::Database;
 use crate::storage::read_file_if_exists;
 use crate::types::{MonoError, NoteTypes};
+use crate::utils::is_locked;
 use chrono::{Duration, Local};
 
 pub fn reminder(db: &Database) -> Result<String, MonoError> {
@@ -61,6 +62,10 @@ fn get_todo_list(db: &Database) -> Result<String, MonoError> {
         if note.value.is_some() && note.value.unwrap().is_negative() {
             continue;
         };
+        if is_locked(&note.file_link)? {
+            lines.push(format!("[{}] is locked and can't be read.", note.id));
+            continue;
+        }
         let Some(content) = read_file_if_exists(&note.file_link)? else {
             continue;
         };
